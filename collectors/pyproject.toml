@@ -2,7 +2,7 @@
 name = "kampff-collect"
 version = "0.1.0"
 description = "Generic config-driven collector for kampff bundles"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
   "pyyaml>=6.0",
 ]
