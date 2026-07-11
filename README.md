@@ -4,6 +4,7 @@
 
 Human spectrum analysis from text — for communities, workplace boards, and teams.
 
+[![Stars](https://img.shields.io/github/stars/YangKangSung/kampff-skills?style=social)](https://github.com/YangKangSung/kampff-skills/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ---
