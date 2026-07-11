@@ -32,10 +32,29 @@ kampff       → text → human spectrum (spectrograph)
 
 ## Quick start
 
+### Install skill
+
+| Agent | Path |
+|-------|------|
+| Grok | `~/.grok/skills/kampff` |
+| Claude Code | `~/.claude/skills/kampff` or `.claude/skills/kampff` |
+| Hermes | `~/.hermes/skills/kampff` |
+| Cursor | `.cursor/skills/kampff` |
+
 ```bash
-cp -r kampff ~/.grok/skills/kampff
-setx KAMPFF_DATA "D:\data\kampff"   # optional data root
+cp -r kampff ~/.grok/skills/kampff    # pick your agent path
 ```
+
+Optional data root (env or shell):
+
+```bash
+# Windows
+setx KAMPFF_DATA "D:\data\kampff"
+# macOS / Linux
+export KAMPFF_DATA=~/kampff-data
+```
+
+Collector (optional, separate package): see [collectors/README.md](collectors/README.md).
 
 **매일:** 수집기 → `kampff-data/inbox/오늘/bundle.json` → 에이전트:
 
@@ -104,11 +123,22 @@ setx KAMPFF_DATA "D:\data\kampff"   # optional data root
 
 ```
 kampff-skills/
-├── kampff/SKILL.md
-├── docs/spectrograph.md
-├── docs/sample-input.json
+├── kampff/SKILL.md          # analysis skill
+├── collectors/              # kampff-collect (optional)
+├── docs/                    # usage, schema, spectrograph
 └── LICENSE
 ```
+
+Docs: [usage](docs/usage.md) · [input schema](docs/input-schema.md) · [spectrograph](docs/spectrograph.md) · [platforms](docs/prebuilt-platforms.md)
+
+---
+
+## Security
+
+- **Never commit** tokens, `.env`, or `kampff-data/` (gitignored). Use `auth_ref` + `KAMPFF_AUTH_DIR` for collectors — see [collectors.md](docs/collectors.md).
+- **Maintainers:** use [GitHub CLI](https://cli.github.com/) (`gh auth login --web`). Do not script `git credential fill` or echo tokens in terminals or AI chats.
+- Enable **2FA** on your GitHub account. Rotate sessions after any suspected token exposure: [sessions](https://github.com/settings/sessions) · [OAuth apps](https://github.com/settings/applications).
+- Report issues: [github.com/YangKangSung/kampff-skills/issues](https://github.com/YangKangSung/kampff-skills/issues)
 
 ---
 
