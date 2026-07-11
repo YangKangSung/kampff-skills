@@ -1,0 +1,50 @@
+id: github
+label: GitHub / GHE (generic REST)
+transport: rest
+auth: github
+base_url_from: target.url
+
+capabilities:
+  - issue
+  - issue_comment
+  - pr_comment
+
+scopes:
+  - repo:{owner}/{repo}
+  - org:{org}
+
+collect_types:
+  issue:
+    source: issue
+    type: post
+  issue_comment:
+    source: issue_comment
+    type: comment
+  pr_comment:
+    source: pr_comment
+    type: comment
+
+endpoints:
+  issues:
+    method: GET
+    path: /repos/{{ scope.owner }}/{{ scope.repo }}/issues
+    params:
+      state: all
+      since: "{{ query.since }}"
+      per_page: 100
+
+mapping:
+  issue:
+    list_path: .
+    content: "{{ title }}\n\n{{ body }}"
+    author: "{{ user.login }}"
+    timestamp: "{{ updated_at }}"
+    url: "{{ html_url }}"
+    thread_id: "{{ repository_url }}#{{ number }}"
+  issue_comment:
+    nested: issue_comments
+    path: /repos/{{ scope.owner }}/{{ scope.repo }}/issues/{{ issue.number }}/comments
+    content: "{{ body }}"
+    author: "{{ user.login }}"
+    timestamp: "{{ created_at }}"
+    url: "{{ html_url }}"

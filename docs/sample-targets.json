@@ -19,7 +19,7 @@
       "collect": ["wiki_page", "comment"],
       "match_people": ["user_42"],
       "auth_ref": "confluence_prod",
-      "search": {
+      "query": {
         "cql": "contributor = \"kim.oo@company.com\" AND lastModified >= 2025-01-01"
       }
     },
@@ -30,8 +30,8 @@
       "collect": ["issue", "comment"],
       "match_people": ["user_42"],
       "auth_ref": "jira_prod",
-      "search": {
-        "jql": "project = PROJ AND comment ~ \"user42\" OR reporter = user42 ORDER BY updated DESC"
+      "query": {
+        "jql": "project = PROJ AND (reporter = user42 OR assignee = user42) ORDER BY updated DESC"
       }
     },
     {
@@ -41,7 +41,7 @@
       "collect": ["issue", "issue_comment", "pr_comment"],
       "match_people": ["user_42"],
       "auth_ref": "github_enterprise",
-      "search": { "author_login": "user42corp", "since": "2025-01-01" }
+      "query": { "author_login": "user42corp", "since": "2025-01-01" }
     },
     {
       "url": "https://portal.company.local/community/engineering",
@@ -50,10 +50,11 @@
       "collect": ["post", "comment"],
       "match_people": ["me", "user_42"],
       "auth_ref": "corp_sso",
-      "playwright": {
-        "storage_state": "%KAMPFF_AUTH_DIR%/corp_sso/state.json",
-        "headless": true,
-        "search": { "author_display": "김OO", "max_pages": 30 }
+      "query": {
+        "author": "김OO",
+        "max_pages": 30,
+        "item_selector": "[data-post]",
+        "content_selector": ".post-body"
       }
     },
     {

@@ -1,0 +1,51 @@
+# Copy → platforms/{your_system}.yaml
+id: example
+label: Example system
+transport: rest  # rest | playwright | file
+
+auth: bearer  # atlassian | github | bearer | basic | playwright_storage | none
+
+base_url_from: target.url  # or fixed in auth profile
+
+capabilities:
+  - post
+  - comment
+
+scopes:
+  - board
+  - thread
+
+collect_types:
+  post:
+    source: community_post
+    type: post
+  comment:
+    source: community_comment
+    type: comment
+
+# --- rest transport ---
+endpoints:
+  list:
+    method: GET
+    path: /api/items
+    params:
+      q: "{{ query.q }}"
+
+mapping:
+  post:
+    list_path: items
+    content: "{{ text }}"
+    author: "{{ author.name }}"
+    timestamp: "{{ created_at }}"
+    url: "{{ _base }}/items/{{ id }}"
+
+# --- playwright transport (delete endpoints, use selectors) ---
+# selectors:
+#   item: "article"
+#   fields:
+#     content: ".content"
+#     author: ".author"
+#     timestamp: "time"
+# pagination:
+#   strategy: scroll | click_next
+#   next_selector: "a.next"

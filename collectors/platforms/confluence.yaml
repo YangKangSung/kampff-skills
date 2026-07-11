@@ -1,0 +1,39 @@
+id: confluence
+label: Confluence (generic REST)
+transport: rest
+auth: atlassian
+base_url_from: target.url
+
+capabilities:
+  - wiki_page
+  - comment
+
+scopes:
+  - space:{key}
+  - page:{id}
+
+collect_types:
+  wiki_page:
+    source: wiki_page
+    type: post
+  comment:
+    source: community_comment
+    type: comment
+
+endpoints:
+  search:
+    method: GET
+    path: /wiki/rest/api/content/search
+    params:
+      cql: "{{ query.cql }}"
+      limit: "{{ query.limit | default(50) }}"
+
+mapping:
+  wiki_page:
+    list_path: results
+    content: "{{ title }}\n\n{{ body.storage.value }}"
+    author: "{{ history.createdBy.displayName }}"
+    author_email: "{{ history.createdBy.email }}"
+    timestamp: "{{ history.createdDate }}"
+    url: "{{ _links.base }}{{ _links.webui }}"
+    thread_id: "{{ id }}"

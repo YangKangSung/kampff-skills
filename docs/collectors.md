@@ -1,6 +1,8 @@
-# collectors — 수집기 아키텍처 (별도 repo/패키지 권장)
+# collectors — 수집기 아키텍처
 
-kampff **skill 밖**. 사내 보안·인증을 고려한 **어댑터 플러그인** 구조.
+> **Generic first:** [collectors-generic.md](collectors-generic.md) — 플랫폼 = YAML, transport 3종만.
+
+kampff **skill 밖**. 구현: `collectors/kampff_collect/`
 
 ```
 targets.json  →  collector CLI  →  adapter(platform)  →  bundle.json

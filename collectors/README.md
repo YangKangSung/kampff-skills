@@ -1,13 +1,30 @@
-# kampff-collect (구현 예정)
+# kampff-collect (generic)
 
-사내·외부 텍스트 수집기. **skill(`kampff`)과 분리.**
+**플랫폼별 코드 X → `platforms/*.yaml` + transport 3종**
 
-- 스펙: [docs/collectors.md](../docs/collectors.md)
-- 타겟: [docs/collection-targets.md](../docs/collection-targets.md)
+| transport | adapter |
+|-----------|---------|
+| `rest` | Confluence, Jira, GitHub, any API |
+| `playwright` | 사내 웹 (SSO) |
+| `file` | export / eml / dump |
+
+## Add a system (no fork)
+
+1. Copy `platforms/_template.yaml` → `platforms/your_portal.yaml`
+2. Set `transport`, `selectors` or `endpoints` + `mapping`
+3. `targets.json` → `"platform": "your_portal"`
+
+## CLI
 
 ```bash
-# 예정
-kampff-collect --targets ../kampff-data/inbox/2026-07-11/targets.json
+cd collectors
+pip install -e ".[all]"
+playwright install chromium
+
+kampff-collect platforms
+kampff-collect collect --targets ../kampff-data/inbox/2026-07-11/targets.json --out ../kampff-data/inbox/2026-07-11/bundle.json
 ```
 
-어댑터: Playwright (`internal_web`), Confluence, Jira, GitHub, SNS.
+Adapters are **stubs** until REST/Playwright mapping engine is wired — architecture is generic.
+
+Design: [docs/collectors-generic.md](../docs/collectors-generic.md)

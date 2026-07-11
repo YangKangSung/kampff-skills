@@ -1,0 +1,50 @@
+id: jira
+label: Jira (generic REST)
+transport: rest
+auth: atlassian
+base_url_from: target.url
+
+capabilities:
+  - issue
+  - comment
+
+scopes:
+  - "project:{key}"
+  - "issue:{key}"
+
+collect_types:
+  issue:
+    source: issue
+    type: post
+  comment:
+    source: issue_comment
+    type: comment
+
+endpoints:
+  search:
+    method: GET
+    path: /rest/api/3/search
+    params:
+      jql: "{{ query.jql | default('ORDER BY updated DESC') }}"
+      maxResults: "{{ query.limit | default(100) }}"
+      fields: "*all"
+
+mapping:
+  issue:
+    list_path: issues
+    content: "{{ fields.summary }}\n\n{{ fields.description | default('') }}"
+    author: "{{ fields.reporter.displayName }}"
+    author_email: "{{ fields.reporter.emailAddress }}"
+    timestamp: "{{ fields.updated }}"
+    url: "{{ target.url }}/browse/{{ key }}"
+    thread_id: "{{ key }}"
+  comment:
+    for_each_issue: true
+    fetch:
+      path: /rest/api/3/issue/{{ issue.key }}/comment
+    list_path: comments
+    content: "{{ body }}"
+    author: "{{ author.displayName }}"
+    timestamp: "{{ created }}"
+    url: "{{ target.url }}/browse/{{ issue.key }}?focusedCommentId={{ id }}"
+    thread_id: "{{ issue.key }}"

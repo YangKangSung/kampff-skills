@@ -1,0 +1,38 @@
+id: internal_web
+label: Generic internal web (Playwright)
+transport: playwright
+auth: playwright_storage
+
+capabilities:
+  - post
+  - comment
+
+scopes:
+  - board
+  - thread
+  - profile
+
+collect_types:
+  post:
+    source: community_post
+    type: post
+  comment:
+    source: community_comment
+    type: comment
+
+selectors:
+  item: "{{ query.item_selector | default('article, .post, [data-post]') }}"
+  fields:
+    content: "{{ query.content_selector | default('.content, .body, [data-content]') }}"
+    author: "{{ query.author_selector | default('.author, [data-author]') }}"
+    timestamp: "{{ query.time_selector | default('time[datetime], .date') }}"
+    link: "a[href]"
+
+pagination:
+  strategy: "{{ query.pagination | default('click_next') }}"
+  next_selector: "{{ query.next_selector | default('a.next, [rel=next]') }}"
+  max_pages: "{{ query.max_pages | default(20) }}"
+
+filters:
+  author_in_aliases: true
+  query_author: "{{ query.author }}"
