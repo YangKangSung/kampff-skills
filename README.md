@@ -24,6 +24,7 @@ Human spectrum analysis from text — for communities, workplace boards, and tea
 - [Structure](#structure)
 - [Security](#security)
 - [Contributing](#contributing)
+- [Support](#support)
 - [License](#license)
 
 ---
@@ -236,6 +237,15 @@ kampff-skills/
 Issues and PRs welcome. Keep skills focused, document real use cases, cite evidence in examples.
 
 Launch copy draft: [docs/launch-copy.md](docs/launch-copy.md)
+
+---
+
+## Support
+
+If Kampff saves you time reading a board:
+
+- **[Sponsor on GitHub](https://github.com/sponsors/YangKangSung)** — recurring support
+- **⭐ Star** the repo — unlocks the next spectrograph module ([roadmap](#star--next-module))
 
 ---
 
