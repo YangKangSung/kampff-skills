@@ -19,6 +19,9 @@
 수집기가 해당 URL 범위에서 그 사람의 **글·댓글·리플**만 골라 `bundle.json` 생성.  
 각 발화에 `url`(permalink) + `collected_from`(수집 범위 URL) 저장.
 
+**사내:** Confluence · Jira · GitHub Enterprise · API 없는 포털은 **Playwright**  
+→ [collectors.md](collectors.md) · `auth_ref` + `KAMPFF_AUTH_DIR` (토큰은 targets에 넣지 않음)
+
 ---
 
 ## 호출 방법 (분석만 — 3가지)

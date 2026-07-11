@@ -28,8 +28,8 @@
 |-------|----------|-------------|
 | `content` | yes | 본문 |
 | `timestamp` | yes | ISO 8601 |
-| `source` | yes | `mail` \| `meeting` \| `chat` \| `messenger` \| `community_post` \| `community_comment` \| `sns_post` \| `sns_comment` |
-| `platform` | no | `x` \| `facebook` \| `instagram` \| `reddit` \| `linkedin` \| `community` \| `other` |
+| `source` | yes | `mail` \| `meeting` \| `chat` \| `messenger` \| `wiki_page` \| `issue` \| `issue_comment` \| `pr_comment` \| `community_post` \| `community_comment` \| `sns_post` \| `sns_comment` |
+| `platform` | no | `x` \| `facebook` \| `instagram` \| `reddit` \| `linkedin` \| `confluence` \| `jira` \| `github` \| `internal_web` \| `community` |
 | `type` | no | `post` \| `comment` \| `reply` \| `dm` \| `thread` \| `forward` \| `repost` |
 | `url` | no | **permalink** — 해당 글/댓글 URL |
 | `collected_from` | no | 수집 범위 URL (targets[].url) |

@@ -48,8 +48,8 @@ setx KAMPFF_DATA "D:\data\kampff"   # optional data root
 /kampff analyze D:\data\kampff\inbox\2026-07-11\bundle.json
 ```
 
-입력 소스: `mail` · `meeting` · `chat` · `messenger` · `community_*` · `sns_*`  
-→ [docs/usage.md](docs/usage.md) · [docs/input-schema.md](docs/input-schema.md)
+입력: `mail` · `meeting` · `chat` · `messenger` · `confluence` · `jira` · `github` · Playwright 사내웹 · SNS  
+수집 스펙: [docs/collectors.md](docs/collectors.md) · [docs/collection-targets.md](docs/collection-targets.md)
 
 ---
 

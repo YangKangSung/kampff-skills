@@ -17,7 +17,7 @@ Analyze people from text they already published. **Collection is out of scope** 
 ### 0 — URL targets (collection, separate script)
 
 User provides `targets.json` (URL + person search). Collector fetches posts/comments → `bundle.json`.  
-Spec: [docs/collection-targets.md](../docs/collection-targets.md)
+Spec: [docs/collection-targets.md](../docs/collection-targets.md) · enterprise: [docs/collectors.md](../docs/collectors.md) (Playwright, Confluence, Jira, GitHub)
 
 ```text
 /kampff collect --targets {path}/targets.json   # collector, not analysis
