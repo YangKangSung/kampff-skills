@@ -1,29 +1,59 @@
 {
-  "context": "workplace",
+  "context": "mixed",
   "viewer_id": "me",
   "protocol": "spectrograph",
   "analysis_lenses": ["personal", "hr"],
+  "batch_date": "2026-07-11",
   "people": [
     {
       "id": "me",
+      "display_name": "viewer",
       "texts": [
         {
           "content": "이번 분기 목표는 팀 단위로 맞추는 게 맞다고 봅니다.",
           "timestamp": "2026-03-15T10:00:00+09:00",
-          "type": "post"
+          "source": "community_post",
+          "type": "post",
+          "thread_id": "board-9912"
+        },
+        {
+          "content": "회의록: 1안 채택, 2주 내 프로토타입.",
+          "timestamp": "2026-07-10T16:00:00+09:00",
+          "source": "meeting",
+          "type": "thread",
+          "source_file": "raw/meeting/2026-07-10-team.txt"
         }
       ]
     },
     {
       "id": "user_42",
+      "display_name": "김OO",
       "texts": [
         {
           "content": "또 회의만 하네. 하는 사람은 늘 하는 거고.",
           "timestamp": "2026-04-02T14:22:00+09:00",
-          "type": "comment"
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "board-9912"
+        },
+        {
+          "content": "Re: 일정 공유 부탁드립니다.",
+          "timestamp": "2026-07-11T09:15:00+09:00",
+          "source": "mail",
+          "type": "reply",
+          "source_file": "raw/mail/2026-07-11-user42.eml"
+        },
+        {
+          "content": "ㅋㅋ 그건 좀 아닌듯",
+          "timestamp": "2026-07-11T11:03:00+09:00",
+          "source": "messenger",
+          "type": "dm"
         }
       ]
     }
   ],
-  "meta": { "language": "ko", "timezone": "Asia/Seoul" }
+  "meta": {
+    "language": "ko",
+    "timezone": "Asia/Seoul"
+  }
 }

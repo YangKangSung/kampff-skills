@@ -32,20 +32,24 @@ kampff       → text → human spectrum (spectrograph)
 ## Quick start
 
 ```bash
-# Grok
 cp -r kampff ~/.grok/skills/kampff
-
-# Hermes
-cp -r kampff ~/.hermes/skills/kampff
+setx KAMPFF_DATA "D:\data\kampff"   # optional data root
 ```
 
-```
-/kampff
+**매일:** 수집기 → `kampff-data/inbox/오늘/bundle.json` → 에이전트:
 
-Context: workplace board. Viewer: me.
-Analyze everyone including me. Lenses: personal, hr.
-[paste JSON — see docs/sample-input.json]
+```text
+/kampff today
 ```
+
+**파일 지정:**
+
+```text
+/kampff analyze D:\data\kampff\inbox\2026-07-11\bundle.json
+```
+
+입력 소스: `mail` · `meeting` · `chat` · `messenger` · `community_*` · `sns_*`  
+→ [docs/usage.md](docs/usage.md) · [docs/input-schema.md](docs/input-schema.md)
 
 ---
 
