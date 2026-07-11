@@ -1,0 +1,29 @@
+{
+  "context": "workplace",
+  "viewer_id": "me",
+  "protocol": "spectrograph",
+  "analysis_lenses": ["personal", "hr"],
+  "people": [
+    {
+      "id": "me",
+      "texts": [
+        {
+          "content": "이번 분기 목표는 팀 단위로 맞추는 게 맞다고 봅니다.",
+          "timestamp": "2026-03-15T10:00:00+09:00",
+          "type": "post"
+        }
+      ]
+    },
+    {
+      "id": "user_42",
+      "texts": [
+        {
+          "content": "또 회의만 하네. 하는 사람은 늘 하는 거고.",
+          "timestamp": "2026-04-02T14:22:00+09:00",
+          "type": "comment"
+        }
+      ]
+    }
+  ],
+  "meta": { "language": "ko", "timezone": "Asia/Seoul" }
+}
