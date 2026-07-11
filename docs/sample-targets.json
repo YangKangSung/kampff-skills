@@ -1,0 +1,40 @@
+{
+  "batch_date": "2026-07-11",
+  "viewer_id": "me",
+  "people": [
+    {
+      "id": "me",
+      "aliases": ["@myhandle", "viewer@company.com"]
+    },
+    {
+      "id": "user_42",
+      "aliases": ["@their_x", "u/their_reddit", "김OO"]
+    }
+  ],
+  "targets": [
+    {
+      "url": "https://x.com/their_x",
+      "platform": "x",
+      "scope": "profile",
+      "collect": ["post", "reply"],
+      "match_people": ["user_42"]
+    },
+    {
+      "url": "https://www.reddit.com/r/work/comments/abc123/",
+      "platform": "reddit",
+      "scope": "thread",
+      "collect": ["post", "comment"],
+      "match_people": ["user_42"],
+      "search": { "author": "u/their_reddit" }
+    },
+    {
+      "url": "https://internal.company.com/board/engineering",
+      "platform": "community",
+      "scope": "board",
+      "collect": ["post", "comment"],
+      "match_people": ["me", "user_42"],
+      "search": { "author_display": "김OO" }
+    }
+  ],
+  "meta": { "since": "2025-01-01" }
+}

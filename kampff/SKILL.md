@@ -12,7 +12,17 @@ description: >
 
 Analyze people from text they already published. **Collection is out of scope** — read normalized files only.
 
-## Usage (pick one)
+## Usage
+
+### 0 — URL targets (collection, separate script)
+
+User provides `targets.json` (URL + person search). Collector fetches posts/comments → `bundle.json`.  
+Spec: [docs/collection-targets.md](../docs/collection-targets.md)
+
+```text
+/kampff collect --targets {path}/targets.json   # collector, not analysis
+/kampff analyze {path}/bundle.json
+```
 
 ### A — File path
 
@@ -48,7 +58,8 @@ Merge bundle with `{root}/people/{id}/history.json` if present; emphasize L5 eph
 
 `mail` · `meeting` · `chat` · `messenger` · `community_post` · `community_comment` · `sns_post` · `sns_comment`
 
-Optional: `type` = `post` | `comment` | `reply` | `dm` | `thread` | `forward`
+Optional: `platform` = `x` | `facebook` | `instagram` | `reddit` | `linkedin` | `community`  
+Optional: `url` (permalink), `collected_from` (scope URL), `type` = `post` | `comment` | `reply` | ...
 
 Full layout: [docs/usage.md](../docs/usage.md) · schema: [docs/input-schema.md](../docs/input-schema.md)
 

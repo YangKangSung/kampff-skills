@@ -2,7 +2,26 @@
 
 수집은 **별도 logic**. skill/agent는 **정규화된 입력 파일**만 읽는다.
 
-## 호출 방법 (3가지)
+## 호출 방법
+
+### 0) URL 지정 + 사람 검색 (수집 → 분석)
+
+**수집은 별도 logic.** `targets.json`에 URL과 찾을 사람을 적는다.
+
+```text
+/kampff collect --targets D:\data\kampff\inbox\2026-07-11\targets.json
+/kampff analyze D:\data\kampff\inbox\2026-07-11\bundle.json
+```
+
+`targets.json` 예: Reddit subreddit, X 프로필, 사내 게시판 URL + `author` / `aliases` 검색  
+→ [collection-targets.md](collection-targets.md) · [sample-targets.json](sample-targets.json)
+
+수집기가 해당 URL 범위에서 그 사람의 **글·댓글·리플**만 골라 `bundle.json` 생성.  
+각 발화에 `url`(permalink) + `collected_from`(수집 범위 URL) 저장.
+
+---
+
+## 호출 방법 (분석만 — 3가지)
 
 ### 1) 슬래시 + 파일 경로 (가장 흔함)
 
@@ -85,7 +104,11 @@ kampff-data/
 | `sns_post` | SNS 본문 |
 | `sns_comment` | SNS 댓글·리플 |
 
-`type` (발화 형태): `post` | `comment` | `reply` | `dm` | `thread` | `forward`
+**SNS `platform`:** `x` · `facebook` · `instagram` · `reddit` · `linkedin`
+
+`type`: `post` | `comment` | `reply` | `dm` | `thread` | `forward` | `repost`
+
+**URL:** `texts[].url` = 글 permalink, `collected_from` = 수집 시작 URL
 
 ---
 

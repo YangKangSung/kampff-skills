@@ -48,8 +48,30 @@
           "timestamp": "2026-07-11T11:03:00+09:00",
           "source": "messenger",
           "type": "dm"
+        },
+        {
+          "content": "That take doesn't hold up if you read the thread.",
+          "timestamp": "2026-06-20T08:44:00+00:00",
+          "source": "sns_comment",
+          "platform": "reddit",
+          "type": "comment",
+          "url": "https://www.reddit.com/r/example/comments/abc/comment/def",
+          "collected_from": "https://www.reddit.com/r/example/",
+          "thread_id": "r/example/abc"
         }
       ]
+    }
+  ],
+  "collection_targets": [
+    {
+      "url": "https://www.reddit.com/r/example/",
+      "platform": "reddit",
+      "match_people": ["user_42"]
+    },
+    {
+      "url": "https://x.com/their_x",
+      "platform": "x",
+      "match_people": ["user_42"]
     }
   ],
   "meta": {
