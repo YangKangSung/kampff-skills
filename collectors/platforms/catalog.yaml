@@ -1,0 +1,86 @@
+# Prebuilt platform packs — copy & override query/selectors only for your org.
+# Custom site: copy _template.yaml, set prebuilt: false
+
+prebuilt:
+  - id: jira
+    label: Atlassian Jira
+    transport: rest
+    auth: atlassian
+    tags: [atlassian, workplace, issue]
+  - id: confluence
+    label: Atlassian Confluence
+    transport: rest
+    auth: atlassian
+    tags: [atlassian, workplace, wiki]
+  - id: github
+    label: GitHub / GitHub Enterprise
+    transport: rest
+    auth: github
+    tags: [dev, issue, pr]
+  - id: gitlab
+    label: GitLab / Self-managed
+    transport: rest
+    auth: bearer
+    tags: [dev, issue, mr]
+  - id: slack
+    label: Slack
+    transport: rest
+    auth: bearer
+    tags: [chat, workplace]
+  - id: notion
+    label: Notion
+    transport: rest
+    auth: bearer
+    tags: [wiki, docs]
+  - id: x
+    label: X (Twitter)
+    transport: rest
+    auth: bearer
+    tags: [sns, public]
+  - id: reddit
+    label: Reddit
+    transport: rest
+    auth: oauth
+    tags: [sns, community]
+  - id: linkedin
+    label: LinkedIn
+    transport: file
+    auth: none
+    tags: [sns, export]
+    note: Official API restricted — use member data export zip
+  - id: discord
+    label: Discord
+    transport: file
+    auth: none
+    tags: [chat, export]
+    note: Use Discord data export package
+  - id: microsoft_teams
+    label: Microsoft Teams
+    transport: file
+    auth: none
+    tags: [chat, workplace, export]
+    note: Teams export / Graph API via custom azure prebuilt (see microsoft_graph.yaml)
+  - id: microsoft_graph
+    label: Microsoft 365 (Graph)
+    transport: rest
+    auth: azure_app
+    tags: [teams, outlook, workplace]
+  - id: google_workspace
+    label: Google Workspace (Gmail export)
+    transport: file
+    auth: none
+    tags: [mail, export]
+  - id: internal_web
+    label: Generic internal web (Playwright)
+    transport: playwright
+    auth: playwright_storage
+    tags: [intranet, sso, crawl]
+  - id: rss
+    label: RSS / Atom feed
+    transport: rest
+    auth: none
+    tags: [feed, public]
+
+roll_your_own:
+  copy: _template.yaml
+  doc: ../../docs/collectors-generic.md

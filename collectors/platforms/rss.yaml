@@ -1,0 +1,31 @@
+id: rss
+label: RSS / Atom feed
+prebuilt: true
+transport: rest
+auth: none
+
+capabilities:
+  - post
+
+scopes:
+  - feed
+
+collect_types:
+  post:
+    source: community_post
+    type: post
+
+endpoints:
+  feed:
+    method: GET
+    path: "{{ target.url }}"
+    headers:
+      Accept: application/rss+xml, application/atom+xml
+
+mapping:
+  post:
+    parser: feed_xml
+    content: "{{ title }}\n\n{{ description }}"
+    author: "{{ author }}"
+    timestamp: "{{ pubDate }}"
+    url: "{{ link }}"

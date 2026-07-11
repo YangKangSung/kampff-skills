@@ -1,0 +1,41 @@
+id: x
+label: X (Twitter) API v2
+prebuilt: true
+transport: rest
+auth: bearer
+base_url_from: fixed
+base_url: https://api.twitter.com
+
+capabilities:
+  - post
+  - reply
+
+scopes:
+  - profile:{user_id}
+  - profile_by_username:{username}
+
+collect_types:
+  post:
+    source: sns_post
+    type: post
+  reply:
+    source: sns_comment
+    type: reply
+
+endpoints:
+  timeline:
+    method: GET
+    path: /2/users/{{ query.user_id }}/tweets
+    params:
+      max_results: "{{ query.limit | default(100) }}"
+      tweet.fields: created_at,author_id,conversation_id
+      start_time: "{{ query.since }}"
+
+mapping:
+  post:
+    list_path: data
+    content: "{{ text }}"
+    author: "{{ author_id }}"
+    timestamp: "{{ created_at }}"
+    url: "https://x.com/i/web/status/{{ id }}"
+    thread_id: "{{ conversation_id }}"

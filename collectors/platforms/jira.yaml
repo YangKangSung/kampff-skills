@@ -1,5 +1,6 @@
 id: jira
-label: Jira (generic REST)
+label: Atlassian Jira
+prebuilt: true
 transport: rest
 auth: atlassian
 base_url_from: target.url

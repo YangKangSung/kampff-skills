@@ -1,0 +1,35 @@
+id: notion
+label: Notion API
+prebuilt: true
+transport: rest
+auth: bearer
+base_url: https://api.notion.com
+
+capabilities:
+  - wiki_page
+
+scopes:
+  - database:{id}
+  - page:{id}
+
+collect_types:
+  wiki_page:
+    source: wiki_page
+    type: post
+
+endpoints:
+  query_db:
+    method: POST
+    path: /v1/databases/{{ query.database_id }}/query
+    body:
+      filter: "{{ query.filter }}"
+      page_size: "{{ query.limit | default(50) }}"
+
+mapping:
+  wiki_page:
+    list_path: results
+    content: "{{ _flatten_blocks }}"
+    author: "{{ created_by.id }}"
+    timestamp: "{{ created_time }}"
+    url: "{{ url }}"
+    thread_id: "{{ id }}"

@@ -21,3 +21,16 @@ def load_platform(platform_id: str) -> dict[str, Any]:
 
 def list_platforms() -> list[str]:
     return sorted(p.stem for p in PLATFORMS_DIR.glob("*.yaml") if not p.stem.startswith("_"))
+
+
+def load_catalog() -> dict:
+    path = PLATFORMS_DIR / "catalog.yaml"
+    if not path.exists():
+        return {"prebuilt": [], "roll_your_own": {}}
+    with path.open(encoding="utf-8") as f:
+        return yaml.safe_load(f)
+
+
+def list_prebuilt() -> list[dict]:
+    catalog = load_catalog()
+    return catalog.get("prebuilt", [])

@@ -1,0 +1,39 @@
+id: gitlab
+label: GitLab / Self-managed
+prebuilt: true
+transport: rest
+auth: bearer
+base_url_from: target.url
+
+capabilities:
+  - issue
+  - issue_comment
+
+scopes:
+  - project:{path}
+  - group:{path}
+
+collect_types:
+  issue:
+    source: issue
+    type: post
+  issue_comment:
+    source: issue_comment
+    type: comment
+
+endpoints:
+  issues:
+    method: GET
+    path: /api/v4/projects/{{ query.project_id }}/issues
+    params:
+      updated_after: "{{ query.since }}"
+      per_page: 100
+
+mapping:
+  issue:
+    list_path: .
+    content: "{{ title }}\n\n{{ description }}"
+    author: "{{ author.username }}"
+    timestamp: "{{ updated_at }}"
+    url: "{{ web_url }}"
+    thread_id: "{{ project_id }}#{{ iid }}"

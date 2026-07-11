@@ -1,0 +1,35 @@
+id: slack
+label: Slack Web API
+prebuilt: true
+transport: rest
+auth: bearer
+base_url: https://slack.com/api
+
+capabilities:
+  - message
+
+scopes:
+  - channel:{id}
+  - user:{id}
+
+collect_types:
+  message:
+    source: chat
+    type: thread
+
+endpoints:
+  history:
+    method: GET
+    path: /conversations.history
+    params:
+      channel: "{{ query.channel_id }}"
+      oldest: "{{ query.oldest }}"
+      limit: "{{ query.limit | default(200) }}"
+
+mapping:
+  message:
+    list_path: messages
+    content: "{{ text }}"
+    author: "{{ user }}"
+    timestamp: "{{ ts }}"
+    thread_id: "{{ channel }}"

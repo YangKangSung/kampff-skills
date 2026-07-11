@@ -1,0 +1,26 @@
+id: google_workspace
+label: Google Takeout (Gmail mbox)
+prebuilt: true
+transport: file
+auth: none
+
+capabilities:
+  - mail
+
+scopes:
+  - takeout
+
+collect_types:
+  mail:
+    source: mail
+    type: forward
+
+file:
+  glob: "{{ query.path }}/**/*.mbox"
+  parser: mbox
+  mapping:
+    mail:
+      content: "{{ body }}"
+      author: "{{ from }}"
+      timestamp: "{{ date }}"
+      thread_id: "{{ message_id }}"

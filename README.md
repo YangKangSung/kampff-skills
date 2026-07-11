@@ -49,7 +49,7 @@ setx KAMPFF_DATA "D:\data\kampff"   # optional data root
 ```
 
 입력: `mail` · `meeting` · `chat` · `messenger` · `confluence` · `jira` · `github` · Playwright 사내웹 · SNS  
-수집 (generic): [docs/collectors-generic.md](docs/collectors-generic.md) · `collectors/platforms/*.yaml`
+수집: [prebuilt platforms](docs/prebuilt-platforms.md) · [generic design](docs/collectors-generic.md)
 
 ---
 

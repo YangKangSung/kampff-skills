@@ -1,0 +1,29 @@
+id: linkedin
+label: LinkedIn (member data export)
+prebuilt: true
+transport: file
+auth: none
+
+capabilities:
+  - post
+  - comment
+
+scopes:
+  - export_package
+
+collect_types:
+  post:
+    source: sns_post
+    type: post
+  comment:
+    source: sns_comment
+    type: comment
+
+file:
+  glob: "{{ query.path }}/**/Shares.csv"
+  parser: linkedin_export
+  mapping:
+    post:
+      content: "{{ ShareCommentary }}"
+      timestamp: "{{ Date }}"
+      url: "{{ ShareLink }}"

@@ -1,5 +1,6 @@
 id: github
-label: GitHub / GHE (generic REST)
+label: GitHub / GitHub Enterprise
+prebuilt: true
 transport: rest
 auth: github
 base_url_from: target.url

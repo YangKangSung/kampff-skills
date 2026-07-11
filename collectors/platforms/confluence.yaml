@@ -1,5 +1,6 @@
 id: confluence
-label: Confluence (generic REST)
+label: Atlassian Confluence
+prebuilt: true
 transport: rest
 auth: atlassian
 base_url_from: target.url

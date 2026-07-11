@@ -1,5 +1,6 @@
 id: internal_web
 label: Generic internal web (Playwright)
+prebuilt: true
 transport: playwright
 auth: playwright_storage
 

@@ -8,11 +8,22 @@
 | `playwright` | 사내 웹 (SSO) |
 | `file` | export / eml / dump |
 
-## Add a system (no fork)
+## Prebuilt (유명 플랫폼)
 
-1. Copy `platforms/_template.yaml` → `platforms/your_portal.yaml`
-2. Set `transport`, `selectors` or `endpoints` + `mapping`
-3. `targets.json` → `"platform": "your_portal"`
+```bash
+kampff-collect catalog
+kampff-collect catalog --tags workplace
+kampff-collect show jira
+```
+
+Jira · Confluence · GitHub · GitLab · Slack · Notion · Teams/Graph · X · Reddit · LinkedIn export · Discord export · Playwright 사내웹 · RSS …
+
+→ [docs/prebuilt-platforms.md](../docs/prebuilt-platforms.md)
+
+## Custom (no fork)
+
+1. Copy nearest prebuilt or `platforms/_template.yaml`
+2. `targets.json` → `"platform": "your_id"`
 
 ## CLI
 

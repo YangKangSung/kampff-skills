@@ -1,0 +1,51 @@
+id: reddit
+label: Reddit API
+prebuilt: true
+transport: rest
+auth: oauth
+base_url: https://oauth.reddit.com
+
+capabilities:
+  - post
+  - comment
+
+scopes:
+  - subreddit:{name}
+  - user:{username}
+  - post:{id}
+
+collect_types:
+  post:
+    source: sns_post
+    type: post
+  comment:
+    source: sns_comment
+    type: comment
+
+endpoints:
+  user_posts:
+    method: GET
+    path: /user/{{ query.username }}/submitted
+    params:
+      limit: "{{ query.limit | default(100) }}"
+  user_comments:
+    method: GET
+    path: /user/{{ query.username }}/comments
+    params:
+      limit: "{{ query.limit | default(100) }}"
+
+mapping:
+  post:
+    list_path: data.children
+    content: "{{ data.title }}\n\n{{ data.selftext }}"
+    author: "{{ data.author }}"
+    timestamp: "{{ data.created_utc }}"
+    url: "https://reddit.com{{ data.permalink }}"
+    thread_id: "{{ data.subreddit }}_{{ data.id }}"
+  comment:
+    list_path: data.children
+    content: "{{ data.body }}"
+    author: "{{ data.author }}"
+    timestamp: "{{ data.created_utc }}"
+    url: "https://reddit.com{{ data.permalink }}"
+    thread_id: "{{ data.link_id }}"

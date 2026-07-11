@@ -1,0 +1,13 @@
+Metadata-Version: 2.4
+Name: kampff-collect
+Version: 0.1.0
+Summary: Generic config-driven collector for kampff bundles
+Requires-Python: >=3.11
+Requires-Dist: pyyaml>=6.0
+Provides-Extra: rest
+Requires-Dist: httpx>=0.27; extra == "rest"
+Requires-Dist: jinja2>=3.1; extra == "rest"
+Provides-Extra: playwright
+Requires-Dist: playwright>=1.40; extra == "playwright"
+Provides-Extra: all
+Requires-Dist: kampff-collect[playwright,rest]; extra == "all"

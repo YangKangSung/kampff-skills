@@ -1,0 +1,49 @@
+id: microsoft_graph
+label: Microsoft 365 Graph (Teams, mail metadata)
+prebuilt: true
+transport: rest
+auth: azure_app
+base_url: https://graph.microsoft.com
+
+capabilities:
+  - chat
+  - mail
+
+scopes:
+  - user:{upn}
+  - team:{id}
+  - channel:{id}
+
+collect_types:
+  chat:
+    source: chat
+    type: thread
+  mail:
+    source: mail
+    type: forward
+
+endpoints:
+  teams_messages:
+    method: GET
+    path: /v1.0/teams/{{ query.team_id }}/channels/{{ query.channel_id }}/messages
+    params:
+      $top: "{{ query.limit | default(50) }}"
+  user_messages:
+    method: GET
+    path: /v1.0/users/{{ query.user_id }}/messages
+    params:
+      $filter: "{{ query.filter }}"
+      $top: 50
+
+mapping:
+  chat:
+    list_path: value
+    content: "{{ body.content }}"
+    author: "{{ from.user.displayName }}"
+    timestamp: "{{ createdDateTime }}"
+    url: "{{ webUrl }}"
+  mail:
+    list_path: value
+    content: "{{ subject }}\n\n{{ body.content }}"
+    author: "{{ from.emailAddress.address }}"
+    timestamp: "{{ receivedDateTime }}"

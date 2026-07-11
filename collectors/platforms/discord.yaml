@@ -1,0 +1,26 @@
+id: discord
+label: Discord (data export package)
+prebuilt: true
+transport: file
+auth: none
+
+capabilities:
+  - message
+
+scopes:
+  - export_package
+
+collect_types:
+  message:
+    source: chat
+    type: thread
+
+file:
+  glob: "{{ query.path }}/messages/**/*.json"
+  parser: discord_export
+  mapping:
+    message:
+      content: "{{ Contents }}"
+      author: "{{ Author.username }}"
+      timestamp: "{{ Timestamp }}"
+      thread_id: "{{ Channel }}"
