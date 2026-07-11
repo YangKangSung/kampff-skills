@@ -1,2 +1,0 @@
-[console_scripts]
-kampff-collect = kampff_collect.cli:main
