@@ -40,7 +40,7 @@ Built an agent skill for analyzing people from text they already published — w
 - Collectors are separate YAML-driven package (15 prebuilt platforms; adapters still WIP)
 
 ```bash
-cp -r kampff ~/.grok/skills/kampff
+cp -r kampff ~/.grok/skills/kampff      # or ~/.claude/skills/kampff · ~/.hermes/skills/kampff
 /kampff analyze path/to/bundle.json
 ```
 
@@ -66,4 +66,4 @@ https://github.com/YangKangSung/kampff-skills — feedback welcome.
 
 **GeekNews:** Agent skill `kampff` — 게시판·Slack·메일 텍스트로 동료/커뮤니티 스펙트럼 분석 (세계관 fit, 시간축 drift, evidence 인용). https://github.com/YangKangSung/kampff-skills
 
-**OKKY:** Grok/Claude용 SKILL.md — 텍스트 trace → human dossier. 수집기 분리, spectrograph 7-layer. Star 캠페인 중.
+**OKKY:** Grok / Claude / Hermes SKILL.md — 텍스트 trace → human dossier. 수집기 분리, spectrograph 7-layer. Star 캠페인 중.

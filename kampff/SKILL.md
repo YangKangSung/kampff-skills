@@ -4,8 +4,9 @@ description: >
   Human analysis from text traces — worldview, alliance fit, temporal drift,
   and distance recommendation. Uses the spectrograph 7-layer protocol. Viewer
   included in the analysis pool. Reads bundle.json or daily inbox paths; no
-  scraping. Triggers: /kampff, kampff today, analyze people from mail meeting
-  chat messenger community sns posts comments.
+  scraping. Grok, Claude Code, Hermes, Cursor compatible SKILL.md. Triggers:
+  /kampff, kampff today, analyze people from mail meeting chat messenger
+  community sns posts comments.
 ---
 
 # Kampff

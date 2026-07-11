@@ -149,8 +149,20 @@ skill은 변환 로직을 **포함하지 않음**. 수집기가:
 
 ## 설치
 
+에이전트마다 skills 경로만 다름. **동일한 `kampff/` 폴더**를 복사한다.
+
 ```bash
+# Grok
 cp -r kampff ~/.grok/skills/kampff
-# optional
+
+# Claude Code
+cp -r kampff ~/.claude/skills/kampff
+
+# Hermes
+cp -r kampff ~/.hermes/skills/kampff
+```
+
+```bash
+# optional data root (Windows)
 setx KAMPFF_DATA "D:\data\kampff"
 ```

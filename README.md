@@ -72,9 +72,20 @@ kampff       → text → human spectrum (spectrograph)
 | Hermes | `~/.hermes/skills/kampff` |
 | Cursor | `.cursor/skills/kampff` |
 
+Same `kampff/SKILL.md` — copy to **your** agent’s skills folder (install per harness you use):
+
 ```bash
-cp -r kampff ~/.grok/skills/kampff    # pick your agent path
+# Grok
+cp -r kampff ~/.grok/skills/kampff
+
+# Claude Code (user-level; or .claude/skills/kampff in a project)
+cp -r kampff ~/.claude/skills/kampff
+
+# Hermes
+cp -r kampff ~/.hermes/skills/kampff
 ```
+
+Early drafts showed only Grok because this repo was bootstrapped in **Grok Build**; the skill is not Grok-specific.
 
 Optional data root:
 
