@@ -9,6 +9,25 @@ Human spectrum analysis from text — for communities, workplace boards, and tea
 
 ---
 
+## Contents
+
+- [What is Kampff?](#what-is-kampff)
+- [How it works](#how-it-works)
+- [Quick start](#quick-start)
+- [Workflow](#workflow)
+- [Example output](#example-output)
+- [Star = next module](#star--next-module)
+- [spectrograph](#spectrograph-7-layers)
+- [Compare](#compare)
+- [Philosophy](#philosophy)
+- [What this is NOT](#what-this-is-not)
+- [Structure](#structure)
+- [Security](#security)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
 ## What is Kampff?
 
 **Kampff** is an agent skill. Feed it text traces — posts, comments, replies — get back a **human dossier**:
@@ -30,6 +49,18 @@ kampff       → text → human spectrum (spectrograph)
 
 ---
 
+## How it works
+
+```
+[optional collector] → bundle.json → /kampff → out/{date}-report.md
+```
+
+1. **Collect** (your pipeline or `kampff-collect`) — mail, meeting, chat, Jira, Confluence, SNS → normalized `bundle.json`
+2. **Analyze** — agent loads `kampff/SKILL.md`, runs spectrograph L1–L7
+3. **Report** — matrix + per-person dossiers with quotes under `{KAMPFF_DATA}/out/`
+
+---
+
 ## Quick start
 
 ### Install skill
@@ -45,7 +76,7 @@ kampff       → text → human spectrum (spectrograph)
 cp -r kampff ~/.grok/skills/kampff    # pick your agent path
 ```
 
-Optional data root (env or shell):
+Optional data root:
 
 ```bash
 # Windows
@@ -54,22 +85,52 @@ setx KAMPFF_DATA "D:\data\kampff"
 export KAMPFF_DATA=~/kampff-data
 ```
 
-Collector (optional, separate package): see [collectors/README.md](collectors/README.md).
+### Collector (optional)
 
-**매일:** 수집기 → `kampff-data/inbox/오늘/bundle.json` → 에이전트:
+```bash
+cd collectors && pip install -e ".[all]"
+kampff-collect collect --targets path/to/targets.json --out path/to/bundle.json
+```
+
+REST/Playwright adapters are **stubs** — architecture and YAML packs ship first. See [collectors/README.md](collectors/README.md).
+
+### Data layout
+
+```
+kampff-data/
+├── inbox/{YYYY-MM-DD}/bundle.json
+├── people/{id}/history.json    # optional, ephemeris depth
+└── out/{YYYY-MM-DD}-report.md
+```
+
+### Daily use
 
 ```text
 /kampff today
-```
-
-**파일 지정:**
-
-```text
 /kampff analyze D:\data\kampff\inbox\2026-07-11\bundle.json
 ```
 
-입력: `mail` · `meeting` · `chat` · `messenger` · `confluence` · `jira` · `github` · Playwright 사내웹 · SNS  
-수집: [prebuilt platforms](docs/prebuilt-platforms.md) · [generic design](docs/collectors-generic.md)
+Input sources: `mail` · `meeting` · `chat` · `messenger` · `confluence` · `jira` · `github` · Playwright · SNS  
+Docs: [usage](docs/usage.md) · [input schema](docs/input-schema.md) · [platforms](docs/prebuilt-platforms.md)
+
+---
+
+## Workflow
+
+| Command | When |
+|---------|------|
+| `/kampff collect --targets …` | URL/person search → `bundle.json` (collector) |
+| `/kampff today` | Daily inbox drop |
+| `/kampff analyze {path}` | Explicit bundle file |
+| `/kampff person {id}` | One-person refresh + ephemeris |
+
+---
+
+## Example output
+
+Anonymized dossier from [sample-input.json](docs/sample-input.json):
+
+→ **[docs/sample-output.md](docs/sample-output.md)** (matrix + per-person reports with evidence quotes)
 
 ---
 
@@ -97,6 +158,8 @@ Collector (optional, separate package): see [collectors/README.md](collectors/RE
 | L6 | HR lens — team signals (assist only) |
 | L7 | OSINT lens — narrative consistency (lawful scope) |
 
+Full protocol: [docs/spectrograph.md](docs/spectrograph.md)
+
 ---
 
 ## Compare
@@ -107,6 +170,16 @@ Collector (optional, separate package): see [collectors/README.md](collectors/RE
 | [i-am](https://github.com/LeoYeAI/openclaw-master-skills) | **You** from agent sessions |
 | [ChatAnalysis.SKILL](https://github.com/JularDepick/ChatAnalysis.SKILL) | Chat stats + personality HTML |
 | **kampff** | **Everyone on the board** + **you** + worldview + time + distance |
+
+---
+
+## Philosophy
+
+- **Evidence over vibes** — every inference tied to a quote or marked low-confidence
+- **Viewer in the pool** — you get the same scrutiny as everyone else
+- **Pattern stability, not soul verdicts** — chronic vs situational; no "born evil"
+- **Lawful scope** — refuse stalking, harassment, covert surveillance
+- **Collection ≠ analysis** — skill reads files you point at; no built-in scraping
 
 ---
 
@@ -123,22 +196,35 @@ Collector (optional, separate package): see [collectors/README.md](collectors/RE
 
 ```
 kampff-skills/
-├── kampff/SKILL.md          # analysis skill
-├── collectors/              # kampff-collect (optional)
-├── docs/                    # usage, schema, spectrograph
+├── kampff/SKILL.md
+├── collectors/                 # kampff-collect (optional)
+│   ├── kampff_collect/
+│   └── platforms/              # 15 prebuilt YAML packs
+├── docs/
+│   ├── usage.md
+│   ├── sample-input.json
+│   ├── sample-output.md
+│   ├── launch-copy.md
+│   └── spectrograph.md
 └── LICENSE
 ```
-
-Docs: [usage](docs/usage.md) · [input schema](docs/input-schema.md) · [spectrograph](docs/spectrograph.md) · [platforms](docs/prebuilt-platforms.md)
 
 ---
 
 ## Security
 
-- **Never commit** tokens, `.env`, or `kampff-data/` (gitignored). Use `auth_ref` + `KAMPFF_AUTH_DIR` for collectors — see [collectors.md](docs/collectors.md).
-- **Maintainers:** use [GitHub CLI](https://cli.github.com/) (`gh auth login --web`). Do not script `git credential fill` or echo tokens in terminals or AI chats.
-- Enable **2FA** on your GitHub account. Rotate sessions after any suspected token exposure: [sessions](https://github.com/settings/sessions) · [OAuth apps](https://github.com/settings/applications).
-- Report issues: [github.com/YangKangSung/kampff-skills/issues](https://github.com/YangKangSung/kampff-skills/issues)
+- **Never commit** tokens, `.env`, or `kampff-data/` (gitignored). Use `auth_ref` + `KAMPFF_AUTH_DIR` — [collectors.md](docs/collectors.md).
+- **Maintainers:** [GitHub CLI](https://cli.github.com/) (`gh auth login --web`). Never paste tokens in AI chats or scripts that echo credentials.
+- Enable **2FA**: [github.com/settings/security](https://github.com/settings/security)
+- Issues: [github.com/YangKangSung/kampff-skills/issues](https://github.com/YangKangSung/kampff-skills/issues)
+
+---
+
+## Contributing
+
+Issues and PRs welcome. Keep skills focused, document real use cases, cite evidence in examples.
+
+Launch copy draft: [docs/launch-copy.md](docs/launch-copy.md)
 
 ---
 
@@ -146,8 +232,8 @@ Docs: [usage](docs/usage.md) · [input schema](docs/input-schema.md) · [spectro
 
 **Kampff** is an independent open-source project by [YangKangSung](https://github.com/YangKangSung).
 
-- Not affiliated with, endorsed by, or sponsored by any film studio, game publisher, or media franchise.
-- The name evokes *reading people from sparse evidence* (German *Kampf* — struggle/contest of interpretation), not a licensed fictional test or character.
+- Not affiliated with any film studio, game publisher, or media franchise.
+- The name evokes *reading people from sparse evidence* (German *Kampf* — struggle/contest of interpretation).
 - Do not use studio logos, stills, or trademarked test names in forks or marketing without permission.
 
 ---
