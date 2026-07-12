@@ -6,17 +6,17 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skill](https://img.shields.io/badge/agent-SKILL.md-0ea5e9)](kampff/SKILL.md)
 
-[![Kampff demo reel](docs/demo-reel.gif)](docs/demo-kampff-walkthrough.html)
+[![Kampff demo reel](docs/demo-reel.gif)](https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html)
 
-**▶** GIF autoplays above · click for [interactive demo](docs/demo-kampff-walkthrough.html) (`Space` pause) · [mp4](docs/demo-reel.mp4)
+**▶** GIF autoplays above · click for <a href="https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html" target="_blank" rel="noopener noreferrer"><strong>interactive demo</strong></a> (`Space` pause) · <a href="https://yangkangsung.github.io/kampff-skills/demo-reel.mp4" target="_blank" rel="noopener noreferrer">mp4</a>
 
 ---
 
 ## Sample report
 
-### → [**Open sample HTML report**](docs/sample-community-report.html)
+### → <a href="https://yangkangsung.github.io/kampff-skills/sample-community-report.html" target="_blank" rel="noopener noreferrer"><strong>Open sample HTML report</strong></a> ↗
 
-Markdown twin: [sample-community-report.md](docs/sample-community-report.md) · short workplace cut: [sample-output.md](docs/sample-output.md)
+Live page (not GitHub source). Markdown twin: [sample-community-report.md](docs/sample-community-report.md) · short workplace cut: [sample-output.md](docs/sample-output.md)
 
 > **Synthetic only.** Demo person `relay_ops` @ `forum.example`.  
 > Real third-party dossiers never belong in this repo.
