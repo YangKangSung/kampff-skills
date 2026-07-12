@@ -9,8 +9,8 @@
 **수집은 별도 logic.** `targets.json`에 URL과 찾을 사람을 적는다.
 
 ```text
-/kampff collect --targets D:\data\kampff\inbox\2026-07-11\targets.json
-/kampff analyze D:\data\kampff\inbox\2026-07-11\bundle.json
+/kampff collect --targets $KAMPFF_DATA/inbox\2026-07-11\targets.json
+/kampff analyze $KAMPFF_DATA/inbox\2026-07-11\bundle.json
 ```
 
 `targets.json` 예: Reddit subreddit, X 프로필, 사내 게시판 URL + `author` / `aliases` 검색  
@@ -29,12 +29,12 @@
 ### 1) 슬래시 + 파일 경로 (가장 흔함)
 
 ```text
-/kampff analyze D:\data\kampff\inbox\2026-07-11\bundle.json
+/kampff analyze $KAMPFF_DATA/inbox\2026-07-11\bundle.json
 ```
 
 ```text
 /kampff
-bundle: D:\data\kampff\inbox\2026-07-11\bundle.json
+bundle: $KAMPFF_DATA/inbox\2026-07-11\bundle.json
 lenses: personal, hr
 viewer: me
 ```
@@ -47,8 +47,8 @@ viewer: me
 
 에이전트 동작:
 
-1. `{KAMPFF_DATA}/inbox/{YYYY-MM-DD}/bundle.json` 존재 확인
-2. 없으면 `{KAMPFF_DATA}/inbox/{YYYY-MM-DD}/raw/` 아래 소스 파일을 읽어 **임시 정규화** 후 분석
+1. `$KAMPFF_DATA/inbox/{YYYY-MM-DD}/bundle.json` 존재 확인
+2. 없으면 `$KAMPFF_DATA/inbox/{YYYY-MM-DD}/raw/` 아래 소스 파일을 읽어 **임시 정규화** 후 분석
 3. 결과 → `{KAMPFF_DATA}/out/{YYYY-MM-DD}-report.md`
 
 기본 데이터 루트: `KAMPFF_DATA` 환경변수, 없으면 `./kampff-data`
@@ -56,7 +56,7 @@ viewer: me
 ### 3) 특정 사람만 갱신
 
 ```text
-/kampff person user_42 --bundle D:\data\kampff\inbox\2026-07-11\bundle.json
+/kampff person user_42 --bundle $KAMPFF_DATA/inbox\2026-07-11\bundle.json
 ```
 
 기존 `people/user_42/history.json` 과 병합 후 ephemeris(L5) 강조.
@@ -164,5 +164,5 @@ cp -r kampff ~/.hermes/skills/kampff
 
 ```bash
 # optional data root (Windows)
-setx KAMPFF_DATA "D:\data\kampff"
+setx KAMPFF_DATA "{KAMPFF_DATA}"
 ```

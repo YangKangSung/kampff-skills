@@ -1,0 +1,110 @@
+# Optional handle-expansion pre-collector (not a text-body source).
+# Runtime: pip install maigret · script: scripts/expand_handles_maigret.py
+# Does NOT produce long-form posts for spectrograph — only identity map + candidate URLs.
+id: maigret
+label: Maigret (username OSINT map)
+prebuilt: true
+transport: cli
+auth: none
+role: identity_expand
+
+capabilities:
+  - account_presence
+  - profile_url
+  - alias_hint
+
+scopes:
+  - username:{handle}
+  - person:{id}
+
+collect_types:
+  # Presence markers are short structured notes, not behavioral corpus.
+  account_hit:
+    source: sns_post
+    type: account_presence
+  profile_summary:
+    source: sns_post
+    type: post
+
+# CLI contract (implemented by scripts/expand_handles_maigret.py)
+cli:
+  command: maigret
+  # Prefer machine-readable; script also accepts simple/json paths Maigret supports.
+  default_args:
+    - "--json"
+    - "simple"
+  # Keep scans small for smoke; full site DB is opt-in and heavy.
+  smoke_args:
+    - "--timeout"
+    - "15"
+    - "--dns-resolver"
+    - "threaded"  # required on many Windows hosts (async aiodns DNS fail → 0 hits)
+  # Do not enable recursive / Tor / Cloudflare bypass by default.
+  forbidden_default_flags:
+    - "--tor"
+    - "-a"  # all 3000+ sites — explicit opt-in only via query.all_sites
+  windows_note: "Always pass --dns-resolver threaded on Windows"
+
+query_schema:
+  usernames:
+    type: list
+    required: true
+    description: One or more public handles to expand
+  person_id:
+    type: string
+    required: false
+    description: Kampff people[].id to attach aliases to
+  top_sites:
+    type: int
+    default: 500
+    description: Maigret default site cap when not using all_sites
+  all_sites:
+    type: bool
+    default: false
+  tags:
+    type: string
+    required: false
+    description: Maigret --tags filter (e.g. photo,dating or country codes)
+  min_status:
+    type: string
+    default: Claimed
+    description: Only keep sites with this claim status when present in JSON
+
+mapping:
+  # Normalized expand report shape (script output), not Maigret raw.
+  account_hit:
+    content: |
+      [maigret] site={{ site }} status={{ status }}
+      url={{ url }}
+      {% if ids %}ids={{ ids }}{% endif %}
+    author: "{{ query.username }}"
+    timestamp: "{{ batch_date }}T00:00:00Z"
+    url: "{{ url }}"
+    platform: maigret
+    type: account_presence
+    collected_from: "maigret:{{ query.username }}"
+
+output:
+  # Primary product of this platform pack
+  expand_report: "{KAMPFF_DATA}/inbox/{batch_date}/raw/maigret_{person_id_or_handle}.json"
+  # Optional merge into people[].aliases + candidate_urls for a later body collect
+  merge_aliases: true
+  produce_full_texts: false
+
+ethics:
+  - Lawful public surfaces only
+  - Username collision: never auto-merge person identities
+  - Refuse stalking / harassment / covert surveillance
+  - Not a substitute for damoang/login board harvest
+  - third_party_notice: ../../THIRD_PARTY_NOTICES.md
+
+targets_example:
+  platform: maigret
+  url: "cli://maigret"
+  scope: "username:YangKangSung"
+  collect: ["account_hit"]
+  match_people: ["me"]
+  query:
+    usernames: ["YangKangSung"]
+    person_id: me
+    all_sites: false

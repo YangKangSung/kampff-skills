@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kampff · demo reel (process + sample report tour)</title>
+<style>
+  :root {
+    --bg: #070b10; --panel: #121821; --line: #243041;
+    --text: #e7eef8; --muted: #93a4bb;
+    --teal: #2dd4bf; --blue: #38bdf8; --amber: #fbbf24; --rose: #f87171; --ok: #4ade80;
+    --mono: "JetBrains Mono", Consolas, monospace;
+    --sans: "Segoe UI", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; background: #000; color: var(--text); font-family: var(--sans); overflow: hidden; }
+  .stage-wrap {
+    height: 100%; display: grid; place-items: center;
+    background: #05080c;
+  }
+  .stage {
+    width: min(96vw, 1120px);
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(180deg, #0e1520, #0a1018);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 30px 80px #000a;
+  }
+  .bg-glow {
+    position: absolute; inset: -20%;
+    background:
+      radial-gradient(500px 280px at 20% 20%, #0f3d3566, transparent),
+      radial-gradient(420px 260px at 80% 30%, #12324a55, transparent);
+    animation: glowDrift 12s ease-in-out infinite alternate;
+    pointer-events: none; z-index: 0;
+  }
+  @keyframes glowDrift {
+    from { transform: translate(-2%, -1%) scale(1); }
+    to { transform: translate(3%, 2%) scale(1.05); }
+  }
+  .particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1; }
+  .particles i {
+    position: absolute; width: 3px; height: 3px; border-radius: 50%;
+    background: #2dd4bf66; animation: rise linear infinite;
+  }
+  @keyframes rise {
+    0% { transform: translateY(110%) scale(.6); opacity: 0; }
+    15% { opacity: .7; }
+    100% { transform: translateY(-20%) scale(1); opacity: 0; }
+  }
+
+  .slide {
+    position: absolute; inset: 0; z-index: 2;
+    padding: 44px 52px 70px;
+    opacity: 0; pointer-events: none;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .slide.active { opacity: 1; pointer-events: auto; }
+  .slide.from-right.active .reveal { animation: inRight .55s cubic-bezier(.2,.8,.2,1) both; }
+  .slide.from-left.active .reveal { animation: inLeft .55s cubic-bezier(.2,.8,.2,1) both; }
+  .slide.from-up.active .reveal { animation: inUp .55s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes inRight {
+    from { opacity: 0; transform: translateX(28px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes inLeft {
+    from { opacity: 0; transform: translateX(-28px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes inUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to { opacity: 1; transform: none; }
+  }
+  .slide.active .reveal:nth-child(1) { animation-delay: .05s; }
+  .slide.active .reveal:nth-child(2) { animation-delay: .12s; }
+  .slide.active .reveal:nth-child(3) { animation-delay: .2s; }
+  .slide.active .reveal:nth-child(4) { animation-delay: .28s; }
+  .slide.active .reveal:nth-child(5) { animation-delay: .36s; }
+  .slide.active .reveal:nth-child(6) { animation-delay: .44s; }
+  .slide.active .reveal:nth-child(7) { animation-delay: .52s; }
+  .slide.active .reveal:nth-child(8) { animation-delay: .6s; }
+
+  .kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 12px;
+  }
+  h1 { font-size: clamp(26px, 3.8vw, 42px); letter-spacing: -0.03em; line-height: 1.12; margin-bottom: 12px; }
+  h2 { font-size: clamp(20px, 2.8vw, 30px); letter-spacing: -0.02em; margin-bottom: 10px; }
+  p, li { color: #c9d6e8; font-size: clamp(13px, 1.4vw, 17px); line-height: 1.55; }
+  .muted { color: var(--muted); }
+  .row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+  .card {
+    flex: 1 1 140px; min-width: 120px;
+    background: #0d131b; border: 1px solid var(--line);
+    border-radius: 12px; padding: 12px 14px;
+    transition: transform .35s ease, border-color .35s ease, box-shadow .35s ease;
+  }
+  .slide.active .card { animation: cardPop .5s cubic-bezier(.2,.8,.2,1) both; }
+  .slide.active .card:nth-child(1) { animation-delay: .15s; }
+  .slide.active .card:nth-child(2) { animation-delay: .22s; }
+  .slide.active .card:nth-child(3) { animation-delay: .29s; }
+  .slide.active .card:nth-child(4) { animation-delay: .36s; }
+  .slide.active .card:nth-child(5) { animation-delay: .43s; }
+  @keyframes cardPop {
+    from { opacity: 0; transform: translateY(16px) scale(.96); }
+    to { opacity: 1; transform: none; }
+  }
+  .card b { display: block; color: var(--teal); font-family: var(--mono); font-size: 11px; margin-bottom: 5px; }
+
+  .pipe { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+  .pipe .step {
+    background: #0d131b; border: 1px solid var(--line); border-radius: 999px;
+    padding: 9px 14px; font-family: var(--mono); font-size: 12px;
+    transform: scale(.96); opacity: .45; transition: all .35s ease;
+  }
+  .pipe .step.on {
+    border-color: var(--teal); color: var(--teal); opacity: 1; transform: scale(1);
+    box-shadow: 0 0 0 1px #2dd4bf44, 0 0 18px #2dd4bf22;
+  }
+  .pipe .arrow { color: var(--muted); transition: color .3s; }
+  .pipe .arrow.on { color: var(--teal); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-top: 12px; }
+  th, td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; }
+  th { color: var(--muted); background: #0b121a; }
+  .slide.active tbody tr { animation: rowIn .45s ease both; }
+  .slide.active tbody tr:nth-child(1) { animation-delay: .2s; }
+  .slide.active tbody tr:nth-child(2) { animation-delay: .3s; }
+  .slide.active tbody tr:nth-child(3) { animation-delay: .4s; }
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateX(12px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .pill {
+    display: inline-block; font-family: var(--mono); font-size: 11px;
+    padding: 3px 10px; border-radius: 999px; border: 1px solid; margin-right: 6px;
+  }
+  .pill.n { color: #cbd5e1; border-color: #475569; }
+  .pill.e { color: #a7f3d0; border-color: #059669; background: #064e3b; }
+  .pill.c { color: #fde68a; border-color: #b45309; background: #422006; }
+  .slide.active .pill.e { animation: pulse 1.4s ease-in-out infinite; }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 #10b98100; }
+    50% { box-shadow: 0 0 0 6px #10b98122; }
+  }
+
+  .quote {
+    margin-top: 12px; padding: 12px 14px; border-left: 3px solid var(--teal);
+    background: #0d151f; border-radius: 0 10px 10px 0; color: #cfe7ff; font-size: 14px;
+  }
+  .bars { margin-top: 14px; display: grid; gap: 9px; max-width: 520px; }
+  .bar-row { display: grid; grid-template-columns: 90px 1fr 48px; gap: 10px; align-items: center; font-size: 12px; }
+  .track { height: 10px; background: #1a2330; border-radius: 99px; overflow: hidden; }
+  .fill { height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, var(--blue), var(--teal)); transition: width 1.1s cubic-bezier(.2,.8,.2,1) .15s; }
+  .slide.active .fill.f100 { width: 100%; }
+  .slide.active .fill.f33 { width: 33%; background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .slide.active .fill.f18 { width: 18%; background: linear-gradient(90deg, #e11d48, #fb7185); }
+
+  .timeline {
+    position: relative; margin-top: 18px; height: 70px;
+  }
+  .timeline .line {
+    position: absolute; left: 0; right: 0; top: 28px; height: 3px; background: #1e293b;
+    overflow: hidden;
+  }
+  .timeline .line > i {
+    display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--teal));
+    transition: width 1.4s ease .2s;
+  }
+  .slide.active .timeline .line > i { width: 100%; }
+  .timeline .node {
+    position: absolute; top: 18px; transform: translateX(-50%);
+    text-align: center; opacity: 0;
+  }
+  .timeline .node::before {
+    content: ""; display: block; width: 14px; height: 14px; border-radius: 50%;
+    background: var(--blue); margin: 0 auto 6px; border: 2px solid #0a1018;
+    box-shadow: 0 0 0 0 #38bdf800;
+  }
+  .slide.active .timeline .node { animation: nodeIn .4s ease both; }
+  .slide.active .timeline .node:nth-child(2) { animation-delay: .25s; }
+  .slide.active .timeline .node:nth-child(3) { animation-delay: .4s; }
+  .slide.active .timeline .node:nth-child(4) { animation-delay: .55s; }
+  .slide.active .timeline .node:nth-child(5) { animation-delay: .7s; }
+  .slide.active .timeline .node:nth-child(6) { animation-delay: .85s; }
+  .slide.active .timeline .node.last::before {
+    background: var(--amber); animation: nodePulse 1.2s ease-in-out infinite .9s;
+  }
+  @keyframes nodeIn { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%); } }
+  @keyframes nodePulse {
+    0%, 100% { box-shadow: 0 0 0 0 #fbbf2400; }
+    50% { box-shadow: 0 0 0 8px #fbbf2422; }
+  }
+  .timeline .node span { font-family: var(--mono); font-size: 10px; color: var(--muted); white-space: nowrap; }
+
+  .mock {
+    background: #070b10; border: 1px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; margin-top: 10px;
+    box-shadow: inset 0 0 0 1px #ffffff05;
+  }
+  .mock .chrome {
+    display: flex; gap: 6px; margin-bottom: 10px; align-items: center;
+  }
+  .mock .chrome i { width: 8px; height: 8px; border-radius: 50%; background: #334155; }
+  .mock .chrome i:nth-child(1) { background: #f87171; }
+  .mock .chrome i:nth-child(2) { background: #fbbf24; }
+  .mock .chrome i:nth-child(3) { background: #4ade80; }
+  .mock .chrome em { font-style: normal; font-family: var(--mono); font-size: 10px; color: #64748b; margin-left: 8px; }
+  .toc-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .toc-pills span {
+    font-family: var(--mono); font-size: 10px; padding: 4px 8px; border-radius: 999px;
+    border: 1px solid var(--line); color: var(--muted); background: #0d131b;
+  }
+  .slide.active .toc-pills span { animation: chipIn .35s ease both; }
+  .slide.active .toc-pills span:nth-child(n) { animation-delay: calc(.15s + var(--i, 0) * .05s); }
+  @keyframes chipIn {
+    from { opacity: 0; transform: scale(.85); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .hud {
+    position: absolute; left: 0; right: 0; bottom: 0; z-index: 5;
+    padding: 10px 18px 12px;
+    background: linear-gradient(transparent, #000d 45%);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .progress { flex: 1; height: 4px; background: #1a2330; border-radius: 99px; overflow: hidden; }
+  .progress > i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--blue), var(--teal)); }
+  .btn {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    background: #0d131b; border: 1px solid var(--line); border-radius: 8px;
+    padding: 6px 10px; cursor: pointer;
+  }
+  .btn:hover { color: var(--text); border-color: #3b4d66; }
+  .dots { display: flex; gap: 5px; flex-wrap: wrap; max-width: 160px; }
+  .dots span { width: 6px; height: 6px; border-radius: 50%; background: #334155; }
+  .dots span.on { background: var(--teal); box-shadow: 0 0 8px #2dd4bf66; }
+  .tag { font-family: var(--mono); font-size: 11px; color: var(--amber); }
+  .two { display: grid; grid-template-columns: 1.05fr .95fr; gap: 18px; align-items: center; }
+  @media (max-width: 800px) {
+    .slide { padding: 24px 18px 64px; }
+    .two { grid-template-columns: 1fr; }
+  }
+  a.cta {
+    display: inline-block; margin-top: 14px; padding: 11px 16px;
+    background: linear-gradient(90deg, #0d9488, #0284c7); color: #fff;
+    text-decoration: none; border-radius: 10px; font-weight: 600;
+    box-shadow: 0 8px 24px #0284c744;
+    transition: transform .2s ease, filter .2s ease;
+  }
+  a.cta:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .brand {
+    position: absolute; top: 14px; right: 18px; font-family: var(--mono);
+    font-size: 10px; color: #64748b; z-index: 4;
+  }
+  .scan {
+    position: absolute; left: 0; right: 0; height: 80px; top: -80px;
+    background: linear-gradient(transparent, #2dd4bf14, transparent);
+    pointer-events: none; z-index: 3;
+  }
+  .slide.active .scan { animation: scan 2.8s ease-in-out 1; }
+  @keyframes scan {
+    from { top: -80px; }
+    to { top: 110%; }
+  }
+  .mbti-bars .bar-row { grid-template-columns: 70px 1fr 36px; }
+  .layer-stack { display: grid; gap: 6px; margin-top: 12px; }
+  .layer-stack .card { padding: 8px 12px; }
+  .slide.active .layer-stack .card { animation: layerIn .4s ease both; }
+  @keyframes layerIn {
+    from { opacity: 0; transform: translateX(-16px); }
+    to { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<div class="stage-wrap">
+  <div class="stage" id="stage">
+    <div class="bg-glow"></div>
+    <div class="particles" id="particles"></div>
+    <div class="brand">KAMPFF · DEMO REEL · SYNTHETIC</div>
+
+    <!-- 0 title -->
+    <section class="slide from-up active" data-dur="4400">
+      <div class="scan"></div>
+      <p class="kicker reveal">Agent skill · community text · distance decisions</p>
+      <h1 class="reveal">How a Kampff report is made —<br>and how to read the sample.</h1>
+      <p class="muted reveal">Autoplay · synthetic <b style="color:#e7eef8">relay_ops</b> @ forum.example · ends with sample report tour</p>
+      <div class="row reveal">
+        <div class="card"><b>01 Collect</b>posts · comments · likes</div>
+        <div class="card"><b>02 Honesty</b>claimed vs collected</div>
+        <div class="card"><b>03 Analyze</b>L1–L5 + lenses</div>
+        <div class="card"><b>04 Sample</b>walk the HTML dossier</div>
+      </div>
+    </section>
+
+    <!-- 1 problem -->
+    <section class="slide from-right" data-dur="4200">
+      <div class="scan"></div>
+      <p class="kicker reveal">The problem</p>
+      <h2 class="reveal">Boards are loud. Vibes are cheap.</h2>
+      <p class="reveal">Someone replies under your post. Craft peer, brand warrior, or stress tax?</p>
+      <div class="row reveal">
+        <div class="card"><b>❌ Guess</b>scroll feelings, screenshot drama</div>
+        <div class="card"><b>✅ Kampff</b>quotes · timeline · distance tags</div>
+      </div>
+      <p class="tag reveal" style="margin-top:16px">Not medical · not stalking · lawful text only</p>
+    </section>
+
+    <!-- 2 collect -->
+    <section class="slide from-left" data-dur="5200">
+      <div class="scan"></div>
+      <p class="kicker reveal">Step 1 · Collect</p>
+      <h2 class="reveal">Gather what they already published</h2>
+      <div class="pipe reveal" id="pipe">
+        <span class="step">member URL</span><span class="arrow">→</span>
+        <span class="step">posts</span><span class="arrow">→</span>
+        <span class="step">comments</span><span class="arrow">→</span>
+        <span class="step">likes</span><span class="arrow">→</span>
+        <span class="step">bundle.json</span>
+      </div>
+      <p class="muted reveal" style="margin-top:14px">Agent-owned browser if login wall · analyze reads <b style="color:#e7eef8">files only</b></p>
+    </section>
+
+    <!-- 3 honesty -->
+    <section class="slide from-right" data-dur="5000">
+      <div class="scan"></div>
+      <p class="kicker reveal">Step 2 · Collection honesty</p>
+      <h2 class="reveal">Never claim “full crawl” without math</h2>
+      <div class="bars reveal">
+        <div class="bar-row"><span>Posts</span><div class="track"><div class="fill f100"></div></div><span>12/12</span></div>
+        <div class="bar-row"><span>Comments</span><div class="track"><div class="fill f33"></div></div><span>40/120</span></div>
+        <div class="bar-row"><span>Likes</span><div class="track"><div class="fill f18"></div></div><span>8/45</span></div>
+      </div>
+      <p class="muted reveal" style="margin-top:14px">From the <b style="color:#e7eef8">sample report</b>: posts full · comments/likes partial (platform caps).</p>
+    </section>
+
+    <!-- 4 spectro -->
+    <section class="slide from-left" data-dur="5200">
+      <div class="scan"></div>
+      <p class="kicker reveal">Step 3 · spectrograph</p>
+      <h2 class="reveal">Five layers before the distance call</h2>
+      <div class="layer-stack reveal">
+        <div class="card" style="animation-delay:.15s"><b>L1 Psych</b>conflict style · conscientiousness</div>
+        <div class="card" style="animation-delay:.22s"><b>L2 Worldview</b>axes · fit vs you</div>
+        <div class="card" style="animation-delay:.29s"><b>L3 Behavior</b>chronic vs one-off</div>
+        <div class="card" style="animation-delay:.36s"><b>L4 Alliance</b>trust · go-together</div>
+        <div class="card" style="animation-delay:.43s"><b>L5 Time</b>drift · turning points</div>
+      </div>
+    </section>
+
+    <!-- 5 story -->
+    <section class="slide from-right" data-dur="5500">
+      <div class="scan"></div>
+      <p class="kicker reveal">Story beat · synthetic sample</p>
+      <div class="two">
+        <div>
+          <h2 class="reveal">relay_ops vs north_packet</h2>
+          <p class="reveal">Viewer praises Vendor X v4. Target cancels after false-green CI + poisoned cache.</p>
+          <div class="quote reveal">“Green build with a poisoned cache is worse than red.”</div>
+        </div>
+        <div class="card reveal">
+          <b>ACH lead (sample)</b>
+          <p style="margin-top:8px"><span class="pill e">H1 verificationist</span></p>
+          <p class="muted" style="margin-top:10px;font-size:13px">H2 flex · H3 ideologue · H4 hostility → fail / weak</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 distance -->
+    <section class="slide from-left" data-dur="5200">
+      <div class="scan"></div>
+      <p class="kicker reveal">Step 4 · Distance</p>
+      <h2 class="reveal">The decision, not a character roast</h2>
+      <p class="reveal" style="margin-bottom:10px">
+        <span class="pill n">neutral</span>
+        <span class="pill e">soft-engage</span>
+        <span class="pill" style="border-color:#16a34a;color:#bbf7d0">not avoid</span>
+      </p>
+      <table class="reveal">
+        <thead><tr><th>Situation</th><th>Tag</th></tr></thead>
+        <tbody>
+          <tr><td>CI flakiness / runners / observability</td><td><span class="pill e">engage</span></td></tr>
+          <tr><td>Default community peer</td><td><span class="pill n">neutral</span></td></tr>
+          <tr><td>Vendor cheer without repro</td><td><span class="pill c">caution</span></td></tr>
+        </tbody>
+      </table>
+      <div class="quote reveal">Sample one-liner: loyal to <b>green that means something</b> — not brands.</div>
+    </section>
+
+    <!-- 7 SAMPLE TOUR intro -->
+    <section class="slide from-up" data-dur="5600">
+      <div class="scan"></div>
+      <p class="kicker reveal">Sample HTML report · tour</p>
+      <h2 class="reveal">What <code style="color:var(--blue)">sample-community-report.html</code> contains</h2>
+      <div class="mock reveal">
+        <div class="chrome"><i></i><i></i><i></i><em>sample-community-report.html · synthetic dossier</em></div>
+        <p style="font-size:13px;margin-bottom:6px"><b style="color:#e7eef8">relay_ops</b> — person analysis report</p>
+        <p class="muted" style="font-size:12px">forum.example · L1–L5 · MBTI + CIA-SAT · fiction only</p>
+        <div class="toc-pills">
+          <span style="--i:0">G Graphs</span>
+          <span style="--i:1">00 Honesty</span>
+          <span style="--i:2">01 Distance</span>
+          <span style="--i:3">02 Identity</span>
+          <span style="--i:4">03 Trigger</span>
+          <span style="--i:5">04 L1–L5</span>
+          <span style="--i:6">06 MBTI</span>
+          <span style="--i:7">07 CIA/KGB</span>
+          <span style="--i:8">08 Cross-check</span>
+        </div>
+      </div>
+      <p class="muted reveal" style="margin-top:12px;font-size:13px">Same section order as a real Kampff production dossier — only the person is fake.</p>
+    </section>
+
+    <!-- 8 SAMPLE graphs -->
+    <section class="slide from-right" data-dur="5800">
+      <div class="scan"></div>
+      <p class="kicker reveal">Sample report · section G</p>
+      <h2 class="reveal">Visual summary block</h2>
+      <div class="row reveal">
+        <div class="card"><b>Driver radar</b>control 3 · autonomy 3 · status 1</div>
+        <div class="card"><b>MBTI radar</b>ISTJ lean · T~80 J~75</div>
+        <div class="card"><b>Honesty bars</b>posts 100% · comments ~33%</div>
+        <div class="card"><b>ACH bars</b>H1 LEAD · H2 fail</div>
+      </div>
+      <div class="row reveal">
+        <div class="card"><b>Timeline</b>2024-11 join → 2026-07 Vendor X cancel</div>
+        <div class="card"><b>Force graph</b>drag nodes · friction edges in red</div>
+        <div class="card"><b>Big Five</b>C88 O78 E30 A48 N32</div>
+      </div>
+      <p class="tag reveal" style="margin-top:12px">All numbers come from the synthetic sample — not a real member.</p>
+    </section>
+
+    <!-- 9 SAMPLE timeline detail -->
+    <section class="slide from-left" data-dur="5600">
+      <div class="scan"></div>
+      <p class="kicker reveal">Sample report · L5 ephemeris</p>
+      <h2 class="reveal">How the sample draws time</h2>
+      <div class="timeline reveal">
+        <div class="line"><i></i></div>
+        <div class="node" style="left:8%"><span>2024-11 join</span></div>
+        <div class="node" style="left:28%"><span>2025-03 red builds</span></div>
+        <div class="node" style="left:48%"><span>2025-08 v3 praise</span></div>
+        <div class="node" style="left:68%"><span>2026-02 runners</span></div>
+        <div class="node last" style="left:88%"><span>2026-07 cancel</span></div>
+      </div>
+      <div class="quote reveal" style="margin-top:28px">Drift rule in the sample: brand stance non-monotonic · <b>verification threshold monotonic</b>.</div>
+    </section>
+
+    <!-- 10 SAMPLE body sections -->
+    <section class="slide from-right" data-dur="6000">
+      <div class="scan"></div>
+      <p class="kicker reveal">Sample report · body sections</p>
+      <h2 class="reveal">How to read the dossier top-to-bottom</h2>
+      <div class="two">
+        <div>
+          <div class="layer-stack reveal">
+            <div class="card"><b>00 Honesty</b>what was collected vs claimed</div>
+            <div class="card"><b>01 Distance</b>engage / neutral / caution map</div>
+            <div class="card"><b>02 Identity</b>what they do (CI glue engineer)</div>
+            <div class="card"><b>03 Trigger</b>viewer c_102 vs target c_118</div>
+            <div class="card"><b>04 L1–L5</b>quotes + patterns + drift</div>
+          </div>
+        </div>
+        <div class="reveal">
+          <div class="card">
+            <b>06–07 Lenses (sample values)</b>
+            <div class="mbti-bars bars" style="margin-top:10px">
+              <div class="bar-row"><span>I</span><div class="track"><div class="fill f100" style="width:0" id="bI"></div></div><span>70</span></div>
+              <div class="bar-row"><span>S</span><div class="track"><div class="fill" style="width:0;background:linear-gradient(90deg,#38bdf8,#2dd4bf)" id="bS"></div></div><span>62</span></div>
+              <div class="bar-row"><span>T</span><div class="track"><div class="fill" style="width:0;background:linear-gradient(90deg,#38bdf8,#2dd4bf)" id="bT"></div></div><span>80</span></div>
+              <div class="bar-row"><span>J</span><div class="track"><div class="fill" style="width:0;background:linear-gradient(90deg,#38bdf8,#2dd4bf)" id="bJ"></div></div><span>75</span></div>
+            </div>
+            <p class="muted" style="margin-top:10px;font-size:12px">MBTI ISTJ lean · CIA drivers control/autonomy high · status low</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 SAMPLE CTA -->
+    <section class="slide from-up" data-dur="9000">
+      <div class="scan"></div>
+      <p class="kicker reveal">Open the sample</p>
+      <h1 class="reveal">Explore the full interactive report</h1>
+      <p class="reveal muted">Scroll sticky TOC · hover graphs · drag the force graph · read the dossier card</p>
+      <div class="row reveal">
+        <div class="card"><b>File</b>docs/sample-community-report.html</div>
+        <div class="card"><b>Twin</b>sample-community-report.md</div>
+        <div class="card"><b>Person</b>relay_ops (fiction)</div>
+      </div>
+      <a class="cta reveal" href="./sample-community-report.html">Open sample HTML report →</a>
+      <p class="reveal" style="margin-top:12px;font-size:13px" class="muted">
+        Markdown: <a style="color:var(--blue)" href="./sample-community-report.md">sample-community-report.md</a>
+        · controls: Space pause · ← → seek · R restart
+      </p>
+    </section>
+
+    <div class="hud">
+      <button class="btn" id="btnPlay" type="button">Pause</button>
+      <button class="btn" id="btnPrev" type="button">Prev</button>
+      <button class="btn" id="btnNext" type="button">Next</button>
+      <div class="progress"><i id="bar"></i></div>
+      <div class="dots" id="dots"></div>
+      <span class="btn" id="clock" style="cursor:default">1 / 12</span>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  const slides = [...document.querySelectorAll('.slide')];
+  const bar = document.getElementById('bar');
+  const dots = document.getElementById('dots');
+  const clock = document.getElementById('clock');
+  const btnPlay = document.getElementById('btnPlay');
+  let i = 0, playing = true, t0 = performance.now();
+
+  // particles
+  const part = document.getElementById('particles');
+  for (let n = 0; n < 28; n++) {
+    const el = document.createElement('i');
+    el.style.left = Math.random() * 100 + '%';
+    el.style.animationDuration = 6 + Math.random() * 10 + 's';
+    el.style.animationDelay = Math.random() * 8 + 's';
+    el.style.opacity = String(0.2 + Math.random() * 0.5);
+    part.appendChild(el);
+  }
+
+  slides.forEach(() => dots.appendChild(document.createElement('span')));
+
+  function animateMbtifills(on) {
+    const map = { bI: 70, bS: 62, bT: 80, bJ: 75 };
+    Object.entries(map).forEach(([id, v]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.style.width = on ? v + '%' : '0';
+    });
+  }
+
+  function show(n) {
+    i = (n + slides.length) % slides.length;
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === i));
+    [...dots.children].forEach((d, idx) => d.classList.toggle('on', idx === i));
+    clock.textContent = (i + 1) + ' / ' + slides.length;
+    t0 = performance.now();
+    bar.style.width = '0%';
+
+    // restart nested animations by reflow on active slide
+    const active = slides[i];
+    active.querySelectorAll('.reveal, .card, .node, tbody tr, .toc-pills span').forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+
+    // pipe
+    const pipe = active.querySelector('#pipe');
+    if (pipe) {
+      const steps = pipe.querySelectorAll('.step');
+      const arrows = pipe.querySelectorAll('.arrow');
+      steps.forEach(s => s.classList.remove('on'));
+      arrows.forEach(a => a.classList.remove('on'));
+      let k = 0;
+      const tick = () => {
+        if (!active.classList.contains('active')) return;
+        if (k < steps.length) {
+          steps[k].classList.add('on');
+          if (k > 0) arrows[k - 1].classList.add('on');
+          k++;
+          setTimeout(tick, 360);
+        }
+      };
+      setTimeout(tick, 180);
+    }
+
+    // MBTI fills only on body tour slide
+    animateMbtifills(!!active.querySelector('#bI'));
+  }
+
+  function dur() { return +(slides[i].dataset.dur || 4500); }
+
+  function frame(now) {
+    if (playing) {
+      const p = Math.min(1, (now - t0) / dur());
+      bar.style.width = (p * 100).toFixed(2) + '%';
+      if (p >= 1) show(i + 1);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  btnPlay.onclick = () => {
+    playing = !playing;
+    btnPlay.textContent = playing ? 'Pause' : 'Play';
+    if (playing) t0 = performance.now() - (parseFloat(bar.style.width) / 100 || 0) * dur();
+  };
+  document.getElementById('btnPrev').onclick = () => show(i - 1);
+  document.getElementById('btnNext').onclick = () => show(i + 1);
+  window.addEventListener('keydown', (e) => {
+    if (e.code === 'Space') { e.preventDefault(); btnPlay.click(); }
+    if (e.key === 'ArrowRight') show(i + 1);
+    if (e.key === 'ArrowLeft') show(i - 1);
+    if (e.key === 'r' || e.key === 'R') show(0);
+  });
+
+  show(0);
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

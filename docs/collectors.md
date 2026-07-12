@@ -233,6 +233,21 @@ bundle: `source: issue` | `issue_comment` | `pr_comment`, `platform: github`
 3. /kampff analyze bundle.json
 ```
 
+## Optional: Maigret handle expansion
+
+Username → public account map (not long-form text). Collector pre-step only.
+
+```bash
+pip install maigret
+python scripts/expand_handles_maigret.py YangKangSung --person-id me --top 50 --merge-bundle
+```
+
+Windows: script forces `--dns-resolver threaded` (async DNS often yields 0 hits).  
+Outputs: `{KAMPFF_DATA}/inbox/{date}/raw/maigret_*.json` · MIT: [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).  
+Platform pack: `collectors/platforms/maigret.yaml`.
+
+Ethics: lawful public only; collision-prone candidates; refuse stalking.
+
 ## 레포 구조 (수집기 구현 시)
 
 ```

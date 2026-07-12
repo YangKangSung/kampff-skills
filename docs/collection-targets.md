@@ -124,8 +124,8 @@ targets.json
 ## 사용자 호출 (수집 → 분석)
 
 ```text
-/kampff collect --targets D:\data\kampff\inbox\2026-07-11\targets.json
-/kampff analyze D:\data\kampff\inbox\2026-07-11\bundle.json
+/kampff collect --targets $KAMPFF_DATA/inbox\2026-07-11\targets.json
+/kampff analyze $KAMPFF_DATA/inbox\2026-07-11\bundle.json
 ```
 
 또는 한 번에:

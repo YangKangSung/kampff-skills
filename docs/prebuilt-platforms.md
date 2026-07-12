@@ -24,6 +24,7 @@
 | `reddit` | Reddit | rest | OAuth |
 | `linkedin` | LinkedIn | file | member export |
 | `rss` | RSS/Atom | rest | 블로그·공지 |
+| `maigret` | Maigret username map | **cli** (optional) | 계정 존재·URL 확장만. 본문 수집 아님. `scripts/expand_handles_maigret.py` · [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) |
 
 ## Export / file packs
 

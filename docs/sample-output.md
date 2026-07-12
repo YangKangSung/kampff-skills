@@ -1,6 +1,10 @@
-# Sample output (anonymized)
+# Sample output (anonymized / synthetic)
 
-From [sample-input.json](sample-input.json) · viewer: `me` · context: mixed workplace + community.
+Short workplace matrix from [sample-input.json](sample-input.json) · viewer: `me` · context: mixed workplace + community.
+
+**Full community visual sample (synthetic):** [sample-community-report.html](sample-community-report.html) · [sample-community-report.md](sample-community-report.md)
+
+> Never paste real third-party profiling into these sample files.
 
 ---
 

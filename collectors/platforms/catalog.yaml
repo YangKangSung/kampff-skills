@@ -80,6 +80,12 @@ prebuilt:
     transport: rest
     auth: none
     tags: [feed, public]
+  - id: maigret
+    label: Maigret (username OSINT map)
+    transport: cli
+    auth: none
+    tags: [osint, identity, public, optional]
+    note: Optional handle expansion only — not long-form text. See scripts/expand_handles_maigret.py + THIRD_PARTY_NOTICES.md
 
 roll_your_own:
   copy: _template.yaml

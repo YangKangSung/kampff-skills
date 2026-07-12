@@ -1,264 +1,229 @@
 # Kampff
 
-> **sickn33 profiles customers. i-am profiles you. Kampff profiles everyone on the board — including you.**
-
-Human spectrum analysis from text — for communities, workplace boards, and teams.
+### Read the board. Not the vibes.
 
 [![Stars](https://img.shields.io/github/stars/YangKangSung/kampff-skills?style=social)](https://github.com/YangKangSung/kampff-skills/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Skill](https://img.shields.io/badge/agent-SKILL.md-0ea5e9)](kampff/SKILL.md)
+
+### → [**▶ Demo reel**](docs/demo-kampff-walkthrough.html) — how a report is made + sample report tour
+
+`Space` pause · `←` `→` seek
+
+> Swap this link later for an `.mp4` / GIF if you record one — keep it **at the top**.
 
 ---
 
-## Contents
+## Sample report
 
-- [What is Kampff?](#what-is-kampff)
-- [How it works](#how-it-works)
-- [Quick start](#quick-start)
-- [Workflow](#workflow)
-- [Example output](#example-output)
-- [Star = next module](#star--next-module)
-- [spectrograph](#spectrograph-7-layers)
-- [Compare](#compare)
-- [Philosophy](#philosophy)
-- [What this is NOT](#what-this-is-not)
-- [Structure](#structure)
-- [Security](#security)
-- [Contributing](#contributing)
-- [Support](#support)
-- [License](#license)
+### → [**Open sample HTML report**](docs/sample-community-report.html)
+
+Markdown twin: [sample-community-report.md](docs/sample-community-report.md) · short workplace cut: [sample-output.md](docs/sample-output.md)
+
+> **Synthetic only.** Demo person `relay_ops` @ `forum.example`.  
+> Real third-party dossiers never belong in this repo.
+
+### Excerpt — matrix + distance
+
+| id | worldview_fit | alliance_fit | stability | drift | risk | one_line |
+|----|---------------|--------------|-----------|-------|------|----------|
+| me | baseline | — | — | — | low | Prefers written decisions + small PRs |
+| **relay_ops** | **partial** (CI / reliability craft) | **conditional engage** | **chronic postmortem writer** | **tool loyalty follows green builds** | harm **low** · process fights **med** | **CI operator; measures, then swaps** |
+
+**Distance:** `neutral` ~ soft-`engage` · **not** `avoid`
+
+| Situation | Tag |
+|-----------|-----|
+| CI flakiness / rollback / observability | **engage** |
+| Default community peer | **neutral** |
+| Vendor cheer without repro | **caution** |
+
+**One-liner**
+
+> `relay_ops` = reliability operator + verificationist poster. Loyal to **green that means something**, not to brands. Trigger reply = same-orbit counter-report, not a personal attack.
+
+### Excerpt — collection honesty
+
+| Surface | Claimed | Collected | Full? |
+|---------|---------|-----------|-------|
+| Posts | 12 | 12 bodies | **YES** |
+| Comments | 120 | 40 recent (API cap) | **NO** |
+| Likes | 45 | 8 unique | **NO** |
+
+### Excerpt — lenses
+
+| Lens | Sample result |
+|------|----------------|
+| **MBTI** (fun) | `ISTJ` lean · I~70 S~62 T~80 J~75 |
+| **CIA-SAT / ACH** | **H1 Verificationist** lead · drivers: control 3 · autonomy 3 · status 1 |
+| **L5 drift** | Vendor X v3 praise → v4 cancel = same trait (verify utility, not brand) |
+
+Inside the HTML: driver radar · Big Five · timeline · force-directed text graph · full L1–L5 · KGB-style dossier card.
 
 ---
 
 ## What is Kampff?
 
-**Kampff** is an agent skill. Feed it text traces — posts, comments, replies — get back a **human dossier**:
+> **sickn33 profiles customers. i-am profiles you.**  
+> **Kampff profiles everyone on the board — including you.**
 
-- **Worldview fit** — politics, ideology, religion, philosophy (from language patterns, not stereotypes)
-- **Alliance fit** — can you work or go together?
-- **Ephemeris** — how someone **changed over time** (drift, turning points)
-- **Distance** — `engage` · `neutral` · `caution` · `avoid` (with quoted evidence)
-- **You too** — the viewer is in the pool. Comparison, not judgment from nowhere.
+An **agent skill** that turns published text into a distance decision:
 
-**No scraping built in.** Your collector gathers text. Kampff analyzes.
-
-Analysis engine: **spectrograph** — 7 layers, optional HR and OSINT lenses.
-
+```text
+posts · comments · mail · chat  →  bundle.json  →  /kampff  →  dossier
 ```
-graphify     → code → graph
-kampff       → text → human spectrum (spectrograph)
+
+| You get | In plain English |
+|---------|------------------|
+| **Distance** | `engage` · `neutral` · `caution` · `avoid` |
+| **Fit** | worldview + alliance vs *you* |
+| **Time** | ephemeris — how they *changed* |
+| **Proof** | every claim tied to a quote (or low-confidence) |
+
+No soul verdicts. No “born evil.” Just **patterns + evidence**.
+
+---
+
+## Install (any agent)
+
+Same skill file. Drop it in **your** harness:
+
+| Agent | Path |
+|-------|------|
+| Hermes | `~/.hermes/skills/kampff` |
+| Claude Code | `~/.claude/skills/kampff` |
+| Grok | `~/.grok/skills/kampff` |
+| Cursor | `.cursor/skills/kampff` |
+
+```bash
+git clone https://github.com/YangKangSung/kampff-skills.git
+cp -r kampff-skills/kampff ~/.hermes/skills/kampff   # pick your path
 ```
+
+```text
+/kampff analyze path/to/bundle.json
+/kampff member {platform} {id}     # community pipeline
+/kampff today
+```
+
+Optional data dir: `export KAMPFF_DATA=~/kampff-data` (Windows: `setx KAMPFF_DATA "..."`)
 
 ---
 
 ## How it works
 
-```
-[optional collector] → bundle.json → /kampff → out/{date}-report.md
+```text
+┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
+│  Collect    │ ──▶ │ bundle.json  │ ──▶ │  spectrograph   │
+│  (optional) │     │  + honesty   │     │  L1–L5 + lenses │
+└─────────────┘     └──────────────┘     └────────┬────────┘
+                                                  ▼
+                                         distance report
+                                      (.md · optional .html)
 ```
 
-1. **Collect** (your pipeline or `kampff-collect`) — mail, meeting, chat, Jira, Confluence, SNS → normalized `bundle.json`
-2. **Analyze** — agent loads `kampff/SKILL.md`, runs spectrograph L1–L7
-3. **Report** — matrix + per-person dossiers with quotes under `{KAMPFF_DATA}/out/`
+1. **Collect** lawful text (your tools, or optional `kampff-collect`)
+2. **Honesty** — posts / comments / likes: claimed vs collected (no fake “full crawl”)
+3. **Analyze** — skill reads files only; never invents scrape mid-report
+4. **Decide** — engage cost, not a persuasion playbook
+
+Community boards are a **first-class pipeline**, not a one-off script:  
+[community-member-pipeline.md](docs/community-member-pipeline.md) · [report-template.md](docs/report-template.md)
 
 ---
 
-## Quick start
+## spectrograph
 
-### Install skill
+| Layer | Job |
+|-------|-----|
+| L1 | Psych lean (Big Five-ish · conflict style) |
+| L2 | Worldview axes |
+| L3 | Behavioral signature (chronic vs one-off) |
+| L4 | Alliance / go-together |
+| L5 | Ephemeris — timeline & drift |
+| L6–L7 | HR / OSINT — only if asked · lawful only |
 
-| Agent | Path |
-|-------|------|
-| Grok | `~/.grok/skills/kampff` |
-| Claude Code | `~/.claude/skills/kampff` or `.claude/skills/kampff` |
-| Hermes | `~/.hermes/skills/kampff` |
-| Cursor | `.cursor/skills/kampff` |
+**Community defaults (on):**
 
-Same `kampff/SKILL.md` — copy to **your** agent’s skills folder (install per harness you use):
+| Lens | Vibe |
+|------|------|
+| [MBTI](docs/lenses-mbti.md) | Fun · low validity · never sole `avoid` |
+| [CIA-SAT + dossier card](docs/lenses-cia-sat.md) | Public analytic form · ACH · not ops |
 
-```bash
-# Grok
-cp -r kampff ~/.grok/skills/kampff
-
-# Claude Code (user-level; or .claude/skills/kampff in a project)
-cp -r kampff ~/.claude/skills/kampff
-
-# Hermes
-cp -r kampff ~/.hermes/skills/kampff
+```yaml
+analysis_lenses: ["personal", "mbti", "cia_sat"]
 ```
 
-Early drafts showed only Grok because this repo was bootstrapped in **Grok Build**; the skill is not Grok-specific.
+---
 
-Optional data root:
+## vs the rest
 
-```bash
-# Windows
-setx KAMPFF_DATA "D:\data\kampff"
-# macOS / Linux
-export KAMPFF_DATA=~/kampff-data
-```
+| Skill | Who it profiles |
+|-------|-----------------|
+| customer profilers | **Buyers** for marketing |
+| i-am / self skills | **You** from agent logs |
+| chat stats tools | Word counts + vibes |
+| **kampff** | **The board** + **you** + time + distance |
 
-### Collector (optional)
+---
 
-```bash
-cd collectors && pip install -e ".[all]"
-kampff-collect collect --targets path/to/targets.json --out path/to/bundle.json
-```
+## Rules of the game
 
-REST/Playwright adapters are **stubs** — architecture and YAML packs ship first. See [collectors/README.md](collectors/README.md).
+**Do**
 
-### Data layout
+- Quote or mark confidence  
+- Put the viewer under the same protocol  
+- Keep real runs under `$KAMPFF_DATA` (outside git)
 
-```
-kampff-data/
-├── inbox/{YYYY-MM-DD}/bundle.json
-├── people/{id}/history.json    # optional, ephemeris depth
-└── out/{YYYY-MM-DD}-report.md
-```
+**Don’t**
 
-### Daily use
+- Medical / legal diagnosis  
+- Stalking or covert collection  
+- Commit real people, tokens, or host dumps to this repo  
+- Confuse “deleted a file” with “gone from git history”
+
+Samples use fiction only: `relay_ops`, `user_42`, `north_packet`.
+
+---
+
+## Repo map
 
 ```text
-/kampff today
-/kampff analyze D:\data\kampff\inbox\2026-07-11\bundle.json
+kampff/                 ← the skill (copy this)
+  SKILL.md
+  references/           ← pipeline · honesty · lenses · template
+docs/
+  demo-kampff-walkthrough.html   ← top of README
+  sample-community-report.html   ← under the demo
+  sample-*.md · spectrograph · collectors
+collectors/             ← optional YAML packs (adapters maturing)
 ```
 
-Input sources: `mail` · `meeting` · `chat` · `messenger` · `confluence` · `jira` · `github` · Playwright · SNS  
-Docs: [usage](docs/usage.md) · [input schema](docs/input-schema.md) · [platforms](docs/prebuilt-platforms.md)
-
 ---
 
-## Workflow
+## Star roadmap
 
-| Command | When |
-|---------|------|
-| `/kampff collect --targets …` | URL/person search → `bundle.json` (collector) |
-| `/kampff today` | Daily inbox drop |
-| `/kampff analyze {path}` | Explicit bundle file |
-| `/kampff person {id}` | One-person refresh + ephemeris |
-
----
-
-## Example output
-
-Anonymized dossier from [sample-input.json](docs/sample-input.json):
-
-→ **[docs/sample-output.md](docs/sample-output.md)** (matrix + per-person reports with evidence quotes)
-
----
-
-## Star = next module
-
-| Stars | Unlock |
-|-------|--------|
-| Ship | kampff + spectrograph L1–L5 |
-| 100 | Ephemeris timeline template |
+| ⭐ | Unlock |
+|----|--------|
+| shipped | L1–L5 + community pipeline + sample HTML |
+| 100 | Ephemeris templates |
 | 300 | HR lens pack |
 | 500 | OSINT lens pack |
 | 1000 | Skill #2 |
 
----
-
-## spectrograph (7 layers)
-
-| Layer | What |
-|-------|------|
-| L1 | Psych — Big Five, conflict, attachment |
-| L2 | Worldview — politics · religion · philosophy |
-| L3 | Behavioral signature — chronic vs situational patterns |
-| L4 | Alliance — trust, reciprocity |
-| L5 | Ephemeris — timeline, drift, turning points |
-| L6 | HR lens — team signals (assist only) |
-| L7 | OSINT lens — narrative consistency (lawful scope) |
-
-Full protocol: [docs/spectrograph.md](docs/spectrograph.md)
+**[Sponsor](https://github.com/sponsors/YangKangSung)** · **[Issues](https://github.com/YangKangSung/kampff-skills/issues)**
 
 ---
 
-## Compare
+## Name & license
 
-| Skill | Profiles |
-|-------|----------|
-| [customer-psychographic-profiler](https://github.com/sickn33/agentic-awesome-skills) | Target **customers** for marketing |
-| [i-am](https://github.com/LeoYeAI/openclaw-master-skills) | **You** from agent sessions |
-| [ChatAnalysis.SKILL](https://github.com/JularDepick/ChatAnalysis.SKILL) | Chat stats + personality HTML |
-| **kampff** | **Everyone on the board** + **you** + worldview + time + distance |
+**Kampff** — independent OSS by [YangKangSung](https://github.com/YangKangSung).  
+Not affiliated with any film/game franchise. Name ≈ *struggle to read sparse evidence*.
 
----
+**MIT** — use wisely, cite quotes, respect local law.  
+Third-party tools: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 
-## Philosophy
-
-- **Evidence over vibes** — every inference tied to a quote or marked low-confidence
-- **Viewer in the pool** — you get the same scrutiny as everyone else
-- **Pattern stability, not soul verdicts** — chronic vs situational; no "born evil"
-- **Lawful scope** — refuse stalking, harassment, covert surveillance
-- **Collection ≠ analysis** — skill reads files you point at; no built-in scraping
-
----
-
-## What this is NOT
-
-- Medical or psychiatric diagnosis
-- Sole hiring / firing decision
-- Stalking or harassment tooling
-- "Born evil" labels — **pattern stability**, not soul verdicts
-
----
-
-## Structure
-
+```text
+graphify  →  code  →  graph
+kampff    →  text  →  human spectrum
 ```
-kampff-skills/
-├── kampff/SKILL.md
-├── collectors/                 # kampff-collect (optional)
-│   ├── kampff_collect/
-│   └── platforms/              # 15 prebuilt YAML packs
-├── docs/
-│   ├── usage.md
-│   ├── sample-input.json
-│   ├── sample-output.md
-│   ├── launch-copy.md
-│   └── spectrograph.md
-└── LICENSE
-```
-
----
-
-## Security
-
-- **Never commit** tokens, `.env`, or `kampff-data/` (gitignored). Use `auth_ref` + `KAMPFF_AUTH_DIR` — [collectors.md](docs/collectors.md).
-- **Maintainers:** [GitHub CLI](https://cli.github.com/) (`gh auth login --web`). Never paste tokens in AI chats or scripts that echo credentials.
-- Enable **2FA**: [github.com/settings/security](https://github.com/settings/security)
-- Issues: [github.com/YangKangSung/kampff-skills/issues](https://github.com/YangKangSung/kampff-skills/issues)
-
----
-
-## Contributing
-
-Issues and PRs welcome. Keep skills focused, document real use cases, cite evidence in examples.
-
-Launch copy draft: [docs/launch-copy.md](docs/launch-copy.md)
-
----
-
-## Support
-
-If Kampff saves you time reading a board:
-
-- **[Sponsor on GitHub](https://github.com/sponsors/YangKangSung)** — recurring support
-- **⭐ Star** the repo — unlocks the next spectrograph module ([roadmap](#star--next-module))
-
----
-
-## Trademark notice
-
-**Kampff** is an independent open-source project by [YangKangSung](https://github.com/YangKangSung).
-
-- Not affiliated with any film studio, game publisher, or media franchise.
-- The name evokes *reading people from sparse evidence* (German *Kampf* — struggle/contest of interpretation).
-- Do not use studio logos, stills, or trademarked test names in forks or marketing without permission.
-
----
-
-## License
-
-MIT — use wisely, cite evidence quotes, respect privacy law in your jurisdiction.
