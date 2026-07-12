@@ -6,11 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skill](https://img.shields.io/badge/agent-SKILL.md-0ea5e9)](kampff/SKILL.md)
 
-### → [**▶ Demo reel**](docs/demo-kampff-walkthrough.html) — how a report is made + sample report tour
+[![Kampff demo reel](docs/demo-reel.gif)](docs/demo-kampff-walkthrough.html)
 
-`Space` pause · `←` `→` seek
-
-> Swap this link later for an `.mp4` / GIF if you record one — keep it **at the top**.
+**▶** GIF autoplays above · click for [interactive demo](docs/demo-kampff-walkthrough.html) (`Space` pause) · [mp4](docs/demo-reel.mp4)
 
 ---
 
