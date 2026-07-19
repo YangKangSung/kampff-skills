@@ -1,0 +1,41 @@
+{
+  "batch_date": "YYYY-MM-DD",
+  "viewer_id": "me",
+  "context": "community",
+  "protocol": "spectrograph",
+  "analysis_lenses": ["personal", "mbti", "cia_sat"],
+  "people": [
+    {
+      "id": "me",
+      "display_name": "viewer",
+      "aliases": []
+    },
+    {
+      "id": "target_id",
+      "display_name": "",
+      "aliases": []
+    }
+  ],
+  "targets": [
+    {
+      "url": "https://example.com/",
+      "platform": "community",
+      "scope": "site",
+      "collect": ["post", "comment"],
+      "match_people": ["target_id"],
+      "auth_ref": null,
+      "query": {
+        "author_id": "",
+        "author_display": "",
+        "since": null,
+        "until": null,
+        "max_pages": 50
+      }
+    }
+  ],
+  "meta": {
+    "language": "ko",
+    "timezone": "Asia/Seoul",
+    "notes": "Fill site url + target identity first. Collect → bundle.json → /kampff analyze."
+  }
+}

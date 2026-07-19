@@ -6,7 +6,8 @@ description: >-
   collect posts/comments/likes honesty triad → bundle.json → spectrograph L1–L5
   + default MBTI (fun) + CIA/KGB-style public tradecraft persona report.
   Triggers: /kampff, kampff, 사람 분석, 인물 분석, person analysis, community member,
-  distance scoring, MBTI, CIA/KGB profile, mail/meeting/chat/sns/github.
+  distance scoring, MBTI, CIA/KGB profile, mail/meeting/chat/sns/github,
+  thread actors, 댓글 네트워크, 조직성, /kampff thread.
   Analyze reads bundle only; collect is a separate lawful step. No stalking.
 ---
 
@@ -46,6 +47,7 @@ Report shape: `references/report-template.md`
 ```text
 /kampff member {platform} {id|nick|url}
 /kampff analyze {path}/bundle.json
+/kampff thread {post_url}          ← comment actors · intent · network · coordination
 /kampff today
 ```
 
@@ -57,7 +59,7 @@ Report shape: `references/report-template.md`
 | 4 Bundle | `{KAMPFF_DATA}/inbox/{date}/bundle.json` |
 | 5 Analyze | L1–L5 always |
 | 6 Lenses | **MBTI + CIA/KGB tradecraft ON by default for community** |
-| 7 Report | `{KAMPFF_DATA}/out/{date}-report.md` (+ optional `.html` with graphs) |
+| 7 Report | **HTML default:** `{KAMPFF_DATA}/out/{date}-report.html` · md twin optional |
 | 8 Handoff | open cross-check prompts; do not invent the operator’s gut read |
 
 **Default lenses**
@@ -77,6 +79,19 @@ Report shape: `references/report-template.md`
 | `docs/sample-output.md` | Short workplace matrix |
 
 Never replace samples with real third-party profiling. Real runs write under `$KAMPFF_DATA` outside the git root.
+
+## Thread actor analysis (one post)
+
+Analyze **all commenters on a single post**: intent signals, malice-risk heuristics, @reply graph, coordination-looking patterns.
+
+| | |
+|--|--|
+| Spec | `references/thread-actor-analysis.md` |
+| Runner | `scripts/thread_actor_analyze.py` |
+| Trigger | `/kampff thread {url}` |
+| Default out | `{KAMPFF_DATA}/out/{date}-thread-{board}_{sn}-actors.html` |
+
+Not a guilty verdict — **signals + graph**. Feeds hot actors into later member collect.
 
 ## Collection honesty (mandatory for community)
 
@@ -172,18 +187,23 @@ Sources: `mail` · `meeting` · `chat` · `messenger` · `community_post` · `co
 - **Public skill repo:** only synthetic samples; never commit real member dossiers, private purpose notes, or host-only paths  
 - Prefer **English** for shared sample reports; operator language OK for private chat  
 
-## HTML report (optional visual)
+## HTML report (**default** deliverable)
 
-When the operator wants graphs (radar, timeline, force graph, honesty bars):
+Community analyze **always** ends with HTML (not optional). Markdown is a twin/source, not the primary handoff.
 
-1. Follow `report-template.md` content in English for public-facing demos  
-2. Emit `{KAMPFF_DATA}/out/{date}-report.html` (local data dir)  
-3. Use **synthetic** names in anything that might be committed to a public tree  
-4. Shape reference: `docs/sample-community-report.html`  
+1. Content order: `references/report-template.md`  
+2. **Must emit** `{KAMPFF_DATA}/out/{date}-report.html` (and `{target_id}` infix OK: `{date}-{id}-report.html`)  
+3. Skin / shape: `docs/sample-community-report.html` (graphs, distance pills, honesty bars, dossier card)  
+4. Include debate section when thread comments exist (debate = first-class ref)  
+5. Optional twin: `{date}-report.md` for git/diff; operator-facing open path = **HTML**  
+6. Public demos / anything committed: **synthetic** names only  
+7. Prefer English on public samples; operator language OK in private `$KAMPFF_DATA` runs
 
 ## Support files
 
 - `references/community-member-pipeline.md`
+- `references/thread-actor-analysis.md` — seed + **cohort** + directed graph + temporal
+- `references/human-like-collect.md` — **anti-bot pacing (mandatory for clien)**
 - `references/report-template.md`
 - `references/collection-honesty.md`
 - `references/community-public-collect.md`
@@ -192,7 +212,8 @@ When the operator wants graphs (radar, timeline, force graph, honesty bars):
 - `references/lenses-cia-sat.md`
 - `references/github-smoke.md`
 - Repo demos: `docs/sample-community-report.{md,html}` · `docs/sample-output.md`
-- `scripts/` — optional collectors
+- `scripts/thread_actor_cohort.py` — directed network + optional slow cohort expand
+- `scripts/human_browse.py` — jitter delays, cache, bot-wall stop, resume
 
 ## License
 

@@ -117,7 +117,7 @@ Optional data dir: `export KAMPFF_DATA=~/kampff-data` (Windows: `setx KAMPFF_DAT
 └─────────────┘     └──────────────┘     └────────┬────────┘
                                                   ▼
                                          distance report
-                                      (.md · optional .html)
+                                      (.html DEFAULT · .md twin)
 ```
 
 1. **Collect** lawful text (your tools, or optional `kampff-collect`)
@@ -191,10 +191,12 @@ kampff/                 ← the skill (copy this)
   SKILL.md
   references/           ← pipeline · honesty · lenses · template
 docs/
-  demo-kampff-walkthrough.html   ← top of README
-  sample-community-report.html   ← under the demo
+  targets.template.json ← GENERAL run input (site url + target)
+  RUN-INPUT.md          ← how to fill targets → collect → analyze
+  demo-kampff-walkthrough.html
   sample-*.md · spectrograph · collectors
 collectors/             ← optional YAML packs (adapters maturing)
+kampff-data/            ← local runs only (gitignored)
 ```
 
 ---
