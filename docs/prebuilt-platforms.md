@@ -20,11 +20,21 @@
 
 | id | 이름 | transport | 비고 |
 |----|------|-----------|------|
-| `x` | X | rest | API v2 |
-| `reddit` | Reddit | rest | OAuth |
-| `linkedin` | LinkedIn | file | member export |
+| `x` | X | rest | API v2 · `connect setup --platform x` |
+| `facebook` | Facebook | rest/file | Graph Page token 또는 data download |
+| `instagram` | Instagram | rest/file | Business Graph 또는 export |
+| `reddit` | Reddit | rest | OAuth · `connect setup --platform reddit` |
+| `linkedin` | LinkedIn | file | member export · `connect setup --platform linkedin` |
 | `rss` | RSS/Atom | rest | 블로그·공지 |
 | `maigret` | Maigret username map | **cli** (optional) | 계정 존재·URL 확장만. 본문 수집 아님. `scripts/expand_handles_maigret.py` · [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) |
+
+**Connection setup (SNS):** [sns-connection-setup.md](sns-connection-setup.md)
+
+```bash
+kampff-collect connect list
+kampff-collect connect setup --platform x --ref x_api
+kampff-collect connect status
+```
 
 ## Export / file packs
 

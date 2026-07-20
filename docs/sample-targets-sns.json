@@ -1,0 +1,86 @@
+{
+  "batch_date": "2026-07-20",
+  "viewer_id": "me",
+  "context": "sns",
+  "protocol": "spectrograph",
+  "analysis_lenses": ["personal", "mbti", "cia_sat"],
+  "people": [
+    {
+      "id": "me",
+      "display_name": "viewer",
+      "aliases": []
+    },
+    {
+      "id": "target_id",
+      "display_name": "",
+      "aliases": ["@their_x", "u/their_reddit", "their_ig"]
+    }
+  ],
+  "targets": [
+    {
+      "url": "https://x.com/their_x",
+      "platform": "x",
+      "scope": "profile_by_username:their_x",
+      "collect": ["post", "reply"],
+      "match_people": ["target_id"],
+      "auth_ref": "x_api",
+      "query": {
+        "username": "their_x",
+        "limit": 100
+      }
+    },
+    {
+      "url": "https://www.reddit.com/user/their_reddit/",
+      "platform": "reddit",
+      "scope": "user:their_reddit",
+      "collect": ["post", "comment"],
+      "match_people": ["target_id"],
+      "auth_ref": "reddit_oauth",
+      "query": {
+        "username": "their_reddit",
+        "limit": 100
+      }
+    },
+    {
+      "url": "https://www.facebook.com/example_page/",
+      "platform": "facebook",
+      "scope": "page:PAGE_ID",
+      "collect": ["post", "comment"],
+      "match_people": ["target_id"],
+      "auth_ref": "facebook_graph",
+      "query": {
+        "page_id": "PAGE_ID",
+        "limit": 50
+      }
+    },
+    {
+      "url": "https://www.instagram.com/their_ig/",
+      "platform": "instagram",
+      "scope": "business:IG_USER_ID",
+      "collect": ["post", "comment"],
+      "match_people": ["target_id"],
+      "auth_ref": "instagram_graph",
+      "query": {
+        "ig_user_id": "IG_USER_ID",
+        "handle": "their_ig",
+        "limit": 50
+      }
+    },
+    {
+      "url": "file://linkedin-export",
+      "platform": "linkedin",
+      "scope": "export_package",
+      "collect": ["post", "comment"],
+      "match_people": ["me"],
+      "auth_ref": "linkedin_export",
+      "query": {
+        "path": "${LINKEDIN_EXPORT_DIR}"
+      }
+    }
+  ],
+  "meta": {
+    "language": "ko",
+    "timezone": "Asia/Seoul",
+    "notes": "Scaffold auth first: kampff-collect connect setup --platform <id>. See docs/sns-connection-setup.md"
+  }
+}

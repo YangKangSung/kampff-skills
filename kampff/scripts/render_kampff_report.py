@@ -1,0 +1,798 @@
+#!/usr/bin/env python3
+"""
+Kampff HTML report renderer — professional, graph-heavy, offline-first.
+
+Usage:
+  python scripts/render_kampff_report.py --analysis path/to/analysis.json -o out/report.html
+  python scripts/render_kampff_report.py --analysis a.json --bundle b.json -o out/report.html
+
+analysis.json schema: see docs/report-analysis.schema.md (inline below in MODULE DOC).
+
+Design goals:
+  - User-friendly: sticky TOC, hero distance, TL;DR, print CSS
+  - Professional: CIA/MBTI/L1–L5 cards, honesty triad, dossier
+  - Graphs: radar (drivers/MBTI/Big5), honesty bars, ACH, timeline,
+            source donut, confidence gauge, alliance bars, distance map
+  - Offline: pure SVG/CSS, no CDN
+"""
+from __future__ import annotations
+
+import argparse
+import html as htmlmod
+import json
+import math
+import re
+from collections import Counter
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
+
+def esc(s: Any) -> str:
+    return htmlmod.escape("" if s is None else str(s))
+
+
+def clamp(x: float, lo: float = 0.0, hi: float = 100.0) -> float:
+    return max(lo, min(hi, x))
+
+
+# ── SVG helpers ──────────────────────────────────────────────────────────────
+
+def _radar_points(values: list[float], cx: float, cy: float, r: float) -> str:
+    """values 0–1, n axes, start top, clockwise."""
+    n = len(values)
+    pts = []
+    for i, v in enumerate(values):
+        ang = -math.pi / 2 + (2 * math.pi * i / n)
+        rr = r * clamp(v, 0, 1)
+        pts.append(f"{cx + rr * math.cos(ang):.1f},{cy + rr * math.sin(ang):.1f}")
+    return " ".join(pts)
+
+
+def svg_radar(
+    labels: list[str],
+    values: list[float],
+    *,
+    max_v: float = 3.0,
+    title: str = "",
+    color: str = "#2dd4bf",
+    size: int = 320,
+) -> str:
+    cx = cy = size / 2
+    r = size * 0.32
+    n = len(labels)
+    norms = [clamp(v / max_v, 0, 1) for v in values]
+    rings = []
+    for k in (1.0, 0.66, 0.33):
+        pts = _radar_points([k] * n, cx, cy, r)
+        rings.append(f'<polygon points="{pts}" fill="none" stroke="#243041" stroke-width="1" opacity="{0.4 + k*0.4}"/>')
+    axes = []
+    labs = []
+    for i, lab in enumerate(labels):
+        ang = -math.pi / 2 + (2 * math.pi * i / n)
+        x2 = cx + r * math.cos(ang)
+        y2 = cy + r * math.sin(ang)
+        axes.append(f'<line x1="{cx}" y1="{cy}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="#334155" stroke-width="1"/>')
+        lx = cx + (r + 22) * math.cos(ang)
+        ly = cy + (r + 22) * math.sin(ang)
+        val = values[i]
+        labs.append(
+            f'<text x="{lx:.1f}" y="{ly:.1f}" text-anchor="middle" dominant-baseline="middle" '
+            f'fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">{esc(lab)} {val:g}</text>'
+        )
+    poly = _radar_points(norms, cx, cy, r)
+    dots = []
+    for i, v in enumerate(norms):
+        ang = -math.pi / 2 + (2 * math.pi * i / n)
+        x = cx + r * v * math.cos(ang)
+        y = cy + r * v * math.sin(ang)
+        dots.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="4" fill="{color}"/>')
+    return f'''<svg viewBox="0 0 {size} {size}" role="img" aria-label="{esc(title or 'radar')}">
+  {"".join(rings)}
+  {"".join(axes)}
+  <polygon points="{poly}" fill="{color}44" stroke="{color}" stroke-width="2"/>
+  {"".join(dots)}
+  {"".join(labs)}
+</svg>'''
+
+
+def svg_hbar_rows(rows: list[tuple[str, float, str]], *, unit: str = "%") -> str:
+    """rows: (label, 0-100, color_class teal|amber|rose|violet|sky)"""
+    out = ['<div class="hbar">']
+    for lab, pct, cls in rows:
+        pct = clamp(pct)
+        out.append(
+            f'<div class="hbar-row"><span title="{esc(lab)}">{esc(lab[:18])}</span>'
+            f'<div class="track"><div class="fill {cls}" style="width:{pct:.0f}%"></div></div>'
+            f'<span>{pct:.0f}{unit if unit=="%" else ""}</span></div>'
+        )
+    out.append("</div>")
+    return "\n".join(out)
+
+
+def svg_donut(parts: list[tuple[str, float, str]], *, size: int = 220) -> str:
+    """parts: (label, value, color). SVG donut."""
+    total = sum(v for _, v, _ in parts) or 1
+    cx = cy = size / 2
+    r = size * 0.32
+    stroke = size * 0.12
+    circ = 2 * math.pi * r
+    acc = 0.0
+    segs = []
+    legend = []
+    for lab, v, col in parts:
+        frac = v / total
+        dash = circ * frac
+        gap = circ - dash
+        offset = circ * 0.25 - acc  # start top
+        segs.append(
+            f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{col}" '
+            f'stroke-width="{stroke}" stroke-dasharray="{dash:.2f} {gap:.2f}" '
+            f'stroke-dashoffset="{offset:.2f}" transform="rotate(-90 {cx} {cy})"/>'
+        )
+        acc += dash
+        legend.append(f'<span><i style="background:{col}"></i>{esc(lab)} ({v:g})</span>')
+    return f'''<svg viewBox="0 0 {size} {size}" role="img" aria-label="source mix">
+  <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="#1a2330" stroke-width="{stroke}"/>
+  {"".join(segs)}
+  <text x="{cx}" y="{cy-4}" text-anchor="middle" fill="#e7eef8" font-size="18" font-weight="700" font-family="Segoe UI,sans-serif">{int(total)}</text>
+  <text x="{cx}" y="{cy+14}" text-anchor="middle" fill="#93a4bb" font-size="10">texts</text>
+</svg>
+<div class="legend">{"".join(legend)}</div>'''
+
+
+def svg_gauge(score: float, label: str = "confidence") -> str:
+    """score 0–100 semicircle gauge."""
+    score = clamp(score)
+    # map to angle -180..0
+    ang = math.radians(180 - 180 * score / 100)
+    cx, cy, r = 120, 110, 80
+    x = cx + r * math.cos(ang)
+    y = cy - r * math.sin(ang)
+    color = "#4ade80" if score >= 70 else "#fbbf24" if score >= 40 else "#f87171"
+    return f'''<svg viewBox="0 0 240 140" role="img" aria-label="{esc(label)}">
+  <path d="M40 110 A80 80 0 0 1 200 110" fill="none" stroke="#1a2330" stroke-width="16" stroke-linecap="round"/>
+  <path d="M40 110 A80 80 0 0 1 200 110" fill="none" stroke="{color}" stroke-width="16" stroke-linecap="round"
+    stroke-dasharray="{score/100*251:.1f} 251" />
+  <line x1="{cx}" y1="{cy}" x2="{x:.1f}" y2="{y:.1f}" stroke="#e7eef8" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="{cx}" cy="{cy}" r="5" fill="#e7eef8"/>
+  <text x="{cx}" y="90" text-anchor="middle" fill="{color}" font-size="28" font-weight="700" font-family="Segoe UI,sans-serif">{score:.0f}</text>
+  <text x="{cx}" y="130" text-anchor="middle" fill="#93a4bb" font-size="11">{esc(label)}</text>
+</svg>'''
+
+
+def svg_timeline(events: list[dict]) -> str:
+    """events: {t, label, color?} sorted."""
+    if not events:
+        return '<p class="muted">No timeline events.</p>'
+    w = 1040
+    h = 150
+    pad = 50
+    n = len(events)
+    xs = [pad + i * (w - 2 * pad) / max(n - 1, 1) for i in range(n)]
+    line = f'<line x1="{pad}" y1="70" x2="{w-pad}" y2="70" stroke="#334155" stroke-width="2"/>'
+    nodes = []
+    for i, (ev, x) in enumerate(zip(events, xs)):
+        col = ev.get("color") or ("#2dd4bf" if i == n - 1 else "#38bdf8")
+        r = 7 + min(i, 4)
+        nodes.append(
+            f'<circle cx="{x:.0f}" cy="70" r="{r}" fill="{col}"/>'
+            f'<text x="{x:.0f}" y="42" text-anchor="middle" fill="#94a3b8" font-size="11">{esc(ev.get("t",""))}</text>'
+            f'<text x="{x:.0f}" y="100" text-anchor="middle" fill="#64748b" font-size="10">{esc(ev.get("label",""))[:28]}</text>'
+        )
+    note = esc(events[-1].get("note", "")) if events else ""
+    return f'''<svg viewBox="0 0 {w} {h}" role="img" aria-label="ephemeris timeline">
+  {line}
+  {"".join(nodes)}
+  <text x="{pad}" y="{h-10}" fill="#64748b" font-size="11">{note}</text>
+</svg>'''
+
+
+def svg_ach(hypotheses: list[dict]) -> str:
+    """[{id, label, status: lead|weak|fail, score:0-100}]"""
+    rows = []
+    y = 20
+    for h in hypotheses:
+        st = h.get("status", "weak")
+        col = {"lead": "#10b981", "weak": "#fbbf24", "fail": "#f87171"}.get(st, "#94a3b8")
+        sc = clamp(float(h.get("score", 50 if st == "weak" else 90 if st == "lead" else 15)))
+        w = 2.0 * sc
+        rows.append(
+            f'<text x="8" y="{y+12}" fill="#e7eef8" font-size="12">{esc(h.get("id","H"))} {esc(h.get("label",""))[:28]}</text>'
+            f'<rect x="150" y="{y}" width="200" height="18" rx="5" fill="#1a2330"/>'
+            f'<rect x="150" y="{y}" width="{w:.0f}" height="18" rx="5" fill="{col}" opacity=".9"/>'
+            f'<text x="360" y="{y+12}" fill="{col}" font-size="11" font-family="monospace">{esc(st)}</text>'
+        )
+        y += 36
+    return f'<svg viewBox="0 0 400 {max(y, 80)}" role="img" aria-label="ACH">{"".join(rows)}</svg>'
+
+
+DISTANCE_COLORS = {
+    "engage": ("#a7f3d0", "#059669", "#064e3b"),
+    "neutral": ("#cbd5e1", "#475569", "#1e293b"),
+    "caution": ("#fde68a", "#b45309", "#422006"),
+    "avoid": ("#fecaca", "#b91c1c", "#450a0a"),
+}
+
+
+def pill(tag: str) -> str:
+    t = (tag or "neutral").lower().split()[0]
+    if t not in DISTANCE_COLORS:
+        t = "neutral"
+    return f'<span class="pill {t}">{esc(tag)}</span>'
+
+
+# ── Bundle stats ─────────────────────────────────────────────────────────────
+
+def bundle_source_counts(bundle: dict | None, person_id: str) -> list[tuple[str, float, str]]:
+    if not bundle:
+        return []
+    colors = {
+        "community_post": "#2dd4bf",
+        "community_comment": "#38bdf8",
+        "mail": "#a78bfa",
+        "meeting": "#fbbf24",
+        "chat": "#f472b6",
+        "sns_post": "#fb7185",
+        "sns_comment": "#94a3b8",
+    }
+    texts = []
+    for p in bundle.get("people") or []:
+        if p.get("id") == person_id:
+            texts = p.get("texts") or []
+            break
+    c = Counter((t.get("source") or "other") for t in texts)
+    return [(k, float(v), colors.get(k, "#64748b")) for k, v in c.most_common()]
+
+
+def infer_timeline_from_bundle(bundle: dict | None, person_id: str, limit: int = 8) -> list[dict]:
+    if not bundle:
+        return []
+    texts = []
+    for p in bundle.get("people") or []:
+        if p.get("id") == person_id:
+            texts = p.get("texts") or []
+            break
+    events = []
+    for t in sorted(texts, key=lambda x: x.get("timestamp") or ""):
+        ts = (t.get("timestamp") or "")[:10]
+        if not ts:
+            continue
+        src = t.get("type") or t.get("source") or ""
+        title = ""
+        content = t.get("content") or ""
+        m = re.search(r"\[title\]\s*(.+)", content)
+        if m:
+            title = m.group(1).split("\n")[0][:24]
+        else:
+            title = content.replace("\n", " ")[:24]
+        events.append({"t": ts, "label": title or src, "color": "#38bdf8"})
+    # unique by day keep first+last density
+    if len(events) <= limit:
+        return events
+    step = max(1, len(events) // limit)
+    picked = events[::step][: limit - 1] + [events[-1]]
+    return picked
+
+
+# ── HTML assembly ────────────────────────────────────────────────────────────
+
+CSS = r"""
+:root {
+  --bg:#0b0f14; --panel:#121821; --panel2:#18202b; --line:#243041;
+  --text:#e7eef8; --muted:#93a4bb; --accent:#5eead4; --accent2:#38bdf8;
+  --warn:#fbbf24; --ok:#4ade80; --bad:#f87171;
+  --mono:"JetBrains Mono","SF Mono",Consolas,monospace;
+  --sans:"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--sans);color:var(--text);line-height:1.55;
+  background:
+    radial-gradient(1200px 600px at 10% -10%,#12324a55,transparent),
+    radial-gradient(900px 500px at 100% 0%,#0f3d3555,transparent),
+    var(--bg);
+}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 18px 80px}
+header.hero{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border-radius:18px;padding:26px;margin-bottom:18px;position:relative;overflow:hidden;
+}
+header.hero::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+h1{margin:0 0 6px;font-size:26px;letter-spacing:-.02em}
+.sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+.tldr{
+  margin:12px 0 0;padding:14px 16px;border-radius:12px;
+  background:linear-gradient(90deg,#0c1c28,#0d1a16);border:1px solid #1e4d45;font-size:14.5px;
+}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.meta .chip{background:#0d131b;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px}
+.meta .chip b{display:block;color:var(--muted);font-weight:500;font-size:10px;margin-bottom:3px}
+.distance-banner{
+  margin-top:14px;padding:12px 14px;border-radius:12px;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  background:#0c1f1a;border:1px solid #1f5c4a;
+}
+.distance-banner.caution{background:#1c1408;border-color:#7c4a0a}
+.distance-banner.avoid{background:#1c0a0a;border-color:#7f1d1d}
+.distance-banner.engage{background:#052e16;border-color:#166534}
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-family:var(--mono);font-size:11px;border:1px solid}
+.pill.neutral{color:#cbd5e1;border-color:#475569;background:#1e293b}
+.pill.engage{color:#a7f3d0;border-color:#059669;background:#064e3b}
+.pill.caution{color:#fde68a;border-color:#b45309;background:#422006}
+.pill.avoid{color:#fecaca;border-color:#b91c1c;background:#450a0a}
+.pill.ok{color:#bbf7d0;border-color:#16a34a;background:#052e16}
+nav.toc{
+  position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);
+  background:#0b0f14cc;border-bottom:1px solid var(--line);
+  margin:0 -18px 18px;padding:8px 18px;display:flex;gap:6px;flex-wrap:wrap;
+}
+nav.toc a{color:var(--muted);text-decoration:none;font-size:11.5px;padding:5px 9px;border-radius:999px;border:1px solid transparent}
+nav.toc a:hover{color:var(--text);border-color:var(--line);background:var(--panel)}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px}
+section.card h2{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:8px}
+section.card h2 .n{font-family:var(--mono);font-size:11px;color:var(--accent2);border:1px solid #1e3a5f;background:#0b1726;padding:2px 7px;border-radius:999px}
+h3{margin:16px 0 8px;font-size:14px;color:#dbeafe}
+p,li{color:#d5e0ee;font-size:14px}
+ul{padding-left:1.1rem;margin:6px 0}
+blockquote{margin:10px 0;padding:10px 12px;border-left:3px solid var(--accent);background:#0d151f;border-radius:0 10px 10px 0;color:#cfe7ff;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:#0e1520;color:var(--muted);font-weight:600}
+tr:nth-child(even) td{background:#0f1620}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:960px){.grid2,.grid3{grid-template-columns:1fr}}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat .v{font-size:20px;font-weight:700;color:var(--accent);font-family:var(--mono)}
+.stat .l{font-size:11px;color:var(--muted)}
+.chart-box{background:#0a1018;border:1px solid var(--line);border-radius:14px;padding:14px}
+.chart-box h3{margin:0 0 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.chart-box svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.hbar{display:grid;gap:9px}
+.hbar-row{display:grid;grid-template-columns:110px 1fr 40px;gap:8px;align-items:center;font-size:12px}
+.track{height:10px;background:#1a2330;border-radius:99px;overflow:hidden}
+.fill{height:100%;border-radius:99px;transition:width .6s ease}
+.fill.teal{background:linear-gradient(90deg,#0ea5e9,#2dd4bf)}
+.fill.amber{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.fill.rose{background:linear-gradient(90deg,#e11d48,#fb7185)}
+.fill.violet{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+.fill.sky{background:linear-gradient(90deg,#0284c7,#38bdf8)}
+pre.dossier{background:#070b10;border:1px solid var(--line);border-radius:12px;padding:12px 14px;overflow:auto;font-family:var(--mono);font-size:11.5px;line-height:1.45;color:#b8c7da;white-space:pre-wrap}
+.dist-map{display:grid;gap:8px}
+.dist-row{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:#0d131b;border:1px solid var(--line);font-size:13px}
+.q{margin:10px 0;padding:10px 12px;background:#121a24;border-left:3px solid var(--accent);border-radius:0 8px 8px 0}
+.q figcaption{color:var(--muted);font-size:.78rem;margin-bottom:6px}
+.q pre{white-space:pre-wrap;margin:0;font:13px/1.45 var(--mono);color:#d5deea}
+.muted{color:var(--muted);font-size:12.5px}
+footer{margin-top:24px;color:var(--muted);font-size:11px;text-align:center}
+a{color:var(--accent2)}
+@media print{
+  body{background:#fff;color:#111}
+  nav.toc,.kicker{display:none}
+  section.card,header.hero{break-inside:avoid;border-color:#ccc;background:#fff}
+  .chart-box{background:#f8fafc;border-color:#ddd}
+}
+"""
+
+
+def render(analysis: dict, bundle: dict | None = None) -> str:
+    meta = analysis.get("meta") or {}
+    target = analysis.get("target") or {}
+    viewer = analysis.get("viewer") or {"id": "me"}
+    distance = (analysis.get("distance") or "neutral").lower()
+    confidence = float(analysis.get("confidence_score") or 55)
+    conf_label = analysis.get("confidence") or "medium"
+    tldr = analysis.get("tldr") or analysis.get("one_line") or ""
+    tid = target.get("id") or "target"
+    nick = target.get("nick") or tid
+    date = meta.get("date") or datetime.now().strftime("%Y-%m-%d")
+    platform = meta.get("platform") or "community"
+    protocol = meta.get("protocol") or "L1–L5 · MBTI · CIA-SAT"
+
+    honesty = analysis.get("honesty") or {}
+    posts_pct = float(honesty.get("posts_pct", 50))
+    cmts_pct = float(honesty.get("comments_pct", 40))
+    likes_pct = honesty.get("likes_pct")
+    likes_na = likes_pct is None or str(honesty.get("likes_status", "")).lower() in ("n/a", "na")
+
+    matrix = analysis.get("matrix") or {}
+    identity = analysis.get("identity") or {}
+    spectro = analysis.get("spectrograph") or analysis.get("l1_l5") or {}
+    mbti = analysis.get("mbti") or {}
+    cia = analysis.get("cia") or {}
+    ops = analysis.get("distance_ops") or []
+    cross = analysis.get("cross_check") or []
+    quotes = analysis.get("quotes") or []
+    files = analysis.get("files") or {}
+    trigger = analysis.get("trigger") or {}
+    timeline = analysis.get("timeline") or infer_timeline_from_bundle(bundle, tid)
+    sources = analysis.get("source_mix") or bundle_source_counts(bundle, tid)
+
+    # Big Five
+    big5 = analysis.get("big5") or spectro.get("big5") or {
+        "O": 50, "C": 50, "E": 50, "A": 50, "N": 50
+    }
+    big5_rows = [
+        ("Openness", float(big5.get("O", 50)), "violet"),
+        ("Conscient.", float(big5.get("C", 50)), "teal"),
+        ("Extraversion", float(big5.get("E", 50)), "sky"),
+        ("Agreeable", float(big5.get("A", 50)), "amber"),
+        ("Neuroticism", float(big5.get("N", 50)), "rose"),
+    ]
+
+    # Drivers
+    drivers = cia.get("drivers") or analysis.get("drivers") or {
+        "resource": 2, "control": 2, "status": 1, "belonging": 1, "autonomy": 2
+    }
+    d_labels = ["resource", "control", "status", "belong", "autonomy"]
+    d_vals = [
+        float(drivers.get("resource", drivers.get("resource/career", 2))),
+        float(drivers.get("control", drivers.get("certainty/control", 2))),
+        float(drivers.get("status", 1)),
+        float(drivers.get("belonging", drivers.get("belong", 1))),
+        float(drivers.get("autonomy", 2)),
+    ]
+
+    # MBTI leans 0-100 toward second letter of pair displayed
+    leans = mbti.get("leans") or {"E": 50, "I": 50, "S": 50, "N": 50, "T": 50, "F": 50, "J": 50, "P": 50}
+    mbti_type = mbti.get("type") or mbti.get("guess") or "xxxx"
+    # radar axes I,S,T,J as strength of those poles
+    m_labels = ["I", "S", "T", "J"]
+    m_vals = [
+        float(leans.get("I", 100 - float(leans.get("E", 50)))),
+        float(leans.get("S", 50)),
+        float(leans.get("T", 50)),
+        float(leans.get("J", 50)),
+    ]
+
+    ach = cia.get("ach") or analysis.get("ach") or [
+        {"id": "H1", "label": "primary", "status": "lead", "score": 85},
+        {"id": "H2", "label": "alt", "status": "weak", "score": 35},
+        {"id": "H3", "label": "noise", "status": "fail", "score": 15},
+    ]
+
+    alliance = analysis.get("alliance_bars") or [
+        ("domain trust", float(matrix.get("alliance_score", 40)), "teal"),
+        ("craft peer", 45, "sky"),
+        ("soft friendship", 20, "amber"),
+        ("persuade ROI", 15, "rose"),
+    ]
+    if alliance and isinstance(alliance[0], dict):
+        alliance = [(a.get("label", ""), float(a.get("pct", 0)), a.get("color", "teal")) for a in alliance]
+
+    banner_cls = distance if distance in DISTANCE_COLORS else "neutral"
+
+    # honesty svg bars
+    likes_bar = (
+        f'<text x="8" y="138" fill="#93a4bb" font-size="12">Likes</text>'
+        f'<rect x="80" y="122" width="280" height="22" rx="6" fill="#1a2330"/>'
+        f'<text x="200" y="138" fill="#64748b" font-size="12">n/a</text>'
+        if likes_na
+        else (
+            f'<text x="8" y="138" fill="#93a4bb" font-size="12">Likes</text>'
+            f'<rect x="80" y="122" width="280" height="22" rx="6" fill="#1a2330"/>'
+            f'<rect x="80" y="122" width="{2.8 * float(likes_pct):.0f}" height="22" rx="6" fill="#f87171"/>'
+            f'<text x="370" y="138" fill="#f87171" font-size="12" font-family="monospace">{float(likes_pct):.0f}%</text>'
+        )
+    )
+    honesty_svg = f'''<svg viewBox="0 0 400 180" role="img" aria-label="collection completeness">
+  <text x="8" y="38" fill="#93a4bb" font-size="12">Posts</text>
+  <rect x="80" y="22" width="280" height="22" rx="6" fill="#1a2330"/>
+  <rect x="80" y="22" width="{2.8*posts_pct:.0f}" height="22" rx="6" fill="url(#g1)"/>
+  <text x="370" y="38" fill="#4ade80" font-size="12" font-family="monospace">{posts_pct:.0f}%</text>
+  <text x="8" y="88" fill="#93a4bb" font-size="12">Comments</text>
+  <rect x="80" y="72" width="280" height="22" rx="6" fill="#1a2330"/>
+  <rect x="80" y="72" width="{2.8*cmts_pct:.0f}" height="22" rx="6" fill="#fbbf24"/>
+  <text x="370" y="88" fill="#fbbf24" font-size="12" font-family="monospace">{cmts_pct:.0f}%</text>
+  {likes_bar}
+  <defs><linearGradient id="g1" x1="0" x2="1"><stop stop-color="#0ea5e9"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient></defs>
+  <text x="80" y="168" fill="#64748b" font-size="10">{esc(honesty.get("note",""))}</text>
+</svg>'''
+
+    # stats chips
+    corpus = analysis.get("corpus") or {}
+    n_posts = corpus.get("posts", honesty.get("posts_n", "?"))
+    n_cmts = corpus.get("comments", honesty.get("comments_n", "?"))
+    n_likes = corpus.get("likes", "n/a" if likes_na else honesty.get("likes_n", "?"))
+
+    quote_html = []
+    for q in quotes[:12]:
+        label = q.get("label") or q.get("type") or "Q"
+        ts = q.get("timestamp") or ""
+        body = q.get("text") or q.get("content") or ""
+        quote_html.append(
+            f'<figure class="q"><figcaption>{esc(label)} · {esc(ts)}</figcaption>'
+            f"<pre>{esc(body[:900])}</pre></figure>"
+        )
+
+    id_bullets = identity.get("bullets") or identity.get("points") or []
+    if isinstance(id_bullets, str):
+        id_bullets = [id_bullets]
+    id_ul = "".join(f"<li>{esc(b)}</li>" for b in id_bullets)
+
+    l_sections = []
+    for key, title in [
+        ("L1", "Psych"),
+        ("L2", "Worldview"),
+        ("L3", "Behavioral"),
+        ("L4", "Alliance"),
+        ("L5", "Ephemeris"),
+    ]:
+        body = spectro.get(key) or spectro.get(key.lower()) or ""
+        if isinstance(body, list):
+            body = "</p><p>".join(esc(x) for x in body)
+            l_sections.append(f"<p><strong>{key} {title}</strong> — {body}</p>")
+        else:
+            l_sections.append(f"<p><strong>{key} {title}</strong> — {esc(body)}</p>")
+
+    ops_rows = []
+    for o in ops:
+        if isinstance(o, dict):
+            ops_rows.append(f"<tr><td>{pill(o.get('tag',''))}</td><td>{esc(o.get('when',''))}</td></tr>")
+        else:
+            ops_rows.append(f"<tr><td colspan='2'>{esc(o)}</td></tr>")
+
+    cross_ol = "".join(f"<li>{esc(c)}</li>" for c in cross)
+
+    dossier = cia.get("card") or cia.get("dossier") or analysis.get("dossier") or ""
+    if isinstance(dossier, dict):
+        dossier = "\n".join(f"{k.upper()}: {v}" for k, v in dossier.items())
+
+    ach_lead = next((h for h in ach if h.get("status") == "lead"), ach[0] if ach else {})
+
+    matrix_row = (
+        f"<tr><td>{esc(tid)}</td>"
+        f"<td>{esc(matrix.get('worldview_fit','—'))}</td>"
+        f"<td>{esc(matrix.get('alliance_fit','—'))}</td>"
+        f"<td>{esc(matrix.get('stability','—'))}</td>"
+        f"<td>{esc(matrix.get('drift','—'))}</td>"
+        f"<td>{esc(matrix.get('risk','—'))}</td>"
+        f"<td>{esc(matrix.get('one_line', tldr))}</td></tr>"
+    )
+
+    files_html = "<br/>".join(f"{esc(k)}: {esc(v)}" for k, v in files.items()) if files else "—"
+
+    trigger_html = ""
+    if trigger:
+        trigger_html = f'''
+  <section class="card" id="trigger">
+    <h2><span class="n">3</span> Trigger / Debate</h2>
+    <p>{esc(trigger.get("summary",""))}</p>
+    <p class="muted">{esc(trigger.get("url",""))}</p>
+  </section>'''
+
+    donut = svg_donut(sources) if sources else '<p class="muted">No source mix</p>'
+
+    html = f'''<!DOCTYPE html>
+<html lang="{esc(meta.get("language","ko"))}">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Kampff · {esc(platform)} / {esc(nick)} · {esc(date)}</title>
+<style>{CSS}</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="kicker">Kampff dossier · {esc(protocol)} · offline graphs</p>
+    <h1>{esc(nick)} — person analysis</h1>
+    <p class="sub">{esc(date)} · {esc(platform)} · id <b>{esc(tid)}</b> · viewer {esc(viewer.get("id","me"))}</p>
+    <div class="meta">
+      <div class="chip"><b>Target</b>{esc(nick)} · {esc(tid)}</div>
+      <div class="chip"><b>Corpus</b>posts {esc(n_posts)} · cmts {esc(n_cmts)} · likes {esc(n_likes)}</div>
+      <div class="chip"><b>Confidence</b>{esc(conf_label)} ({confidence:.0f})</div>
+      <div class="chip"><b>MBTI</b>{esc(mbti_type)} · ACH {esc(ach_lead.get("id","H1"))}</div>
+    </div>
+    <div class="distance-banner {banner_cls}">
+      <span style="font-size:12px;color:var(--muted)">Distance</span>
+      {pill(distance)}
+      <span style="font-size:12px;color:var(--muted)">ACH lead: <b style="color:#fff">{esc(ach_lead.get("label",""))}</b></span>
+    </div>
+    <div class="tldr"><b>TL;DR</b> — {esc(tldr)}</div>
+  </header>
+
+  <nav class="toc">
+    <a href="#graphs">Graphs</a>
+    <a href="#honesty">Collect</a>
+    <a href="#distance">Distance</a>
+    <a href="#identity">Identity</a>
+    <a href="#spectro">L1–L5</a>
+    <a href="#mbti">MBTI</a>
+    <a href="#cia">CIA/KGB</a>
+    <a href="#quotes">Evidence</a>
+    <a href="#check">Cross-check</a>
+  </nav>
+
+  <section class="card" id="graphs">
+    <h2><span class="n">G</span> Visual summary</h2>
+    <div class="grid3" style="margin-bottom:12px">
+      <div class="stat"><div class="v">{esc(distance.upper())}</div><div class="l">distance tag</div></div>
+      <div class="stat"><div class="v">{esc(mbti_type)}</div><div class="l">MBTI lean (fun)</div></div>
+      <div class="stat"><div class="v">{confidence:.0f}</div><div class="l">confidence score</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="chart-box">
+        <h3>Motivational drivers (0–3)</h3>
+        {svg_radar(d_labels, d_vals, max_v=3, title="drivers", color="#2dd4bf")}
+        <div class="legend"><span><i style="background:#2dd4bf"></i>CIA-SAT drivers</span></div>
+      </div>
+      <div class="chart-box">
+        <h3>MBTI leans (fun · low validity)</h3>
+        {svg_radar(m_labels, m_vals, max_v=100, title="mbti", color="#38bdf8")}
+        <div class="legend"><span><i style="background:#38bdf8"></i>{esc(mbti_type)} · not diagnostic</span></div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:12px">
+      <div class="chart-box">
+        <h3>Big Five (L1)</h3>
+        {svg_hbar_rows(big5_rows)}
+      </div>
+      <div class="chart-box">
+        <h3>Confidence gauge</h3>
+        {svg_gauge(confidence, conf_label)}
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:12px">
+      <div class="chart-box">
+        <h3>Collection completeness</h3>
+        {honesty_svg}
+      </div>
+      <div class="chart-box">
+        <h3>ACH — hypothesis survival</h3>
+        {svg_ach(ach)}
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:12px">
+      <div class="chart-box">
+        <h3>Source mix</h3>
+        {donut}
+      </div>
+      <div class="chart-box">
+        <h3>Alliance vs viewer (L4)</h3>
+        {svg_hbar_rows([(a[0], float(a[1]), a[2] if len(a)>2 else "teal") for a in alliance])}
+      </div>
+    </div>
+
+    <div class="chart-box" style="margin-top:12px">
+      <h3>Ephemeris timeline (L5)</h3>
+      {svg_timeline(timeline)}
+    </div>
+
+    <div class="grid2" style="margin-top:12px">
+      <div class="chart-box">
+        <h3>Distance map by situation</h3>
+        <div class="dist-map">
+          {"".join(f'<div class="dist-row"><span>{esc(o.get("when") if isinstance(o,dict) else o)}</span>{pill(o.get("tag","neutral") if isinstance(o,dict) else "neutral")}</div>' for o in (ops or [{"tag":distance,"when":"default"}]))}
+        </div>
+      </div>
+      <div class="chart-box">
+        <h3>Fit snapshot</h3>
+        {svg_hbar_rows([
+          ("worldview", float(matrix.get("worldview_score", 35)), "violet"),
+          ("alliance", float(matrix.get("alliance_score", 40)), "teal"),
+          ("stability", float(matrix.get("stability_score", 40)), "sky"),
+          ("risk (inv)", 100-float(matrix.get("risk_score", 40)), "amber"),
+        ])}
+        <p class="muted">Higher risk bar = safer. Scores are analyst estimates 0–100.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" id="honesty">
+    <h2><span class="n">0</span> Collection honesty</h2>
+    <table>
+      <tr><th>Axis</th><th>Status</th><th>Notes</th></tr>
+      <tr><td>posts</td><td>{esc(honesty.get("posts_status", f"{posts_pct:.0f}%"))}</td><td>{esc(honesty.get("posts_note",""))}</td></tr>
+      <tr><td>comments</td><td>{esc(honesty.get("comments_status", f"{cmts_pct:.0f}%"))}</td><td>{esc(honesty.get("comments_note",""))}</td></tr>
+      <tr><td>likes</td><td>{esc(honesty.get("likes_status", "n/a"))}</td><td>{esc(honesty.get("likes_note",""))}</td></tr>
+    </table>
+    <p class="muted">{esc(honesty.get("note",""))}</p>
+  </section>
+
+  <section class="card" id="distance">
+    <h2><span class="n">1</span> Matrix + distance ops</h2>
+    <table>
+      <tr><th>id</th><th>worldview</th><th>alliance</th><th>stability</th><th>drift</th><th>risk</th><th>one_line</th></tr>
+      {matrix_row}
+    </table>
+    <table>
+      <tr><th>tag</th><th>when</th></tr>
+      {"".join(ops_rows) or f"<tr><td>{pill(distance)}</td><td>default</td></tr>"}
+    </table>
+    <p><b>Recommendation:</b> {pill(distance)} — {esc(analysis.get("recommendation") or tldr)}</p>
+  </section>
+
+  <section class="card" id="identity">
+    <h2><span class="n">2</span> Identity</h2>
+    <ul>{id_ul or "<li class='muted'>No bullets</li>"}</ul>
+    <p class="muted">{esc(identity.get("not_seen",""))}</p>
+  </section>
+  {trigger_html}
+
+  <section class="card" id="spectro">
+    <h2><span class="n">4</span> Spectrograph L1–L5</h2>
+    {"".join(l_sections) or "<p class='muted'>No L1–L5 text</p>"}
+  </section>
+
+  <section class="card" id="mbti">
+    <h2><span class="n">6</span> MBTI (fun · low validity)</h2>
+    <div class="grid2">
+      <div>
+        <p><b>Type guess:</b> {esc(mbti_type)}</p>
+        <p><b>Engage cost (soft):</b> {esc(mbti.get("engage_cost",""))}</p>
+        <p class="muted">confidence: {esc(mbti.get("confidence","low"))} — never sole distance reason</p>
+      </div>
+      <div class="chart-box">{svg_radar(m_labels, m_vals, max_v=100, color="#38bdf8")}</div>
+    </div>
+  </section>
+
+  <section class="card" id="cia">
+    <h2><span class="n">7</span> CIA / KGB-style card</h2>
+    <div class="grid2">
+      <div class="chart-box">
+        <h3>Drivers</h3>
+        {svg_radar(d_labels, d_vals, max_v=3, color="#2dd4bf")}
+      </div>
+      <div class="chart-box">
+        <h3>ACH</h3>
+        {svg_ach(ach)}
+      </div>
+    </div>
+    <h3>Dossier</h3>
+    <pre class="dossier">{esc(dossier)}</pre>
+    <p class="muted">Public analytic form only — not ops, not medical/legal.</p>
+  </section>
+
+  <section class="card" id="quotes">
+    <h2><span class="n">E</span> Evidence quotes</h2>
+    {"".join(quote_html) or "<p class='muted'>No quotes attached</p>"}
+  </section>
+
+  <section class="card" id="check">
+    <h2><span class="n">8</span> Cross-check prompts</h2>
+    <ol>{cross_ol or "<li>keep / revise / reverse distance?</li>"}</ol>
+  </section>
+
+  <section class="card" id="files">
+    <h2><span class="n">9</span> Files</h2>
+    <div class="muted">{files_html}</div>
+  </section>
+
+  <footer>
+    Kampff report · not medical/legal · MBTI entertainment · lawful sources only · {esc(date)}
+  </footer>
+</div>
+</body>
+</html>'''
+    return html
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser(description="Render Kampff HTML report")
+    ap.add_argument("--analysis", "-a", required=True, help="analysis.json path")
+    ap.add_argument("--bundle", "-b", default="", help="optional bundle.json")
+    ap.add_argument("--output", "-o", required=True, help="output .html")
+    args = ap.parse_args()
+    analysis = json.loads(Path(args.analysis).read_text(encoding="utf-8"))
+    bundle = None
+    if args.bundle:
+        bundle = json.loads(Path(args.bundle).read_text(encoding="utf-8"))
+    html = render(analysis, bundle)
+    out = Path(args.output)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(html, encoding="utf-8")
+    print(out)
+
+
+if __name__ == "__main__":
+    main()

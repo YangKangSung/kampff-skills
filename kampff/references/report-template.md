@@ -4,109 +4,77 @@
 
 | Priority | Path | Role |
 |----------|------|------|
-| **1 · default** | `{KAMPFF_DATA}/out/{date}-report.html` | Operator-facing dossier (graphs, pills, debate) |
-| 2 · twin | `{KAMPFF_DATA}/out/{date}-report.md` | Source/diff/archive (optional but recommended) |
-| 3 · debate | `{KAMPFF_DATA}/out/{date}-debate-ref.md` | When thread comments collected — **major ref** |
-
-Skin: `docs/sample-community-report.html`  
-Name infix OK: `{date}-{target_id}-report.html`
+| **1 · default** | `{KAMPFF_DATA}/out/{date}-{id}-report.html` | Operator dossier (graphs, pills, honesty) |
+| 2 · analysis | `{KAMPFF_DATA}/out/{date}-{id}-analysis.json` | Structured input to renderer |
+| 3 · twin | `{KAMPFF_DATA}/out/{date}-{id}-report.md` | Optional git/diff |
+| 4 · debate | `{KAMPFF_DATA}/out/{date}-debate-ref.md` | When thread comments collected |
 
 **HTML is default.** Do not stop at markdown-only for community runs.
 
----
+## Render pipeline (required)
 
-## Content order (md twin and HTML sections)
+1. Write **analysis.json** (see `docs/report-analysis.schema.md`)
+2. Run renderer:
 
-Same section order in both formats.
-
-### Header
-
-```markdown
-# Kampff report — {date} ({platform} / {target_id})
-
-**Source:** bundle path  
-**Protocol:** L1–L5 · lenses: personal + mbti + cia_sat  
-**Viewer:** …  
-**Target:** nick · member id · meta  
-**Trigger:** optional thread URLs  
-**N texts:** posts / comments / likes (claimed vs collected)
+```bash
+python scripts/render_kampff_report.py \
+  -a {KAMPFF_DATA}/out/{date}-{id}-analysis.json \
+  -b {KAMPFF_DATA}/inbox/{date}/bundle.json \
+  -o {KAMPFF_DATA}/out/{date}-{id}-report.html
 ```
 
-HTML: hero + meta chips + **distance banner** (pill: engage · neutral · caution · avoid).
+3. Open HTML for operator. Optional md twin from same analysis.
+
+Graphs included automatically: drivers radar · MBTI radar · Big Five bars · confidence gauge · honesty triad · ACH · source donut · alliance bars · L5 timeline · distance map · fit snapshot.
+
+## Content order (analysis fields → HTML sections)
+
+### Header / TL;DR
+`tldr`, `distance`, `confidence_score`, corpus chips, MBTI type, ACH lead
+
+### §G Visual summary
+Auto from scores in analysis.json
 
 ### §0 Collection honesty
+`honesty.*` triad — mandatory when community collect ran
 
-Mandatory triad table when community collect ran.
-
-### §1 Matrix + distance
-
-Columns: `id | worldview_fit | alliance_fit | stability | drift | risk | one_line`  
-Distance tags: engage · neutral · caution · avoid
+### §1 Matrix + distance ops
+`matrix` + `distance_ops`
 
 ### §2 Identity
-
-What they **do** (operator vs reviewer vs flex). Quote-backed.
+`identity.bullets`
 
 ### §3 Trigger / Debate
-
-- Trigger interaction if any (viewer vs target thread).  
-- **Debate ref** when other-comments exist: stats, hot threads, quote samples, move mix.  
-  Link full `{date}-debate-ref.md`. Debate is first-class, not flavor.
+`trigger` when present; debate ref when comments/others collected
 
 ### §4 spectrograph L1–L5
-
-Always. L6/L7 only if requested.
+`spectrograph.L1` … `L5` always
 
 ### §5 Distance ops
-
-Engage-cost table + one-line recommendation.
+merged into §1 in HTML; keep explicit in md twin
 
 ### §6 MBTI (fun · low validity)
+`mbti` — default ON community
 
-Default ON for community. See `lenses-mbti.md`.
-
-### §7 CIA / KGB-style tradecraft persona
-
-Default ON for community. Public analytic hygiene only. See `lenses-cia-sat.md`.
-
-T1–T7 + optional dossier card:
-
-```
-SUBJECT / ALIASES
-BIO LINE
-CHARACTER
-STRENGTHS
-PRESSURE POINTS (engage-cost for operator)
-APPROACH / AVOID channels
-ASSESSMENT (distance + confidence)
-```
+### §7 CIA / KGB-style card
+`cia.card` + drivers + ACH — default ON community
 
 ### §8 Cross-check prompts
-
-3–4 open questions; do not fill the operator’s private read.
+`cross_check` 3–4 open questions
 
 ### §9 Files
-
-Paths to bundle, honesty, raw, **html**, md twin, debate ref.
+`files` paths
 
 ### Footer
+Not medical/legal. MBTI entertainment. Tradecraft public form only.
 
-Not medical/legal. MBTI entertainment. Tradecraft = public form only. Lawful sources only.
+## Distance tags
 
----
+`engage` · `neutral` · `caution` · `avoid`
 
-## HTML requirements (minimum)
+## UX rules
 
-| Element | Required |
-|---------|----------|
-| Dark sample skin (or equivalent) | yes |
-| Distance pill banner | yes |
-| Honesty table | yes |
-| Matrix + distance map | yes |
-| L1–L5 sections | yes |
-| MBTI + CIA/dossier | yes (community default) |
-| Graphs (drivers / completeness / optional force) | yes when data allows |
-| Debate block | yes if comments/others collected |
-| Openable local file under `$KAMPFF_DATA/out/` | yes |
-
-Generator pattern (this repo runs): reuse CSS from `docs/sample-community-report.html`, fill live stats from `bundle.json` + debate ref.
+- Sticky TOC · hero distance banner · TL;DR above fold
+- Offline-first (pure SVG/CSS — no CDN)
+- Print-friendly CSS included
+- Public demos: synthetic names only (`docs/sample-analysis.json` → `sample-community-report.html`)

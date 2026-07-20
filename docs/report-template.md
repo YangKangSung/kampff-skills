@@ -1,73 +1,80 @@
 # Report template (community default)
 
-Write `{KAMPFF_DATA}/out/{date}-report.md` in this order unless lenses are skipped.
+## Deliverables
 
-## Header
+| Priority | Path | Role |
+|----------|------|------|
+| **1 · default** | `{KAMPFF_DATA}/out/{date}-{id}-report.html` | Operator dossier (graphs, pills, honesty) |
+| 2 · analysis | `{KAMPFF_DATA}/out/{date}-{id}-analysis.json` | Structured input to renderer |
+| 3 · twin | `{KAMPFF_DATA}/out/{date}-{id}-report.md` | Optional git/diff |
+| 4 · debate | `{KAMPFF_DATA}/out/{date}-debate-ref.md` | When thread comments collected |
 
-```markdown
-# Kampff report — {date} ({platform} / {target_id})
+**HTML is default.** Do not stop at markdown-only for community runs.
 
-**Source:** bundle path  
-**Protocol:** L1–L5 · lenses: personal + mbti + cia_sat  
-**Viewer:** …  
-**Target:** nick · member id · meta  
-**Trigger:** optional thread URLs  
-**N texts:** posts / comments / likes (claimed vs collected)
+## Render pipeline (required)
+
+1. Write **analysis.json** (see `docs/report-analysis.schema.md`)
+2. Run renderer:
+
+```bash
+python scripts/render_kampff_report.py \
+  -a {KAMPFF_DATA}/out/{date}-{id}-analysis.json \
+  -b {KAMPFF_DATA}/inbox/{date}/bundle.json \
+  -o {KAMPFF_DATA}/out/{date}-{id}-report.html
 ```
 
-## §0 Collection honesty
+3. Open HTML for operator. Optional md twin from same analysis.
 
-Mandatory triad table when community collect ran.
+Graphs included automatically: drivers radar · MBTI radar · Big Five bars · confidence gauge · honesty triad · ACH · source donut · alliance bars · L5 timeline · distance map · fit snapshot.
 
-## §1 Matrix + distance
+## Content order (analysis fields → HTML sections)
 
-Columns: `id | worldview_fit | alliance_fit | stability | drift | risk | one_line`  
-Distance tags: engage · neutral · caution · avoid
+### Header / TL;DR
+`tldr`, `distance`, `confidence_score`, corpus chips, MBTI type, ACH lead
 
-## §2 Identity
+### §G Visual summary
+Auto from scores in analysis.json
 
-What they **do** (operator vs reviewer vs flex). Quote-backed.
+### §0 Collection honesty
+`honesty.*` triad — mandatory when community collect ran
 
-## §3 Trigger interaction (if any)
+### §1 Matrix + distance ops
+`matrix` + `distance_ops`
 
-Viewer text vs target text.
+### §2 Identity
+`identity.bullets`
 
-## §4 spectrograph L1–L5
+### §3 Trigger / Debate
+`trigger` when present; debate ref when comments/others collected
 
-Always. L6/L7 only if requested.
+### §4 spectrograph L1–L5
+`spectrograph.L1` … `L5` always
 
-## §5 Distance ops
+### §5 Distance ops
+merged into §1 in HTML; keep explicit in md twin
 
-Engage-cost table + one-line recommendation.
+### §6 MBTI (fun · low validity)
+`mbti` — default ON community
 
-## §6 MBTI (fun · low validity)
+### §7 CIA / KGB-style card
+`cia.card` + drivers + ACH — default ON community
 
-Default ON for community. See `lenses-mbti.md`.
+### §8 Cross-check prompts
+`cross_check` 3–4 open questions
 
-## §7 CIA / KGB-style tradecraft persona
+### §9 Files
+`files` paths
 
-Default ON for community. Public analytic hygiene only. See `lenses-cia-sat.md`.
+### Footer
+Not medical/legal. MBTI entertainment. Tradecraft public form only.
 
-T1–T7 + optional dossier card:
+## Distance tags
 
-```
-SUBJECT / ALIASES
-BIO LINE
-CHARACTER
-STRENGTHS
-PRESSURE POINTS (engage-cost for operator)
-APPROACH / AVOID channels
-ASSESSMENT (distance + confidence)
-```
+`engage` · `neutral` · `caution` · `avoid`
 
-## §8 Cross-check prompts
+## UX rules
 
-3–4 open questions; do not fill the operator’s private read.
-
-## §9 Files
-
-Paths to bundle, honesty, raw.
-
-## Footer
-
-Not medical/legal. MBTI entertainment. Tradecraft = public form only. Lawful sources only.
+- Sticky TOC · hero distance banner · TL;DR above fold
+- Offline-first (pure SVG/CSS — no CDN)
+- Print-friendly CSS included
+- Public demos: synthetic names only (`docs/sample-analysis.json` → `sample-community-report.html`)

@@ -41,7 +41,7 @@ kampff-collect --targets inbox/2026-07-11/targets.json --out inbox/2026-07-11/bu
 | `jira` | REST API (JQL) | 이슈·댓글·changelog 발화 |
 | `github` | REST/GraphQL | 이슈·PR·리뷰·discussion |
 | `messenger` | Playwright / export | 사내 메신저 |
-| `x` · `reddit` · … | API/export | 외부 SNS |
+| `x` · `facebook` · `instagram` · `reddit` · `linkedin` | API/export + **connect setup** | 외부 SNS → [sns-connection-setup.md](sns-connection-setup.md) |
 
 ---
 

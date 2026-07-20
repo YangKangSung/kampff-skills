@@ -72,6 +72,9 @@ skill **밖** — 수집기가 URL·검색 조건을 읽고 `bundle.json`을 만
 **외부:** `x` · `facebook` · `instagram` · `reddit` · `linkedin` · `community`  
 **사내:** `internal_web` (Playwright) · `confluence` · `jira` · `github`
 
+SNS 연결 세팅: [sns-connection-setup.md](sns-connection-setup.md)  
+`kampff-collect connect setup --platform {x|facebook|instagram|reddit|linkedin}`
+
 상세: [collectors.md](collectors.md)
 
 ## search (플랫폼별)

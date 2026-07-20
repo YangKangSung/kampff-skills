@@ -46,6 +46,8 @@ Report shape: `references/report-template.md`
 
 ```text
 /kampff member {platform} {id|nick|url}
+/kampff connect                 # SNS: facebook · x · instagram · linkedin · reddit
+/kampff connect {platform}
 /kampff analyze {path}/bundle.json
 /kampff thread {post_url}          ← comment actors · intent · network · coordination
 /kampff today
@@ -53,6 +55,7 @@ Report shape: `references/report-template.md`
 
 | Step | Do |
 |------|-----|
+| 0 Connect (SNS) | `kampff-collect connect setup --platform …` · `references/sns-connection-setup.md` |
 | 1 Scope | target ≠ viewer; platform; optional trigger thread |
 | 2 Collect | lawful surfaces; agent-owned browser profile if login needed |
 | 3 Honesty | posts / comments / likes triad → honesty file |
@@ -114,7 +117,7 @@ Details: `references/collection-honesty.md`.
 | 1 | Public GitHub (`gh`) | often already auth’d |
 | 2 | RSS / public feeds | no auth |
 | 3 | sample-input | dry-run |
-| later | community boards / X / etc. | tokens + login |
+| later | X / Reddit / Facebook / Instagram / LinkedIn | `connect setup` + tokens/export |
 
 Self-dossier smoke: `viewer_id: me` = same person as collector login.
 
@@ -191,13 +194,18 @@ Sources: `mail` · `meeting` · `chat` · `messenger` · `community_post` · `co
 
 Community analyze **always** ends with HTML (not optional). Markdown is a twin/source, not the primary handoff.
 
-1. Content order: `references/report-template.md`  
-2. **Must emit** `{KAMPFF_DATA}/out/{date}-report.html` (and `{target_id}` infix OK: `{date}-{id}-report.html`)  
-3. Skin / shape: `docs/sample-community-report.html` (graphs, distance pills, honesty bars, dossier card)  
-4. Include debate section when thread comments exist (debate = first-class ref)  
-5. Optional twin: `{date}-report.md` for git/diff; operator-facing open path = **HTML**  
-6. Public demos / anything committed: **synthetic** names only  
-7. Prefer English on public samples; operator language OK in private `$KAMPFF_DATA` runs
+1. Write `{KAMPFF_DATA}/out/{date}-{id}-analysis.json` per `references/report-analysis.schema.md` (or `docs/report-analysis.schema.md`)
+2. Render:
+   ```bash
+   python scripts/render_kampff_report.py      -a {KAMPFF_DATA}/out/{date}-{id}-analysis.json      -b {KAMPFF_DATA}/inbox/{date}/bundle.json      -o {KAMPFF_DATA}/out/{date}-{id}-report.html
+   ```
+3. **Must** open/hand operator the HTML path
+4. Graphs (offline SVG): drivers radar · MBTI radar · Big Five · confidence gauge · honesty triad · ACH · source donut · alliance · L5 timeline · distance map · fit snapshot
+5. Skin source of truth: renderer + `docs/sample-community-report.html` (regenerate from `docs/sample-analysis.json`)
+6. UX: sticky TOC · hero distance · TL;DR · print CSS · no CDN
+7. Optional twin md; debate section when thread comments exist
+8. Public demos: **synthetic** names only
+
 
 ## Support files
 

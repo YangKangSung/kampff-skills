@@ -22,6 +22,16 @@
 **사내:** Confluence · Jira · GitHub Enterprise · API 없는 포털은 **Playwright**  
 → [collectors.md](collectors.md) · `auth_ref` + `KAMPFF_AUTH_DIR` (토큰은 targets에 넣지 않음)
 
+**SNS 연결 (Facebook · X · Instagram · LinkedIn · Reddit):**
+
+```bash
+kampff-collect connect list
+kampff-collect connect setup --platform x --ref x_api
+kampff-collect connect status
+```
+
+→ [sns-connection-setup.md](sns-connection-setup.md) · [sample-targets-sns.json](sample-targets-sns.json)
+
 ---
 
 ## 호출 방법 (분석만 — 3가지)

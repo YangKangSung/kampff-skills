@@ -1,816 +1,384 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kampff sample · relay_ops (synthetic)</title>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Kampff · forum.example / relay_ops · 2026-07-13</title>
 <style>
-  :root {
-    --bg: #0b0f14;
-    --panel: #121821;
-    --panel2: #18202b;
-    --line: #243041;
-    --text: #e7eef8;
-    --muted: #93a4bb;
-    --accent: #5eead4;
-    --accent2: #38bdf8;
-    --warn: #fbbf24;
-    --ok: #4ade80;
-    --bad: #f87171;
-    --mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
-    --sans: "Segoe UI", system-ui, sans-serif;
-  }
-  * { box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    margin: 0;
-    font-family: var(--sans);
-    background:
-      radial-gradient(1200px 600px at 10% -10%, #12324a55, transparent),
-      radial-gradient(900px 500px at 100% 0%, #0f3d3555, transparent),
-      var(--bg);
-    color: var(--text);
-    line-height: 1.55;
-  }
-  .wrap { max-width: 1120px; margin: 0 auto; padding: 28px 18px 80px; }
-  header.hero {
-    border: 1px solid var(--line);
-    background: linear-gradient(180deg, var(--panel2), var(--panel));
-    border-radius: 18px;
-    padding: 26px;
-    margin-bottom: 18px;
-    position: relative;
-    overflow: hidden;
-  }
-  header.hero::before {
-    content: "";
-    position: absolute; inset: 0 auto 0 0; width: 5px;
-    background: linear-gradient(180deg, var(--accent), var(--accent2));
-  }
-  .kicker {
-    font-family: var(--mono); font-size: 11px; letter-spacing: .14em;
-    text-transform: uppercase; color: var(--accent); margin: 0 0 8px;
-  }
-  h1 { margin: 0 0 6px; font-size: 26px; letter-spacing: -0.02em; }
-  .sub { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
-  .meta {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 8px;
-  }
-  .meta .chip {
-    background: #0d131b; border: 1px solid var(--line); border-radius: 12px;
-    padding: 10px 12px; font-size: 12.5px;
-  }
-  .meta .chip b { display: block; color: var(--muted); font-weight: 500; font-size: 10px; margin-bottom: 3px; }
-  .distance-banner {
-    margin-top: 14px; padding: 12px 14px; border-radius: 12px;
-    background: #0c1f1a; border: 1px solid #1f5c4a;
-    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
-  }
-  .pill {
-    display: inline-flex; align-items: center;
-    padding: 3px 10px; border-radius: 999px; font-family: var(--mono);
-    font-size: 11px; border: 1px solid;
-  }
-  .pill.neutral { color: #cbd5e1; border-color: #475569; background: #1e293b; }
-  .pill.engage { color: #a7f3d0; border-color: #059669; background: #064e3b; }
-  .pill.caution { color: #fde68a; border-color: #b45309; background: #422006; }
-  .pill.ok { color: #bbf7d0; border-color: #16a34a; background: #052e16; }
-  nav.toc {
-    position: sticky; top: 0; z-index: 5;
-    backdrop-filter: blur(10px);
-    background: #0b0f14cc;
-    border-bottom: 1px solid var(--line);
-    margin: 0 -18px 18px; padding: 8px 18px;
-    display: flex; gap: 6px; flex-wrap: wrap;
-  }
-  nav.toc a {
-    color: var(--muted); text-decoration: none; font-size: 11.5px;
-    padding: 5px 9px; border-radius: 999px; border: 1px solid transparent;
-  }
-  nav.toc a:hover { color: var(--text); border-color: var(--line); background: var(--panel); }
-  section.card {
-    background: var(--panel);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 14px;
-  }
-  section.card h2 {
-    margin: 0 0 12px; font-size: 17px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  section.card h2 .n {
-    font-family: var(--mono); font-size: 11px; color: var(--accent2);
-    border: 1px solid #1e3a5f; background: #0b1726; padding: 2px 7px; border-radius: 999px;
-  }
-  h3 { margin: 16px 0 8px; font-size: 14px; color: #dbeafe; }
-  p, li { color: #d5e0ee; font-size: 14px; }
-  ul { padding-left: 1.1rem; margin: 6px 0; }
-  blockquote {
-    margin: 10px 0; padding: 10px 12px; border-left: 3px solid var(--accent);
-    background: #0d151f; border-radius: 0 10px 10px 0; color: #cfe7ff; font-size: 13px;
-  }
-  table { width: 100%; border-collapse: collapse; font-size: 12.5px; margin: 8px 0; }
-  th, td { border: 1px solid var(--line); padding: 7px 9px; text-align: left; vertical-align: top; }
-  th { background: #0e1520; color: var(--muted); font-weight: 600; }
-  tr:nth-child(even) td { background: #0f1620; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  @media (max-width: 900px) {
-    .grid2, .grid3 { grid-template-columns: 1fr; }
-  }
-  .stat {
-    background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 12px;
-  }
-  .stat .v { font-size: 20px; font-weight: 700; color: var(--accent); font-family: var(--mono); }
-  .stat .l { font-size: 11px; color: var(--muted); }
-  .chart-box {
-    background: #0a1018;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 14px;
-  }
-  .chart-box h3 { margin: 0 0 10px; font-size: 13px; color: var(--muted); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
-  .chart-box svg { display: block; width: 100%; height: auto; }
-  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; font-size: 11px; color: var(--muted); }
-  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
-  .hbar { display: grid; gap: 9px; }
-  .hbar-row { display: grid; grid-template-columns: 110px 1fr 36px; gap: 8px; align-items: center; font-size: 12px; }
-  .track { height: 10px; background: #1a2330; border-radius: 99px; overflow: hidden; }
-  .fill { height: 100%; border-radius: 99px; }
-  .fill.teal { background: linear-gradient(90deg, #0ea5e9, #2dd4bf); }
-  .fill.amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-  .fill.rose { background: linear-gradient(90deg, #e11d48, #fb7185); }
-  .fill.violet { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
-  .tag-yes { color: var(--ok); font-weight: 700; }
-  .tag-no { color: var(--bad); font-weight: 700; }
-  pre.dossier {
-    background: #070b10; border: 1px solid var(--line); border-radius: 12px;
-    padding: 12px 14px; overflow: auto; font-family: var(--mono); font-size: 11.5px;
-    line-height: 1.45; color: #b8c7da;
-  }
-  .one-line {
-    margin-top: 10px; padding: 12px 14px; border-radius: 12px;
-    background: linear-gradient(90deg, #0c1c28, #0d1a16);
-    border: 1px solid #1e4d45; font-size: 14px;
-  }
-  footer { margin-top: 24px; color: var(--muted); font-size: 11px; text-align: center; }
-  a { color: var(--accent2); }
-  .dist-map { display: grid; gap: 8px; }
-  .dist-row {
-    display: grid; grid-template-columns: 1fr 120px;
-    gap: 10px; align-items: center;
-    padding: 10px 12px; border-radius: 10px;
-    background: #0d131b; border: 1px solid var(--line);
-    font-size: 13px;
-  }
+:root {
+  --bg:#0b0f14; --panel:#121821; --panel2:#18202b; --line:#243041;
+  --text:#e7eef8; --muted:#93a4bb; --accent:#5eead4; --accent2:#38bdf8;
+  --warn:#fbbf24; --ok:#4ade80; --bad:#f87171;
+  --mono:"JetBrains Mono","SF Mono",Consolas,monospace;
+  --sans:"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--sans);color:var(--text);line-height:1.55;
+  background:
+    radial-gradient(1200px 600px at 10% -10%,#12324a55,transparent),
+    radial-gradient(900px 500px at 100% 0%,#0f3d3555,transparent),
+    var(--bg);
+}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 18px 80px}
+header.hero{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border-radius:18px;padding:26px;margin-bottom:18px;position:relative;overflow:hidden;
+}
+header.hero::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 8px}
+h1{margin:0 0 6px;font-size:26px;letter-spacing:-.02em}
+.sub{color:var(--muted);font-size:13px;margin:0 0 14px}
+.tldr{
+  margin:12px 0 0;padding:14px 16px;border-radius:12px;
+  background:linear-gradient(90deg,#0c1c28,#0d1a16);border:1px solid #1e4d45;font-size:14.5px;
+}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
+.meta .chip{background:#0d131b;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px}
+.meta .chip b{display:block;color:var(--muted);font-weight:500;font-size:10px;margin-bottom:3px}
+.distance-banner{
+  margin-top:14px;padding:12px 14px;border-radius:12px;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  background:#0c1f1a;border:1px solid #1f5c4a;
+}
+.distance-banner.caution{background:#1c1408;border-color:#7c4a0a}
+.distance-banner.avoid{background:#1c0a0a;border-color:#7f1d1d}
+.distance-banner.engage{background:#052e16;border-color:#166534}
+.pill{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-family:var(--mono);font-size:11px;border:1px solid}
+.pill.neutral{color:#cbd5e1;border-color:#475569;background:#1e293b}
+.pill.engage{color:#a7f3d0;border-color:#059669;background:#064e3b}
+.pill.caution{color:#fde68a;border-color:#b45309;background:#422006}
+.pill.avoid{color:#fecaca;border-color:#b91c1c;background:#450a0a}
+.pill.ok{color:#bbf7d0;border-color:#16a34a;background:#052e16}
+nav.toc{
+  position:sticky;top:0;z-index:5;backdrop-filter:blur(10px);
+  background:#0b0f14cc;border-bottom:1px solid var(--line);
+  margin:0 -18px 18px;padding:8px 18px;display:flex;gap:6px;flex-wrap:wrap;
+}
+nav.toc a{color:var(--muted);text-decoration:none;font-size:11.5px;padding:5px 9px;border-radius:999px;border:1px solid transparent}
+nav.toc a:hover{color:var(--text);border-color:var(--line);background:var(--panel)}
+section.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px}
+section.card h2{margin:0 0 12px;font-size:17px;display:flex;align-items:center;gap:8px}
+section.card h2 .n{font-family:var(--mono);font-size:11px;color:var(--accent2);border:1px solid #1e3a5f;background:#0b1726;padding:2px 7px;border-radius:999px}
+h3{margin:16px 0 8px;font-size:14px;color:#dbeafe}
+p,li{color:#d5e0ee;font-size:14px}
+ul{padding-left:1.1rem;margin:6px 0}
+blockquote{margin:10px 0;padding:10px 12px;border-left:3px solid var(--accent);background:#0d151f;border-radius:0 10px 10px 0;color:#cfe7ff;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:12.5px;margin:8px 0}
+th,td{border:1px solid var(--line);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:#0e1520;color:var(--muted);font-weight:600}
+tr:nth-child(even) td{background:#0f1620}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:960px){.grid2,.grid3{grid-template-columns:1fr}}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat .v{font-size:20px;font-weight:700;color:var(--accent);font-family:var(--mono)}
+.stat .l{font-size:11px;color:var(--muted)}
+.chart-box{background:#0a1018;border:1px solid var(--line);border-radius:14px;padding:14px}
+.chart-box h3{margin:0 0 10px;font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.chart-box svg{display:block;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.hbar{display:grid;gap:9px}
+.hbar-row{display:grid;grid-template-columns:110px 1fr 40px;gap:8px;align-items:center;font-size:12px}
+.track{height:10px;background:#1a2330;border-radius:99px;overflow:hidden}
+.fill{height:100%;border-radius:99px;transition:width .6s ease}
+.fill.teal{background:linear-gradient(90deg,#0ea5e9,#2dd4bf)}
+.fill.amber{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.fill.rose{background:linear-gradient(90deg,#e11d48,#fb7185)}
+.fill.violet{background:linear-gradient(90deg,#7c3aed,#a78bfa)}
+.fill.sky{background:linear-gradient(90deg,#0284c7,#38bdf8)}
+pre.dossier{background:#070b10;border:1px solid var(--line);border-radius:12px;padding:12px 14px;overflow:auto;font-family:var(--mono);font-size:11.5px;line-height:1.45;color:#b8c7da;white-space:pre-wrap}
+.dist-map{display:grid;gap:8px}
+.dist-row{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center;padding:10px 12px;border-radius:10px;background:#0d131b;border:1px solid var(--line);font-size:13px}
+.q{margin:10px 0;padding:10px 12px;background:#121a24;border-left:3px solid var(--accent);border-radius:0 8px 8px 0}
+.q figcaption{color:var(--muted);font-size:.78rem;margin-bottom:6px}
+.q pre{white-space:pre-wrap;margin:0;font:13px/1.45 var(--mono);color:#d5deea}
+.muted{color:var(--muted);font-size:12.5px}
+footer{margin-top:24px;color:var(--muted);font-size:11px;text-align:center}
+a{color:var(--accent2)}
+@media print{
+  body{background:#fff;color:#111}
+  nav.toc,.kicker{display:none}
+  section.card,header.hero{break-inside:avoid;border-color:#ccc;background:#fff}
+  .chart-box{background:#f8fafc;border-color:#ddd}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="hero">
-    <p class="kicker">Kampff sample dossier · synthetic · safe for public git · EN</p>
-    <h1>relay_ops — person analysis report</h1>
-    <p class="sub">2026-07-13 · spectrograph L1–L5 · MBTI + CIA-SAT · forum.example community text (fiction)</p>
+    <p class="kicker">Kampff dossier · L1–L5 · MBTI · CIA-SAT · synthetic · offline graphs</p>
+    <h1>relay_ops — person analysis</h1>
+    <p class="sub">2026-07-13 · forum.example · id <b>relay_ops</b> · viewer north_packet</p>
     <div class="meta">
-      <div class="chip"><b>Target</b>relay_ops · oauth_demo_91 · Lv.12</div>
-      <div class="chip"><b>Viewer</b>north_packet (demo)</div>
-      <div class="chip"><b>Corpus</b>posts 12/12 · comments 40/120 · likes 8/45</div>
-      <div class="chip"><b>Joined</b>2024-11-02</div>
+      <div class="chip"><b>Target</b>relay_ops · relay_ops</div>
+      <div class="chip"><b>Corpus</b>posts 12 · cmts 40 · likes 8</div>
+      <div class="chip"><b>Confidence</b>medium (72)</div>
+      <div class="chip"><b>MBTI</b>ISTJ · ACH H1</div>
     </div>
-    <div class="distance-banner">
-      <span style="font-size:12px;color:#a7f3d0">Distance</span>
+    <div class="distance-banner neutral">
+      <span style="font-size:12px;color:var(--muted)">Distance</span>
       <span class="pill neutral">neutral</span>
-      <span class="pill engage">soft-engage</span>
-      <span class="pill ok">not avoid</span>
-      <span style="font-size:12px;color:var(--muted)">MBTI lean: <b style="color:#fff">ISTJ</b> · ACH lead: <b style="color:#fff">H1 verificationist</b></span>
+      <span style="font-size:12px;color:var(--muted)">ACH lead: <b style="color:#fff">Verificationist</b></span>
     </div>
+    <div class="tldr"><b>TL;DR</b> — Verificationist craft peer on CI/observability. Soft-engage on flaky systems; neutral default community peer; avoid vendor cheer without repro. Not avoid.</div>
   </header>
 
   <nav class="toc">
     <a href="#graphs">Graphs</a>
-    <a href="#big5">Big Five</a>
-    <a href="#force">Text graph</a>
     <a href="#honesty">Collect</a>
     <a href="#distance">Distance</a>
     <a href="#identity">Identity</a>
-    <a href="#trigger">Trigger</a>
     <a href="#spectro">L1–L5</a>
     <a href="#mbti">MBTI</a>
     <a href="#cia">CIA/KGB</a>
+    <a href="#quotes">Evidence</a>
     <a href="#check">Cross-check</a>
   </nav>
 
   <section class="card" id="graphs">
     <h2><span class="n">G</span> Visual summary</h2>
+    <div class="grid3" style="margin-bottom:12px">
+      <div class="stat"><div class="v">NEUTRAL</div><div class="l">distance tag</div></div>
+      <div class="stat"><div class="v">ISTJ</div><div class="l">MBTI lean (fun)</div></div>
+      <div class="stat"><div class="v">72</div><div class="l">confidence score</div></div>
+    </div>
 
     <div class="grid2">
       <div class="chart-box">
         <h3>Motivational drivers (0–3)</h3>
-        <svg viewBox="0 0 320 300" role="img" aria-label="Driver radar chart">
-          <g fill="none" stroke="#243041" stroke-width="1">
-            <polygon points="160,40 274,112 230,240 90,240 46,112" opacity=".9"/>
-            <polygon points="160,72 242,124 214,208 106,208 78,124" opacity=".7"/>
-            <polygon points="160,104 210,136 198,176 122,176 110,136" opacity=".5"/>
-          </g>
-          <g stroke="#334155" stroke-width="1">
-            <line x1="160" y1="160" x2="160" y2="40"/>
-            <line x1="160" y1="160" x2="274" y2="112"/>
-            <line x1="160" y1="160" x2="230" y2="240"/>
-            <line x1="160" y1="160" x2="90" y2="240"/>
-            <line x1="160" y1="160" x2="46" y2="112"/>
-          </g>
-          <polygon points="160,40 233,119 230,240 125,213 95,132" fill="rgba(45,212,191,0.28)" stroke="#2dd4bf" stroke-width="2"/>
-          <g fill="#5eead4">
-            <circle cx="160" cy="40" r="4"/><circle cx="233" cy="119" r="4"/>
-            <circle cx="230" cy="240" r="4"/><circle cx="125" cy="213" r="4"/><circle cx="95" cy="132" r="4"/>
-          </g>
-          <g fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">
-            <text x="160" y="28" text-anchor="middle">Control 3</text>
-            <text x="286" y="110">Resource 2</text>
-            <text x="236" y="258">Autonomy 3</text>
-            <text x="48" y="258">Status 1</text>
-            <text x="8" y="110">Belong 2</text>
-          </g>
-        </svg>
-        <div class="legend"><span><i style="background:#2dd4bf"></i>H1 lead — control / autonomy dominate; status muted</span></div>
+        <svg viewBox="0 0 320 320" role="img" aria-label="drivers">
+  <polygon points="160.0,57.6 257.4,128.4 220.2,242.8 99.8,242.8 62.6,128.4" fill="none" stroke="#243041" stroke-width="1" opacity="0.8"/><polygon points="160.0,92.4 224.3,139.1 199.7,214.7 120.3,214.7 95.7,139.1" fill="none" stroke="#243041" stroke-width="1" opacity="0.664"/><polygon points="160.0,126.2 192.1,149.6 179.9,187.3 140.1,187.3 127.9,149.6" fill="none" stroke="#243041" stroke-width="1" opacity="0.532"/>
+  <line x1="160.0" y1="160.0" x2="160.0" y2="57.6" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="257.4" y2="128.4" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="220.2" y2="242.8" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="99.8" y2="242.8" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="62.6" y2="128.4" stroke="#334155" stroke-width="1"/>
+  <polygon points="160.0,91.7 257.4,128.4 180.1,187.6 119.9,215.2 62.6,128.4" fill="#2dd4bf44" stroke="#2dd4bf" stroke-width="2"/>
+  <circle cx="160.0" cy="91.7" r="4" fill="#2dd4bf"/><circle cx="257.4" cy="128.4" r="4" fill="#2dd4bf"/><circle cx="180.1" cy="187.6" r="4" fill="#2dd4bf"/><circle cx="119.9" cy="215.2" r="4" fill="#2dd4bf"/><circle cx="62.6" cy="128.4" r="4" fill="#2dd4bf"/>
+  <text x="160.0" y="35.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">resource 2</text><text x="278.3" y="121.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">control 3</text><text x="233.1" y="260.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">status 1</text><text x="86.9" y="260.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">belong 2</text><text x="41.7" y="121.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">autonomy 3</text>
+</svg>
+        <div class="legend"><span><i style="background:#2dd4bf"></i>CIA-SAT drivers</span></div>
       </div>
-
       <div class="chart-box">
         <h3>MBTI leans (fun · low validity)</h3>
-        <svg viewBox="0 0 320 300" role="img" aria-label="MBTI radar">
-          <g fill="none" stroke="#243041">
-            <circle cx="160" cy="155" r="100"/><circle cx="160" cy="155" r="66"/><circle cx="160" cy="155" r="33"/>
-            <line x1="160" y1="55" x2="160" y2="255"/><line x1="60" y1="155" x2="260" y2="155"/>
-          </g>
-          <polygon points="160,93 240,155 160,230 90,155" fill="rgba(56,189,248,0.25)" stroke="#38bdf8" stroke-width="2"/>
-          <g fill="#38bdf8">
-            <circle cx="160" cy="93" r="4"/><circle cx="240" cy="155" r="4"/>
-            <circle cx="160" cy="230" r="4"/><circle cx="90" cy="155" r="4"/>
-          </g>
-          <g fill="#93a4bb" font-size="12" font-family="Segoe UI,sans-serif">
-            <text x="160" y="48" text-anchor="middle">S ~62</text>
-            <text x="268" y="158">T ~80</text>
-            <text x="160" y="275" text-anchor="middle">J ~75</text>
-            <text x="28" y="158">I ~70</text>
-          </g>
-          <text x="160" y="160" text-anchor="middle" fill="#e7eef8" font-size="18" font-weight="700" font-family="Segoe UI,sans-serif">ISTJ</text>
-          <text x="160" y="178" text-anchor="middle" fill="#93a4bb" font-size="10" font-family="Segoe UI,sans-serif">lean</text>
-        </svg>
-        <div class="legend"><span><i style="background:#38bdf8"></i>Strong T/J · I solid · S over N on postmortems</span></div>
+        <svg viewBox="0 0 320 320" role="img" aria-label="mbti">
+  <polygon points="160.0,57.6 262.4,160.0 160.0,262.4 57.6,160.0" fill="none" stroke="#243041" stroke-width="1" opacity="0.8"/><polygon points="160.0,92.4 227.6,160.0 160.0,227.6 92.4,160.0" fill="none" stroke="#243041" stroke-width="1" opacity="0.664"/><polygon points="160.0,126.2 193.8,160.0 160.0,193.8 126.2,160.0" fill="none" stroke="#243041" stroke-width="1" opacity="0.532"/>
+  <line x1="160.0" y1="160.0" x2="160.0" y2="57.6" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="262.4" y2="160.0" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="160.0" y2="262.4" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="57.6" y2="160.0" stroke="#334155" stroke-width="1"/>
+  <polygon points="160.0,88.3 223.5,160.0 160.0,241.9 83.2,160.0" fill="#38bdf844" stroke="#38bdf8" stroke-width="2"/>
+  <circle cx="160.0" cy="88.3" r="4" fill="#38bdf8"/><circle cx="223.5" cy="160.0" r="4" fill="#38bdf8"/><circle cx="160.0" cy="241.9" r="4" fill="#38bdf8"/><circle cx="83.2" cy="160.0" r="4" fill="#38bdf8"/>
+  <text x="160.0" y="35.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">I 70</text><text x="284.4" y="160.0" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">S 62</text><text x="160.0" y="284.4" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">T 80</text><text x="35.6" y="160.0" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">J 75</text>
+</svg>
+        <div class="legend"><span><i style="background:#38bdf8"></i>ISTJ · not diagnostic</span></div>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:12px">
+      <div class="chart-box">
+        <h3>Big Five (L1)</h3>
+        <div class="hbar">
+<div class="hbar-row"><span title="Openness">Openness</span><div class="track"><div class="fill violet" style="width:58%"></div></div><span>58%</span></div>
+<div class="hbar-row"><span title="Conscient.">Conscient.</span><div class="track"><div class="fill teal" style="width:78%"></div></div><span>78%</span></div>
+<div class="hbar-row"><span title="Extraversion">Extraversion</span><div class="track"><div class="fill sky" style="width:35%"></div></div><span>35%</span></div>
+<div class="hbar-row"><span title="Agreeable">Agreeable</span><div class="track"><div class="fill amber" style="width:42%"></div></div><span>42%</span></div>
+<div class="hbar-row"><span title="Neuroticism">Neuroticism</span><div class="track"><div class="fill rose" style="width:40%"></div></div><span>40%</span></div>
+</div>
+      </div>
+      <div class="chart-box">
+        <h3>Confidence gauge</h3>
+        <svg viewBox="0 0 240 140" role="img" aria-label="medium">
+  <path d="M40 110 A80 80 0 0 1 200 110" fill="none" stroke="#1a2330" stroke-width="16" stroke-linecap="round"/>
+  <path d="M40 110 A80 80 0 0 1 200 110" fill="none" stroke="#4ade80" stroke-width="16" stroke-linecap="round"
+    stroke-dasharray="180.7 251" />
+  <line x1="120" y1="110" x2="171.0" y2="48.4" stroke="#e7eef8" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="120" cy="110" r="5" fill="#e7eef8"/>
+  <text x="120" y="90" text-anchor="middle" fill="#4ade80" font-size="28" font-weight="700" font-family="Segoe UI,sans-serif">72</text>
+  <text x="120" y="130" text-anchor="middle" fill="#93a4bb" font-size="11">medium</text>
+</svg>
       </div>
     </div>
 
     <div class="grid2" style="margin-top:12px">
       <div class="chart-box">
         <h3>Collection completeness</h3>
-        <svg viewBox="0 0 400 180" role="img" aria-label="Collection bars">
-          <text x="8" y="38" fill="#93a4bb" font-size="12">Posts</text>
-          <rect x="80" y="22" width="280" height="22" rx="6" fill="#1a2330"/>
-          <rect x="80" y="22" width="280" height="22" rx="6" fill="url(#g1)"/>
-          <text x="370" y="38" fill="#4ade80" font-size="12" font-family="monospace">100%</text>
-          <text x="8" y="88" fill="#93a4bb" font-size="12">Comments</text>
-          <rect x="80" y="72" width="280" height="22" rx="6" fill="#1a2330"/>
-          <rect x="80" y="72" width="93" height="22" rx="6" fill="#fbbf24"/>
-          <text x="370" y="88" fill="#fbbf24" font-size="12" font-family="monospace">~33%</text>
-          <text x="8" y="138" fill="#93a4bb" font-size="12">Likes</text>
-          <rect x="80" y="122" width="280" height="22" rx="6" fill="#1a2330"/>
-          <rect x="80" y="122" width="50" height="22" rx="6" fill="#f87171"/>
-          <text x="370" y="138" fill="#f87171" font-size="12" font-family="monospace">~18%</text>
-          <defs><linearGradient id="g1" x1="0" x2="1"><stop stop-color="#0ea5e9"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient></defs>
-          <text x="80" y="168" fill="#64748b" font-size="10">Platform caps: comments recent-only · likes sparse pages</text>
-        </svg>
+        <svg viewBox="0 0 400 180" role="img" aria-label="collection completeness">
+  <text x="8" y="38" fill="#93a4bb" font-size="12">Posts</text>
+  <rect x="80" y="22" width="280" height="22" rx="6" fill="#1a2330"/>
+  <rect x="80" y="22" width="280" height="22" rx="6" fill="url(#g1)"/>
+  <text x="370" y="38" fill="#4ade80" font-size="12" font-family="monospace">100%</text>
+  <text x="8" y="88" fill="#93a4bb" font-size="12">Comments</text>
+  <rect x="80" y="72" width="280" height="22" rx="6" fill="#1a2330"/>
+  <rect x="80" y="72" width="92" height="22" rx="6" fill="#fbbf24"/>
+  <text x="370" y="88" fill="#fbbf24" font-size="12" font-family="monospace">33%</text>
+  <text x="8" y="138" fill="#93a4bb" font-size="12">Likes</text><rect x="80" y="122" width="280" height="22" rx="6" fill="#1a2330"/><rect x="80" y="122" width="50" height="22" rx="6" fill="#f87171"/><text x="370" y="138" fill="#f87171" font-size="12" font-family="monospace">18%</text>
+  <defs><linearGradient id="g1" x1="0" x2="1"><stop stop-color="#0ea5e9"/><stop offset="1" stop-color="#2dd4bf"/></linearGradient></defs>
+  <text x="80" y="168" fill="#64748b" font-size="10">Synthetic demo · platform caps: comments recent-only · likes sparse</text>
+</svg>
       </div>
       <div class="chart-box">
         <h3>ACH — hypothesis survival</h3>
-        <svg viewBox="0 0 400 180" role="img" aria-label="ACH scores">
-          <text x="8" y="36" fill="#e7eef8" font-size="12">H1 Verificationist</text>
-          <rect x="150" y="20" width="200" height="20" rx="5" fill="#10b981" opacity=".85"/>
-          <text x="360" y="36" fill="#4ade80" font-size="11" font-family="monospace">LEAD</text>
-          <text x="8" y="72" fill="#93a4bb" font-size="12">H2 Empty flex</text>
-          <rect x="150" y="56" width="200" height="20" rx="5" fill="#1a2330"/>
-          <rect x="150" y="56" width="36" height="20" rx="5" fill="#f87171"/>
-          <text x="360" y="72" fill="#f87171" font-size="11" font-family="monospace">fail</text>
-          <text x="8" y="108" fill="#93a4bb" font-size="12">H3 Ideologue</text>
-          <rect x="150" y="92" width="200" height="20" rx="5" fill="#1a2330"/>
-          <rect x="150" y="92" width="50" height="20" rx="5" fill="#fbbf24"/>
-          <text x="360" y="108" fill="#fbbf24" font-size="11" font-family="monospace">weak</text>
-          <text x="8" y="144" fill="#93a4bb" font-size="12">H4 Hostility→viewer</text>
-          <rect x="150" y="128" width="200" height="20" rx="5" fill="#1a2330"/>
-          <rect x="150" y="128" width="28" height="20" rx="5" fill="#f87171"/>
-          <text x="360" y="144" fill="#f87171" font-size="11" font-family="monospace">fail</text>
-        </svg>
+        <svg viewBox="0 0 400 164" role="img" aria-label="ACH"><text x="8" y="32" fill="#e7eef8" font-size="12">H1 Verificationist</text><rect x="150" y="20" width="200" height="18" rx="5" fill="#1a2330"/><rect x="150" y="20" width="184" height="18" rx="5" fill="#10b981" opacity=".9"/><text x="360" y="32" fill="#10b981" font-size="11" font-family="monospace">lead</text><text x="8" y="68" fill="#e7eef8" font-size="12">H2 Empty flex</text><rect x="150" y="56" width="200" height="18" rx="5" fill="#1a2330"/><rect x="150" y="56" width="36" height="18" rx="5" fill="#f87171" opacity=".9"/><text x="360" y="68" fill="#f87171" font-size="11" font-family="monospace">fail</text><text x="8" y="104" fill="#e7eef8" font-size="12">H3 Ideologue</text><rect x="150" y="92" width="200" height="18" rx="5" fill="#1a2330"/><rect x="150" y="92" width="56" height="18" rx="5" fill="#fbbf24" opacity=".9"/><text x="360" y="104" fill="#fbbf24" font-size="11" font-family="monospace">weak</text><text x="8" y="140" fill="#e7eef8" font-size="12">H4 Hostility→viewer</text><rect x="150" y="128" width="200" height="18" rx="5" fill="#1a2330"/><rect x="150" y="128" width="24" height="18" rx="5" fill="#f87171" opacity=".9"/><text x="360" y="140" fill="#f87171" font-size="11" font-family="monospace">fail</text></svg>
+      </div>
+    </div>
+
+    <div class="grid2" style="margin-top:12px">
+      <div class="chart-box">
+        <h3>Source mix</h3>
+        <svg viewBox="0 0 220 220" role="img" aria-label="source mix">
+  <circle cx="110.0" cy="110.0" r="70.4" fill="none" stroke="#1a2330" stroke-width="26.4"/>
+  <circle cx="110.0" cy="110.0" r="70.4" fill="none" stroke="#2dd4bf" stroke-width="26.4" stroke-dasharray="93.12 349.21" stroke-dashoffset="110.58" transform="rotate(-90 110.0 110.0)"/><circle cx="110.0" cy="110.0" r="70.4" fill="none" stroke="#38bdf8" stroke-width="26.4" stroke-dasharray="310.41 131.92" stroke-dashoffset="17.46" transform="rotate(-90 110.0 110.0)"/><circle cx="110.0" cy="110.0" r="70.4" fill="none" stroke="#94a3b8" stroke-width="26.4" stroke-dasharray="38.80 403.53" stroke-dashoffset="-292.95" transform="rotate(-90 110.0 110.0)"/>
+  <text x="110.0" y="106.0" text-anchor="middle" fill="#e7eef8" font-size="18" font-weight="700" font-family="Segoe UI,sans-serif">57</text>
+  <text x="110.0" y="124.0" text-anchor="middle" fill="#93a4bb" font-size="10">texts</text>
+</svg>
+<div class="legend"><span><i style="background:#2dd4bf"></i>community_post (12)</span><span><i style="background:#38bdf8"></i>community_comment (40)</span><span><i style="background:#94a3b8"></i>sns_comment (5)</span></div>
+      </div>
+      <div class="chart-box">
+        <h3>Alliance vs viewer (L4)</h3>
+        <div class="hbar">
+<div class="hbar-row"><span title="Domain trust">Domain trust</span><div class="track"><div class="fill teal" style="width:88%"></div></div><span>88%</span></div>
+<div class="hbar-row"><span title="Craft peer">Craft peer</span><div class="track"><div class="fill sky" style="width:80%"></div></div><span>80%</span></div>
+<div class="hbar-row"><span title="Soft friendship">Soft friendship</span><div class="track"><div class="fill amber" style="width:25%"></div></div><span>25%</span></div>
+<div class="hbar-row"><span title="Vendor brand ally">Vendor brand ally</span><div class="track"><div class="fill rose" style="width:15%"></div></div><span>15%</span></div>
+<div class="hbar-row"><span title="Convert / persuade">Convert / persuade</span><div class="track"><div class="fill rose" style="width:10%"></div></div><span>10%</span></div>
+</div>
       </div>
     </div>
 
     <div class="chart-box" style="margin-top:12px">
       <h3>Ephemeris timeline (L5)</h3>
-      <svg viewBox="0 0 1040 160" role="img" aria-label="Life timeline">
-        <line x1="40" y1="80" x2="1000" y2="80" stroke="#334155" stroke-width="2"/>
-        <g font-family="Segoe UI,sans-serif">
-          <circle cx="80" cy="80" r="7" fill="#64748b"/><text x="80" y="50" text-anchor="middle" fill="#94a3b8" font-size="11">2024-11</text>
-          <text x="80" y="110" text-anchor="middle" fill="#64748b" font-size="10">join · keyboards</text>
-          <circle cx="280" cy="80" r="8" fill="#38bdf8"/><text x="280" y="50" text-anchor="middle" fill="#7dd3fc" font-size="11">2025-03</text>
-          <text x="280" y="110" text-anchor="middle" fill="#64748b" font-size="10">red-build series</text>
-          <circle cx="480" cy="80" r="9" fill="#a78bfa"/><text x="480" y="50" text-anchor="middle" fill="#c4b5fd" font-size="11">2025-08</text>
-          <text x="480" y="110" text-anchor="middle" fill="#c4b5fd" font-size="10">Vendor X v3 praise</text>
-          <circle cx="680" cy="80" r="10" fill="#2dd4bf"/><text x="680" y="50" text-anchor="middle" fill="#5eead4" font-size="11">2026-02</text>
-          <text x="680" y="110" text-anchor="middle" fill="#5eead4" font-size="10">self-hosted runners</text>
-          <circle cx="880" cy="80" r="11" fill="#fbbf24" stroke="#f59e0b" stroke-width="2"/>
-          <text x="880" y="50" text-anchor="middle" fill="#fde68a" font-size="11">2026-07</text>
-          <text x="880" y="110" text-anchor="middle" fill="#fde68a" font-size="10">Vendor X v4 cancel</text>
-        </g>
-        <text x="40" y="145" fill="#64748b" font-size="11">Drift rule: brand stance non-monotonic · verification threshold monotonic</text>
-      </svg>
+      <svg viewBox="0 0 1040 150" role="img" aria-label="ephemeris timeline">
+  <line x1="50" y1="70" x2="990" y2="70" stroke="#334155" stroke-width="2"/>
+  <circle cx="50" cy="70" r="7" fill="#64748b"/><text x="50" y="42" text-anchor="middle" fill="#94a3b8" font-size="11">2024-11</text><text x="50" y="100" text-anchor="middle" fill="#64748b" font-size="10">join · keyboards</text><circle cx="285" cy="70" r="8" fill="#38bdf8"/><text x="285" y="42" text-anchor="middle" fill="#94a3b8" font-size="11">2025-03</text><text x="285" y="100" text-anchor="middle" fill="#64748b" font-size="10">red-build series</text><circle cx="520" cy="70" r="9" fill="#a78bfa"/><text x="520" y="42" text-anchor="middle" fill="#94a3b8" font-size="11">2025-08</text><text x="520" y="100" text-anchor="middle" fill="#64748b" font-size="10">Vendor X v3 praise</text><circle cx="755" cy="70" r="10" fill="#2dd4bf"/><text x="755" y="42" text-anchor="middle" fill="#94a3b8" font-size="11">2026-02</text><text x="755" y="100" text-anchor="middle" fill="#64748b" font-size="10">self-hosted runners</text><circle cx="990" cy="70" r="11" fill="#fbbf24"/><text x="990" y="42" text-anchor="middle" fill="#94a3b8" font-size="11">2026-07</text><text x="990" y="100" text-anchor="middle" fill="#64748b" font-size="10">Vendor X v4 cancel</text>
+  <text x="50" y="140" fill="#64748b" font-size="11">Drift: brand non-monotonic · verification threshold monotonic</text>
+</svg>
     </div>
 
     <div class="grid2" style="margin-top:12px">
-      <div class="chart-box">
-        <h3>Alliance vs viewer (L4)</h3>
-        <div class="hbar">
-          <div class="hbar-row"><span>Domain trust</span><div class="track"><div class="fill teal" style="width:88%"></div></div><span>high</span></div>
-          <div class="hbar-row"><span>Craft peer</span><div class="track"><div class="fill teal" style="width:80%"></div></div><span>yes</span></div>
-          <div class="hbar-row"><span>Soft friendship</span><div class="track"><div class="fill amber" style="width:25%"></div></div><span>unk</span></div>
-          <div class="hbar-row"><span>Vendor brand ally</span><div class="track"><div class="fill rose" style="width:15%"></div></div><span>low</span></div>
-          <div class="hbar-row"><span>Convert / persuade</span><div class="track"><div class="fill rose" style="width:10%"></div></div><span>no</span></div>
-        </div>
-      </div>
       <div class="chart-box">
         <h3>Distance map by situation</h3>
         <div class="dist-map">
-          <div class="dist-row"><span>CI flakiness / rollback / observability</span><span class="pill engage">engage</span></div>
-          <div class="dist-row"><span>Default community peer</span><span class="pill neutral">neutral</span></div>
-          <div class="dist-row"><span>Vendor cheer without repro steps</span><span class="pill caution">caution</span></div>
-          <div class="dist-row"><span>Chronic interpersonal harm</span><span style="font-size:11px;color:#64748b">no evidence</span></div>
+          <div class="dist-row"><span>CI flakiness / rollback / observability</span><span class="pill engage">engage</span></div><div class="dist-row"><span>Default community peer</span><span class="pill neutral">neutral</span></div><div class="dist-row"><span>Vendor cheer without repro steps</span><span class="pill caution">caution</span></div><div class="dist-row"><span>Chronic interpersonal harm — no evidence</span><span class="pill avoid">avoid</span></div>
         </div>
       </div>
-    </div>
-
-    <div class="grid2" style="margin-top:12px">
-      <div class="chart-box" id="big5">
-        <h3>Big Five lean (L1 · text-inferred · not clinical)</h3>
-        <svg viewBox="0 0 360 320" role="img" aria-label="Big Five radar">
-          <g fill="none" stroke="#243041" stroke-width="1">
-            <polygon id="bf-ring3" points=""/><polygon id="bf-ring2" points=""/><polygon id="bf-ring1" points=""/>
-          </g>
-          <g id="bf-axes" stroke="#334155" stroke-width="1"></g>
-          <polygon id="bf-data" fill="rgba(167,139,250,0.28)" stroke="#a78bfa" stroke-width="2"/>
-          <g id="bf-dots" fill="#c4b5fd"></g>
-          <g id="bf-labels" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif"></g>
-        </svg>
-        <div class="hbar" style="margin-top:4px">
-          <div class="hbar-row"><span>O Openness</span><div class="track"><div class="fill violet" style="width:78%"></div></div><span>78</span></div>
-          <div class="hbar-row"><span>C Consc.</span><div class="track"><div class="fill teal" style="width:88%"></div></div><span>88</span></div>
-          <div class="hbar-row"><span>E Extra.</span><div class="track"><div class="fill amber" style="width:30%"></div></div><span>30</span></div>
-          <div class="hbar-row"><span>A Agree.</span><div class="track"><div class="fill amber" style="width:48%"></div></div><span>48</span></div>
-          <div class="hbar-row"><span>N Neuro.</span><div class="track"><div class="fill rose" style="width:32%"></div></div><span>32</span></div>
-        </div>
-        <div class="legend" style="margin-top:8px"><span><i style="background:#a78bfa"></i>High C+O · low E · selective A · low-mid N (cancel-as-process)</span></div>
-      </div>
-      <div class="chart-box" id="force">
-        <h3>Text-relation graph (force layout)</h3>
-        <p style="margin:0 0 8px;font-size:11px;color:var(--muted)">Drag nodes · scroll wheel zoom. Edges = co-occurrence / causal links in corpus + trigger thread.</p>
-        <div id="force-host" style="position:relative;height:360px;border-radius:12px;overflow:hidden;background:#070b10;border:1px solid var(--line)">
-          <canvas id="force-canvas" width="520" height="360" style="width:100%;height:360px;display:block;cursor:grab"></canvas>
-        </div>
-        <div class="legend" style="margin-top:8px">
-          <span><i style="background:#2dd4bf"></i>target</span>
-          <span><i style="background:#38bdf8"></i>tools/stack</span>
-          <span><i style="background:#fbbf24"></i>ops</span>
-          <span><i style="background:#a78bfa"></i>viewer / social</span>
-          <span><i style="background:#f87171"></i>friction edge</span>
-        </div>
+      <div class="chart-box">
+        <h3>Fit snapshot</h3>
+        <div class="hbar">
+<div class="hbar-row"><span title="worldview">worldview</span><div class="track"><div class="fill violet" style="width:78%"></div></div><span>78%</span></div>
+<div class="hbar-row"><span title="alliance">alliance</span><div class="track"><div class="fill teal" style="width:70%"></div></div><span>70%</span></div>
+<div class="hbar-row"><span title="stability">stability</span><div class="track"><div class="fill sky" style="width:82%"></div></div><span>82%</span></div>
+<div class="hbar-row"><span title="risk (inv)">risk (inv)</span><div class="track"><div class="fill amber" style="width:78%"></div></div><span>78%</span></div>
+</div>
+        <p class="muted">Higher risk bar = safer. Scores are analyst estimates 0–100.</p>
       </div>
     </div>
   </section>
 
   <section class="card" id="honesty">
-    <h2><span class="n">00</span> Collection honesty</h2>
-    <div class="grid3" style="margin-bottom:10px">
-      <div class="stat"><div class="v">12/12</div><div class="l">Posts — full bodies</div></div>
-      <div class="stat"><div class="v">40<span style="font-size:13px;color:var(--muted)">/120</span></div><div class="l">Comments — API recent cap</div></div>
-      <div class="stat"><div class="v">8<span style="font-size:13px;color:var(--muted)">/45</span></div><div class="l">Likes — unique enumerable</div></div>
-    </div>
+    <h2><span class="n">0</span> Collection honesty</h2>
     <table>
-      <thead><tr><th>Surface</th><th>Claimed</th><th>Collected</th><th>Full?</th></tr></thead>
-      <tbody>
-        <tr><td>Posts</td><td>12</td><td>12 index + 12 bodies</td><td class="tag-yes">YES</td></tr>
-        <tr><td>Comments</td><td>120</td><td>40 recent (API cap)</td><td class="tag-no">NO</td></tr>
-        <tr><td>Likes given</td><td>45</td><td>8 unique</td><td class="tag-no">NO</td></tr>
-      </tbody>
+      <tr><th>Axis</th><th>Status</th><th>Notes</th></tr>
+      <tr><td>posts</td><td>done</td><td>12/12 bodies</td></tr>
+      <tr><td>comments</td><td>partial</td><td>40/120 recent-only cap</td></tr>
+      <tr><td>likes</td><td>partial</td><td>8/45 sparse pages</td></tr>
     </table>
+    <p class="muted">Synthetic demo · platform caps: comments recent-only · likes sparse</p>
   </section>
 
   <section class="card" id="distance">
-    <h2><span class="n">01</span> Distance recommendation</h2>
-    <div class="one-line">
-      <strong>relay_ops</strong> = CI reliability operator + verificationist poster. Not a vendor fan.
-      <strong>Loyal to green that means something.</strong> Trigger reply is a same-orbit counter-report, not a personal attack.
-    </div>
-    <h3>Ops mapping</h3>
+    <h2><span class="n">1</span> Matrix + distance ops</h2>
     <table>
-      <thead><tr><th>Question</th><th>Answer</th></tr></thead>
-      <tbody>
-        <tr><td>Stress-giver?</td><td>Not personality-attack type · long postmortems = debate tax</td></tr>
-        <tr><td>Worth time?</td><td>Yes for flaky tests / runners / observability intel</td></tr>
-        <tr><td>Someone to align with?</td><td>No — persuasion cost high on brand takes</td></tr>
-        <tr><td>Relationship cut?</td><td>Overkill on current corpus</td></tr>
-      </tbody>
+      <tr><th>id</th><th>worldview</th><th>alliance</th><th>stability</th><th>drift</th><th>risk</th><th>one_line</th></tr>
+      <tr><td>relay_ops</td><td>high (craft)</td><td>soft-engage</td><td>high</td><td>brand non-mono / threshold mono</td><td>low interpersonal</td><td>verificationist · domain trust high · not empty flex</td></tr>
     </table>
+    <table>
+      <tr><th>tag</th><th>when</th></tr>
+      <tr><td><span class="pill engage">engage</span></td><td>CI flakiness / rollback / observability</td></tr><tr><td><span class="pill neutral">neutral</span></td><td>Default community peer</td></tr><tr><td><span class="pill caution">caution</span></td><td>Vendor cheer without repro steps</td></tr><tr><td><span class="pill avoid">avoid</span></td><td>Chronic interpersonal harm — no evidence</td></tr>
+    </table>
+    <p><b>Recommendation:</b> <span class="pill neutral">neutral</span> — neutral default · soft-engage on CI rollback/obs · caution on empty vendor flex</p>
   </section>
 
   <section class="card" id="identity">
-    <h2><span class="n">02</span> Identity</h2>
-    <p>Not a drive-by commenter. <strong>Operator who publishes postmortems</strong> after outages and flaky suites.</p>
-    <ul>
-      <li>Self-described “glue engineer” for GitHub Actions + self-hosted runners</li>
-      <li>Weekly “red build autopsy” posts with failing-step tables</li>
-      <li>2025-08 praised Vendor X v3 after a green week</li>
-      <li>2026-07 cancelled Vendor X v4 after poisoned-cache false greens</li>
-      <li>Side track: mechanical keyboard reviews (low weight for distance)</li>
-    </ul>
+    <h2><span class="n">2</span> Identity</h2>
+    <ul><li>Self-hosted runners / red-build postmortems</li><li>Vendor X praise then cancel under same verification bar</li><li>Keyboard hobby + CI craft identity</li><li>Low soft-friendship signal; high domain peer signal</li></ul>
+    <p class="muted">Chronic personal hostility; pure status theater</p>
   </section>
-
+  
   <section class="card" id="trigger">
-    <h2><span class="n">03</span> Trigger interaction</h2>
-    <div class="grid2">
-      <div class="stat">
-        <div class="l">Viewer c_102</div>
-        <p style="margin:8px 0 0;font-size:13px">Vendor X v4 agent mode cut triage time in half</p>
-      </div>
-      <div class="stat">
-        <div class="l">Target c_118</div>
-        <p style="margin:8px 0 0;font-size:13px">Same agent mode masked failing assertions / wrong caches → <strong>cancel</strong></p>
-      </div>
-    </div>
-    <table>
-      <thead><tr><th>Reading</th><th>Strength</th></tr></thead>
-      <tbody>
-        <tr><td>Personal nick attack</td><td class="tag-no">weak</td></tr>
-        <tr><td>Empty flex only</td><td class="tag-no">weak</td></tr>
-        <tr><td>Same-orbit counter-measurement report</td><td class="tag-yes">strong</td></tr>
-      </tbody>
-    </table>
+    <h2><span class="n">3</span> Trigger / Debate</h2>
+    <p>Synthetic trigger thread: Vendor X v4 cancel after measurement fail.</p>
+    <p class="muted">https://forum.example/t/demo</p>
   </section>
 
   <section class="card" id="spectro">
-    <h2><span class="n">04</span> Spectrograph L1–L5</h2>
-    <h3>L1 Psych</h3>
-    <ul>
-      <li><strong>Conscientiousness very high</strong> — dated postmortems, rerun matrices, 1:1 repro</li>
-      <li><strong>Openness high</strong> — frequent runner/tool swaps</li>
-      <li><strong>Agreeableness selective</strong> — short warm thanks; blunt tool verdicts</li>
-      <li><strong>Conflict style:</strong> measure → rank → cancel / switch</li>
-    </ul>
-    <blockquote>“Green build with a poisoned cache is worse than red.” — ops/7720 (synthetic)</blockquote>
-    <blockquote>“We cancelled Vendor X after three forced repros failed.” — ops/8841#c_118 (synthetic)</blockquote>
-
-    <h3>L2 Worldview</h3>
-    <p>Pragmatic reliability · individual craft · tools as instruments. Vendor narrative distrust when metrics fail. Politics axis low-confidence.</p>
-    <p><strong>Fit:</strong> high lexical overlap on CI/observability. <strong>Mis-fit:</strong> Vendor X brand loyalty <em>right now</em>.</p>
-
-    <h3>L3 Behavioral</h3>
-    <table>
-      <thead><tr><th>Pattern</th><th>Stability</th></tr></thead>
-      <tbody>
-        <tr><td>Outage → postmortem → publish</td><td>chronic</td></tr>
-        <tr><td>Subscription exit as speech act</td><td>recurring</td></tr>
-        <tr><td>CI + runners as core identity</td><td>2025–26 core</td></tr>
-        <tr><td>“Glue engineer” frame + serious uptime stakes</td><td>stable tension</td></tr>
-      </tbody>
-    </table>
-
-    <h3>L5 Drift rule</h3>
-    <blockquote>Vendor X v3 praise → v4 cancel is <strong>not</strong> flip-flop personality. Same trait: <strong>loyalty to verified utility under his repro harness, not to brand.</strong></blockquote>
+    <h2><span class="n">4</span> Spectrograph L1–L5</h2>
+    <p><strong>L1 Psych</strong> — High C · low-mid E · conflict via criteria not insult.</p><p><strong>L2 Worldview</strong> — Pragmatic over sacred · liberty on tooling · individual craft.</p><p><strong>L3 Behavioral</strong> — Stable verification threshold; brand stance can flip without personality flip.</p><p><strong>L4 Alliance</strong> — Domain trust high · convert/persuade ROI low.</p><p><strong>L5 Ephemeris</strong> — 2024 join → 2025 red-build → 2026 Vendor X cancel.</p>
   </section>
 
   <section class="card" id="mbti">
-    <h2><span class="n">06</span> MBTI <span style="font-size:11px;color:var(--muted);font-weight:500">(fun · low validity)</span></h2>
+    <h2><span class="n">6</span> MBTI (fun · low validity)</h2>
     <div class="grid2">
-      <div class="stat"><div class="v">ISTJ</div><div class="l">Primary lean · alt ISxJ / ISTJ–INTJ border on systems posts</div></div>
-      <div class="stat"><div class="v">SJ Sentinel</div><div class="l">Procedure, logs, closed decisions; swaps tools when metrics fail</div></div>
+      <div>
+        <p><b>Type guess:</b> ISTJ</p>
+        <p><b>Engage cost (soft):</b> Low drama · high criteria · meeting-light preferred</p>
+        <p class="muted">confidence: medium — never sole distance reason</p>
+      </div>
+      <div class="chart-box"><svg viewBox="0 0 320 320" role="img" aria-label="radar">
+  <polygon points="160.0,57.6 262.4,160.0 160.0,262.4 57.6,160.0" fill="none" stroke="#243041" stroke-width="1" opacity="0.8"/><polygon points="160.0,92.4 227.6,160.0 160.0,227.6 92.4,160.0" fill="none" stroke="#243041" stroke-width="1" opacity="0.664"/><polygon points="160.0,126.2 193.8,160.0 160.0,193.8 126.2,160.0" fill="none" stroke="#243041" stroke-width="1" opacity="0.532"/>
+  <line x1="160.0" y1="160.0" x2="160.0" y2="57.6" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="262.4" y2="160.0" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="160.0" y2="262.4" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="57.6" y2="160.0" stroke="#334155" stroke-width="1"/>
+  <polygon points="160.0,88.3 223.5,160.0 160.0,241.9 83.2,160.0" fill="#38bdf844" stroke="#38bdf8" stroke-width="2"/>
+  <circle cx="160.0" cy="88.3" r="4" fill="#38bdf8"/><circle cx="223.5" cy="160.0" r="4" fill="#38bdf8"/><circle cx="160.0" cy="241.9" r="4" fill="#38bdf8"/><circle cx="83.2" cy="160.0" r="4" fill="#38bdf8"/>
+  <text x="160.0" y="35.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">I 70</text><text x="284.4" y="160.0" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">S 62</text><text x="160.0" y="284.4" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">T 80</text><text x="35.6" y="160.0" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">J 75</text>
+</svg></div>
     </div>
-    <p style="margin-top:12px"><strong>Engage-cost:</strong> logs/repro → dense talk. Meeting theater / brand cheer wars → short or cold. Never use type alone for avoid.</p>
   </section>
 
   <section class="card" id="cia">
-    <h2><span class="n">07</span> CIA-SAT / KGB-style card <span style="font-size:11px;color:var(--muted);font-weight:500">(public tradecraft · not ops)</span></h2>
-    <h3>T2 Drivers</h3>
-    <table>
-      <thead><tr><th>Driver</th><th>Score</th><th>Evidence (synthetic)</th></tr></thead>
-      <tbody>
-        <tr><td>Certainty / control</td><td>3</td><td>Forced repro matrices; refuses “trust the green”</td></tr>
-        <tr><td>Resource / capital skill</td><td>2</td><td>SaaS cancel cost-aware; runner hardware posts</td></tr>
-        <tr><td>Autonomy</td><td>3</td><td>Self-hosted stack; exit speech as control</td></tr>
-        <tr><td>Status</td><td>1</td><td>Low dunk energy; reports over flex</td></tr>
-        <tr><td>Belonging</td><td>2</td><td>Board active; not fandom-loyal</td></tr>
-      </tbody>
-    </table>
-    <pre class="dossier">SUBJECT: relay_ops (oauth_demo_91) · forum.example Lv.12
-VIEWER: north_packet (demo)
-CLASSIFICATION: synthetic demo text only
+    <h2><span class="n">7</span> CIA / KGB-style card</h2>
+    <div class="grid2">
+      <div class="chart-box">
+        <h3>Drivers</h3>
+        <svg viewBox="0 0 320 320" role="img" aria-label="radar">
+  <polygon points="160.0,57.6 257.4,128.4 220.2,242.8 99.8,242.8 62.6,128.4" fill="none" stroke="#243041" stroke-width="1" opacity="0.8"/><polygon points="160.0,92.4 224.3,139.1 199.7,214.7 120.3,214.7 95.7,139.1" fill="none" stroke="#243041" stroke-width="1" opacity="0.664"/><polygon points="160.0,126.2 192.1,149.6 179.9,187.3 140.1,187.3 127.9,149.6" fill="none" stroke="#243041" stroke-width="1" opacity="0.532"/>
+  <line x1="160.0" y1="160.0" x2="160.0" y2="57.6" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="257.4" y2="128.4" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="220.2" y2="242.8" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="99.8" y2="242.8" stroke="#334155" stroke-width="1"/><line x1="160.0" y1="160.0" x2="62.6" y2="128.4" stroke="#334155" stroke-width="1"/>
+  <polygon points="160.0,91.7 257.4,128.4 180.1,187.6 119.9,215.2 62.6,128.4" fill="#2dd4bf44" stroke="#2dd4bf" stroke-width="2"/>
+  <circle cx="160.0" cy="91.7" r="4" fill="#2dd4bf"/><circle cx="257.4" cy="128.4" r="4" fill="#2dd4bf"/><circle cx="180.1" cy="187.6" r="4" fill="#2dd4bf"/><circle cx="119.9" cy="215.2" r="4" fill="#2dd4bf"/><circle cx="62.6" cy="128.4" r="4" fill="#2dd4bf"/>
+  <text x="160.0" y="35.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">resource 2</text><text x="278.3" y="121.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">control 3</text><text x="233.1" y="260.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">status 1</text><text x="86.9" y="260.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">belong 2</text><text x="41.7" y="121.6" text-anchor="middle" dominant-baseline="middle" fill="#93a4bb" font-size="11" font-family="Segoe UI,sans-serif">autonomy 3</text>
+</svg>
+      </div>
+      <div class="chart-box">
+        <h3>ACH</h3>
+        <svg viewBox="0 0 400 164" role="img" aria-label="ACH"><text x="8" y="32" fill="#e7eef8" font-size="12">H1 Verificationist</text><rect x="150" y="20" width="200" height="18" rx="5" fill="#1a2330"/><rect x="150" y="20" width="184" height="18" rx="5" fill="#10b981" opacity=".9"/><text x="360" y="32" fill="#10b981" font-size="11" font-family="monospace">lead</text><text x="8" y="68" fill="#e7eef8" font-size="12">H2 Empty flex</text><rect x="150" y="56" width="200" height="18" rx="5" fill="#1a2330"/><rect x="150" y="56" width="36" height="18" rx="5" fill="#f87171" opacity=".9"/><text x="360" y="68" fill="#f87171" font-size="11" font-family="monospace">fail</text><text x="8" y="104" fill="#e7eef8" font-size="12">H3 Ideologue</text><rect x="150" y="92" width="200" height="18" rx="5" fill="#1a2330"/><rect x="150" y="92" width="56" height="18" rx="5" fill="#fbbf24" opacity=".9"/><text x="360" y="104" fill="#fbbf24" font-size="11" font-family="monospace">weak</text><text x="8" y="140" fill="#e7eef8" font-size="12">H4 Hostility→viewer</text><rect x="150" y="128" width="200" height="18" rx="5" fill="#1a2330"/><rect x="150" y="128" width="24" height="18" rx="5" fill="#f87171" opacity=".9"/><text x="360" y="140" fill="#f87171" font-size="11" font-family="monospace">fail</text></svg>
+      </div>
+    </div>
+    <h3>Dossier</h3>
+    <pre class="dossier">SUBJECT   relay_ops / oauth_demo_91
+BIO       forum craft peer · CI/obs · keyboards
+CHARACTER verificationist · dry · low status theater
+STRENGTHS repro steps · rollback discipline
+PRESSURE  vendor cheer threads (time cost if empty)
+APPROACH  CI/obs tickets · AVOID brand wars
+ASSESS    NEUTRAL–soft ENGAGE · conf medium
+LEAD H    H1 verificationist</pre>
+    <p class="muted">Public analytic form only — not ops, not medical/legal.</p>
+  </section>
 
-CLAIMED / PERFORMED
-  Claim: “glue engineer”
-  Practice: postmortems, runner topology, cancel-on-failed-repro
-
-REDLINES
-  - Green without truth → public write-up + cancel
-  - Low tolerance for yes-man vendor narratives
-
-SAFE CHANNELS
-  - Failure modes, CI graphs, runner design, observability
-  - Short factual Q&amp;A
-
-UNSAFE / HIGH-TAX
-  - Vendor cheer wars without repro
-  - Status-only dunk without data
-  - Emotional “align” to a brand
-
-DISTANCE: NEUTRAL ~ SOFT-ENGAGE
-CONFIDENCE: medium–high (posts full; comments/likes partial)</pre>
+  <section class="card" id="quotes">
+    <h2><span class="n">E</span> Evidence quotes</h2>
+    <figure class="q"><figcaption>POST · 2026-07</figcaption><pre>[synthetic] Cancelled Vendor X v4 after load test failed our SLO gate — same bar as last year.</pre></figure><figure class="q"><figcaption>CMT · 2026-02</figcaption><pre>[synthetic] Self-hosted runners cut queue time 40%; here&#x27;s the dashboard.</pre></figure>
   </section>
 
   <section class="card" id="check">
-    <h2><span class="n">08</span> Cross-check (your gut)</h2>
-    <ol>
-      <li>First impression: flex / troll / expert / ally candidate — which?</li>
-      <li>c_118: status smash vs fair warning — which side now?</li>
-      <li>MBTI ISTJ feel vs more INTJ (systems abstract)?</li>
-      <li>After this report: keep / revise / reverse?</li>
-    </ol>
-    <p style="color:var(--muted);font-size:12px">Demo files: <code>docs/sample-community-report.md</code> · this HTML. Synthetic only · safe for public git.</p>
+    <h2><span class="n">8</span> Cross-check prompts</h2>
+    <ol><li>Does craft peer feel right vs empty-flex?</li><li>Any brand-war fatigue not captured?</li><li>keep neutral / soft-engage / revise</li></ol>
+  </section>
+
+  <section class="card" id="files">
+    <h2><span class="n">9</span> Files</h2>
+    <div class="muted">html: docs/sample-community-report.html<br/>note: synthetic public demo</div>
   </section>
 
   <footer>
-    Not medical/legal · MBTI entertainment · CIA-SAT public hygiene only · Distance scoring · Not stalking · EN · <strong>FICTION SAMPLE</strong>
+    Kampff report · not medical/legal · MBTI entertainment · lawful sources only · 2026-07-13
   </footer>
 </div>
-
-<script>
-(function () {
-  // ---- Big Five radar (O C E A N) scores 0-100 ----
-  const bf = [
-    { k: "O", label: "Openness 78", v: 78 },
-    { k: "C", label: "Consc. 88", v: 88 },
-    { k: "E", label: "Extra. 30", v: 30 },
-    { k: "A", label: "Agree. 48", v: 48 },
-    { k: "N", label: "Neuro. 32", v: 32 },
-  ];
-  const cx = 180, cy = 155, R = 100;
-  function pt(i, r, n) {
-    const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-    return [cx + r * Math.cos(a), cy + r * Math.sin(a)];
-  }
-  function poly(r) {
-    return bf.map((_, i) => pt(i, r, bf.length).join(",")).join(" ");
-  }
-  const r3 = document.getElementById("bf-ring3");
-  const r2 = document.getElementById("bf-ring2");
-  const r1 = document.getElementById("bf-ring1");
-  if (r3) {
-    r3.setAttribute("points", poly(R));
-    r2.setAttribute("points", poly(R * 0.66));
-    r1.setAttribute("points", poly(R * 0.33));
-    const axes = document.getElementById("bf-axes");
-    const dots = document.getElementById("bf-dots");
-    const labels = document.getElementById("bf-labels");
-    const dataPts = [];
-    bf.forEach((d, i) => {
-      const [x1, y1] = pt(i, R, bf.length);
-      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      line.setAttribute("x1", cx); line.setAttribute("y1", cy);
-      line.setAttribute("x2", x1); line.setAttribute("y2", y1);
-      axes.appendChild(line);
-      const rr = (d.v / 100) * R;
-      const [x, y] = pt(i, rr, bf.length);
-      dataPts.push([x, y]);
-      const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("r", 4);
-      dots.appendChild(c);
-      const [lx, ly] = pt(i, R + 22, bf.length);
-      const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
-      t.setAttribute("x", lx); t.setAttribute("y", ly + 4);
-      t.setAttribute("text-anchor", "middle");
-      t.textContent = d.label;
-      labels.appendChild(t);
-    });
-    document.getElementById("bf-data").setAttribute("points", dataPts.map(p => p.join(",")).join(" "));
-  }
-
-  // ---- Force-directed text graph ----
-  const canvas = document.getElementById("force-canvas");
-  if (!canvas) return;
-  const host = document.getElementById("force-host");
-  const ctx = canvas.getContext("2d");
-
-  function resize() {
-    const w = host.clientWidth || 520;
-    const h = 360;
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    canvas.style.width = w + "px";
-    canvas.style.height = h + "px";
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    return { w, h };
-  }
-  let { w, h } = resize();
-
-  const nodes = [
-    { id: "relay_ops", group: "target", r: 18 },
-    { id: "CI/CD", group: "ops", r: 14 },
-    { id: "postmortems", group: "ops", r: 13 },
-    { id: "verify/repro", group: "tool", r: 14 },
-    { id: "Vendor X v3", group: "tool", r: 12 },
-    { id: "Vendor X v4", group: "tool", r: 12 },
-    { id: "self-runners", group: "tool", r: 13 },
-    { id: "Actions/GHA", group: "tool", r: 12 },
-    { id: "viewer", group: "social", r: 13 },
-    { id: "forum.example", group: "social", r: 11 },
-    { id: "keyboards", group: "ops", r: 11 },
-    { id: "observability", group: "tool", r: 12 },
-  ];
-  const links = [
-    { s: "relay_ops", t: "CI/CD", w: 2.2, kind: "core" },
-    { s: "CI/CD", t: "postmortems", w: 2, kind: "core" },
-    { s: "relay_ops", t: "verify/repro", w: 2.4, kind: "core" },
-    { s: "verify/repro", t: "Vendor X v3", w: 1.6, kind: "pass" },
-    { s: "verify/repro", t: "Vendor X v4", w: 2.2, kind: "friction" },
-    { s: "Vendor X v3", t: "Vendor X v4", w: 1.2, kind: "time" },
-    { s: "relay_ops", t: "self-runners", w: 1.8, kind: "core" },
-    { s: "self-runners", t: "observability", w: 1.6, kind: "core" },
-    { s: "relay_ops", t: "Actions/GHA", w: 1.4, kind: "swap" },
-    { s: "relay_ops", t: "forum.example", w: 1.2, kind: "social" },
-    { s: "viewer", t: "forum.example", w: 1.2, kind: "social" },
-    { s: "viewer", t: "Vendor X v4", w: 1.5, kind: "friction" },
-    { s: "relay_ops", t: "viewer", w: 1.0, kind: "trigger" },
-    { s: "relay_ops", t: "keyboards", w: 1.0, kind: "side" },
-    { s: "CI/CD", t: "Actions/GHA", w: 1.3, kind: "swap" },
-    { s: "verify/repro", t: "self-runners", w: 1.5, kind: "core" },
-  ];
-  const byId = Object.fromEntries(nodes.map(n => [n.id, n]));
-  nodes.forEach(n => {
-    n.x = w / 2 + (Math.random() - 0.5) * 180;
-    n.y = h / 2 + (Math.random() - 0.5) * 140;
-    n.vx = 0; n.vy = 0;
-  });
-
-  const colors = {
-    target: "#2dd4bf",
-    tool: "#38bdf8",
-    ops: "#fbbf24",
-    social: "#a78bfa",
-  };
-  const edgeColor = {
-    friction: "rgba(248,113,113,0.75)",
-    core: "rgba(94,234,212,0.55)",
-    pass: "rgba(56,189,248,0.45)",
-    swap: "rgba(148,163,184,0.4)",
-    social: "rgba(167,139,250,0.45)",
-    time: "rgba(148,163,184,0.35)",
-    trigger: "rgba(251,191,36,0.7)",
-    side: "rgba(100,116,139,0.4)",
-  };
-
-  let scale = 1, ox = 0, oy = 0;
-  let drag = null, pan = null;
-
-  function step() {
-    // repulsion
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i], b = nodes[j];
-        let dx = a.x - b.x, dy = a.y - b.y;
-        let dist = Math.hypot(dx, dy) || 0.01;
-        const f = 1800 / (dist * dist);
-        dx = (dx / dist) * f; dy = (dy / dist) * f;
-        a.vx += dx; a.vy += dy; b.vx -= dx; b.vy -= dy;
-      }
-    }
-    // springs
-    links.forEach(L => {
-      const a = byId[L.s], b = byId[L.t];
-      let dx = b.x - a.x, dy = b.y - a.y;
-      const dist = Math.hypot(dx, dy) || 0.01;
-      const ideal = 95 + (L.w || 1) * 8;
-      const f = (dist - ideal) * 0.012 * L.w;
-      dx = (dx / dist) * f; dy = (dy / dist) * f;
-      a.vx += dx; a.vy += dy; b.vx -= dx; b.vy -= dy;
-    });
-    // center gravity
-    nodes.forEach(n => {
-      n.vx += (w / 2 - n.x) * 0.002;
-      n.vy += (h / 2 - n.y) * 0.002;
-      n.vx *= 0.82; n.vy *= 0.82;
-      if (n !== drag) {
-        n.x += n.vx; n.y += n.vy;
-      }
-    });
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    ctx.save();
-    ctx.translate(ox, oy);
-    ctx.scale(scale, scale);
-
-    links.forEach(L => {
-      const a = byId[L.s], b = byId[L.t];
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.strokeStyle = edgeColor[L.kind] || "rgba(148,163,184,0.35)";
-      ctx.lineWidth = L.kind === "friction" || L.kind === "trigger" ? 2.2 : 1.2;
-      ctx.stroke();
-    });
-
-    nodes.forEach(n => {
-      ctx.beginPath();
-      ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
-      ctx.fillStyle = colors[n.group] || "#94a3b8";
-      ctx.globalAlpha = 0.92;
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      ctx.lineWidth = 1.5;
-      ctx.strokeStyle = "rgba(15,23,42,0.8)";
-      ctx.stroke();
-      ctx.fillStyle = "#0b1220";
-      ctx.font = "600 11px Segoe UI,sans-serif";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      // label outside
-      ctx.fillStyle = "#e7eef8";
-      ctx.font = "11px Segoe UI,sans-serif";
-      ctx.fillText(n.id, n.x, n.y + n.r + 12);
-    });
-    ctx.restore();
-  }
-
-  function loop() {
-    for (let i = 0; i < 2; i++) step();
-    draw();
-    requestAnimationFrame(loop);
-  }
-  loop();
-
-  function world(ev) {
-    const rect = canvas.getBoundingClientRect();
-    const x = (ev.clientX - rect.left - ox) / scale;
-    const y = (ev.clientY - rect.top - oy) / scale;
-    return { x, y };
-  }
-  function hit(p) {
-    for (let i = nodes.length - 1; i >= 0; i--) {
-      const n = nodes[i];
-      if (Math.hypot(p.x - n.x, p.y - n.y) <= n.r + 4) return n;
-    }
-    return null;
-  }
-
-  canvas.addEventListener("pointerdown", (ev) => {
-    canvas.setPointerCapture(ev.pointerId);
-    const p = world(ev);
-    const n = hit(p);
-    if (n) {
-      drag = n; n.vx = n.vy = 0;
-      canvas.style.cursor = "grabbing";
-    } else {
-      pan = { x: ev.clientX - ox, y: ev.clientY - oy };
-      canvas.style.cursor = "grabbing";
-    }
-  });
-  canvas.addEventListener("pointermove", (ev) => {
-    if (drag) {
-      const p = world(ev);
-      drag.x = p.x; drag.y = p.y; drag.vx = drag.vy = 0;
-    } else if (pan) {
-      ox = ev.clientX - pan.x;
-      oy = ev.clientY - pan.y;
-    }
-  });
-  canvas.addEventListener("pointerup", () => {
-    drag = null; pan = null; canvas.style.cursor = "grab";
-  });
-  canvas.addEventListener("wheel", (ev) => {
-    ev.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    const mx = ev.clientX - rect.left;
-    const my = ev.clientY - rect.top;
-    const before = 1 / scale;
-    const factor = ev.deltaY < 0 ? 1.08 : 0.92;
-    scale = Math.min(2.5, Math.max(0.45, scale * factor));
-    // zoom toward cursor
-    ox = mx - (mx - ox) * (scale * before);
-    oy = my - (my - oy) * (scale * before);
-  }, { passive: false });
-
-  window.addEventListener("resize", () => {
-    const s = resize();
-    w = s.w; h = s.h;
-  });
-})();
-</script>
 </body>
 </html>

@@ -1,0 +1,122 @@
+{
+  "meta": {
+    "date": "2026-07-13",
+    "platform": "forum.example",
+    "language": "en",
+    "protocol": "L1–L5 · MBTI · CIA-SAT · synthetic"
+  },
+  "target": { "id": "relay_ops", "nick": "relay_ops" },
+  "viewer": { "id": "north_packet" },
+  "distance": "neutral",
+  "confidence": "medium",
+  "confidence_score": 72,
+  "tldr": "Verificationist craft peer on CI/observability. Soft-engage on flaky systems; neutral default community peer; avoid vendor cheer without repro. Not avoid.",
+  "recommendation": "neutral default · soft-engage on CI rollback/obs · caution on empty vendor flex",
+  "corpus": { "posts": 12, "comments": 40, "likes": 8 },
+  "honesty": {
+    "posts_pct": 100,
+    "comments_pct": 33,
+    "likes_pct": 18,
+    "posts_status": "done",
+    "comments_status": "partial",
+    "likes_status": "partial",
+    "posts_note": "12/12 bodies",
+    "comments_note": "40/120 recent-only cap",
+    "likes_note": "8/45 sparse pages",
+    "note": "Synthetic demo · platform caps: comments recent-only · likes sparse"
+  },
+  "matrix": {
+    "worldview_fit": "high (craft)",
+    "alliance_fit": "soft-engage",
+    "stability": "high",
+    "drift": "brand non-mono / threshold mono",
+    "risk": "low interpersonal",
+    "one_line": "verificationist · domain trust high · not empty flex",
+    "worldview_score": 78,
+    "alliance_score": 70,
+    "stability_score": 82,
+    "risk_score": 22
+  },
+  "big5": { "O": 58, "C": 78, "E": 35, "A": 42, "N": 40 },
+  "identity": {
+    "bullets": [
+      "Self-hosted runners / red-build postmortems",
+      "Vendor X praise then cancel under same verification bar",
+      "Keyboard hobby + CI craft identity",
+      "Low soft-friendship signal; high domain peer signal"
+    ],
+    "not_seen": "Chronic personal hostility; pure status theater"
+  },
+  "trigger": {
+    "url": "https://forum.example/t/demo",
+    "summary": "Synthetic trigger thread: Vendor X v4 cancel after measurement fail."
+  },
+  "spectrograph": {
+    "L1": "High C · low-mid E · conflict via criteria not insult.",
+    "L2": "Pragmatic over sacred · liberty on tooling · individual craft.",
+    "L3": "Stable verification threshold; brand stance can flip without personality flip.",
+    "L4": "Domain trust high · convert/persuade ROI low.",
+    "L5": "2024 join → 2025 red-build → 2026 Vendor X cancel."
+  },
+  "timeline": [
+    { "t": "2024-11", "label": "join · keyboards", "color": "#64748b" },
+    { "t": "2025-03", "label": "red-build series", "color": "#38bdf8" },
+    { "t": "2025-08", "label": "Vendor X v3 praise", "color": "#a78bfa" },
+    { "t": "2026-02", "label": "self-hosted runners", "color": "#2dd4bf" },
+    { "t": "2026-07", "label": "Vendor X v4 cancel", "color": "#fbbf24", "note": "Drift: brand non-monotonic · verification threshold monotonic" }
+  ],
+  "distance_ops": [
+    { "tag": "engage", "when": "CI flakiness / rollback / observability" },
+    { "tag": "neutral", "when": "Default community peer" },
+    { "tag": "caution", "when": "Vendor cheer without repro steps" },
+    { "tag": "avoid", "when": "Chronic interpersonal harm — no evidence" }
+  ],
+  "alliance_bars": [
+    ["Domain trust", 88, "teal"],
+    ["Craft peer", 80, "sky"],
+    ["Soft friendship", 25, "amber"],
+    ["Vendor brand ally", 15, "rose"],
+    ["Convert / persuade", 10, "rose"]
+  ],
+  "mbti": {
+    "type": "ISTJ",
+    "leans": { "E": 30, "I": 70, "S": 62, "N": 38, "T": 80, "F": 20, "J": 75, "P": 25 },
+    "engage_cost": "Low drama · high criteria · meeting-light preferred",
+    "confidence": "medium"
+  },
+  "drivers": { "resource": 2, "control": 3, "status": 1, "belonging": 2, "autonomy": 3 },
+  "ach": [
+    { "id": "H1", "label": "Verificationist", "status": "lead", "score": 92 },
+    { "id": "H2", "label": "Empty flex", "status": "fail", "score": 18 },
+    { "id": "H3", "label": "Ideologue", "status": "weak", "score": 28 },
+    { "id": "H4", "label": "Hostility→viewer", "status": "fail", "score": 12 }
+  ],
+  "cia": {
+    "drivers": { "resource": 2, "control": 3, "status": 1, "belonging": 2, "autonomy": 3 },
+    "ach": [
+      { "id": "H1", "label": "Verificationist", "status": "lead", "score": 92 },
+      { "id": "H2", "label": "Empty flex", "status": "fail", "score": 18 },
+      { "id": "H3", "label": "Ideologue", "status": "weak", "score": 28 },
+      { "id": "H4", "label": "Hostility→viewer", "status": "fail", "score": 12 }
+    ],
+    "card": "SUBJECT   relay_ops / oauth_demo_91\nBIO       forum craft peer · CI/obs · keyboards\nCHARACTER verificationist · dry · low status theater\nSTRENGTHS repro steps · rollback discipline\nPRESSURE  vendor cheer threads (time cost if empty)\nAPPROACH  CI/obs tickets · AVOID brand wars\nASSESS    NEUTRAL–soft ENGAGE · conf medium\nLEAD H    H1 verificationist"
+  },
+  "quotes": [
+    { "label": "POST", "timestamp": "2026-07", "text": "[synthetic] Cancelled Vendor X v4 after load test failed our SLO gate — same bar as last year." },
+    { "label": "CMT", "timestamp": "2026-02", "text": "[synthetic] Self-hosted runners cut queue time 40%; here's the dashboard." }
+  ],
+  "cross_check": [
+    "Does craft peer feel right vs empty-flex?",
+    "Any brand-war fatigue not captured?",
+    "keep neutral / soft-engage / revise"
+  ],
+  "files": {
+    "html": "docs/sample-community-report.html",
+    "note": "synthetic public demo"
+  },
+  "source_mix": [
+    ["community_post", 12, "#2dd4bf"],
+    ["community_comment", 40, "#38bdf8"],
+    ["sns_comment", 5, "#94a3b8"]
+  ]
+}

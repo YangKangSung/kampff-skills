@@ -61,10 +61,22 @@ cp docs/targets.template.json kampff-data/inbox/$(date +%Y-%m-%d)/targets.json
 | platform | url example | query keys |
 |----------|-------------|------------|
 | `community` | `https://www.clien.net/service/` | `author_id`, `author_display` |
-| `reddit` | `https://www.reddit.com/r/…/` | `author` |
-| `x` | `https://x.com/handle` | handle in url |
+| `reddit` | `https://www.reddit.com/r/…/` | `username` / `author` |
+| `x` | `https://x.com/handle` | `username` / `user_id` |
+| `facebook` | Page URL | `page_id` |
+| `instagram` | profile URL | `ig_user_id`, `handle` |
+| `linkedin` | `file://linkedin-export` | `path` (export dir) |
 | `github` | `https://github.com/org/repo` | `author_login` |
 | `internal_web` | corp board URL | selectors + `author_display` |
+
+SNS OAuth/token/export 연결:
+
+```bash
+kampff-collect connect setup --platform x|reddit|facebook|instagram|linkedin
+kampff-collect connect status
+```
+
+→ [sns-connection-setup.md](sns-connection-setup.md) · sample: [sample-targets-sns.json](sample-targets-sns.json)
 
 ## 4) Pipeline
 
