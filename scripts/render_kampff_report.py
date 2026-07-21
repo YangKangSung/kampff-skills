@@ -501,6 +501,20 @@ pre.dossier{background:#070b10;border:1px solid var(--line);border-radius:12px;p
 .q figcaption{color:var(--muted);font-size:.78rem;margin-bottom:6px}
 .q pre{white-space:pre-wrap;margin:0;font:13px/1.45 var(--mono);color:#d5deea}
 .muted{color:var(--muted);font-size:12.5px}
+.cp-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.cp-actions button{
+  font:inherit;cursor:pointer;border-radius:10px;padding:8px 14px;
+  border:1px solid var(--line);background:#0d1520;color:var(--text);
+}
+.cp-actions button.primary{border-color:#1e4d45;background:#0c1c28;color:var(--accent)}
+.cp-actions button:hover{filter:brightness(1.08)}
+.cp-out{
+  width:100%;min-height:140px;box-sizing:border-box;resize:vertical;
+  font:14px/1.55 var(--sans);color:var(--text);
+  background:#070b10;border:1px solid #1e4d45;border-radius:12px;padding:12px 14px;
+}
+.cp-status{font-size:12px;color:var(--muted);min-height:1.2em;margin-top:6px}
+
 footer{margin-top:24px;color:var(--muted);font-size:11px;text-align:center}
 a{color:var(--accent2)}
 @media print{
@@ -510,6 +524,8 @@ a{color:var(--accent2)}
   .chart-box{background:#f8fafc;border-color:#ddd}
 }
 """
+KAMPFF_CP_JS = '\n<script id="kampff-cp-js">\n(function(){\n  function seed(){\n    var el = document.getElementById(\'kampff-cp-seed\');\n    if(!el) return {};\n    try { return JSON.parse(el.textContent || \'{}\'); } catch(e){ return {}; }\n  }\n  function softTopic(s){\n    s = String(s||\'\');\n    s = s.replace(/\\b(caution|avoid|engage|ops ROI|distance|worldview|alliance)\\b/gi, \'\');\n    s = s.replace(/\\s{2,}/g, \' \').trim();\n    if (s.length > 160) s = s.slice(0, 157) + \'\\u2026\';\n    return s;\n  }\n  function generate(){\n    var d = seed();\n    if (d.preset && String(d.preset).trim()) return String(d.preset).trim();\n    var board = d.board || d.platform || \'\\uac8c\\uc2dc\\ud310\';\n    var nick = d.nick || d.id || \'\\uc791\\uc131\\uc790\\ubd84\';\n    var topic = softTopic(d.trigger || d.one_line || d.tldr || \'\');\n    var lines = [];\n    lines.push(\'\\uc548\\ub155\\ud558\\uc138\\uc694. \' + board + \' \\uae00\\uc744 \\uc77d\\ub2e4\\uac00 \\ub0a8\\uae30\\ub294 \\uac1c\\uc778 \\uc758\\uacac\\uc785\\ub2c8\\ub2e4.\');\n    lines.push(\'\');\n    if (topic) {\n      lines.push(\'\\uacf5\\uac1c\\ub41c \\uae00\\u00b7\\ub313\\uae00\\ub9cc \\uae30\\uc900\\uc73c\\ub85c \\ubcf4\\uba74, \\uc778\\uc0c1\\uc740 \\ub300\\ub7b5 \\uc774\\ub7f0 \\ucabd\\uc774\\uc5c8\\uc2b5\\ub2c8\\ub2e4: \' + topic);\n      lines.push(\'\');\n    } else {\n      lines.push(nick + \' \\ub2d8 \\uae00/\\ub313\\uae00 \\uc911 \\uacf5\\uac1c\\ub41c \\ubc94\\uc704\\ub9cc \\ubcf4\\uace0 \\uc801\\uc2b5\\ub2c8\\ub2e4. \\ud45c\\ubcf8\\uc774 \\ud55c\\uc815\\ub418\\uc5b4 \\ub2e8\\uc815\\uc740 \\ud558\\uc9c0 \\uc54a\\uaca0\\uc2b5\\ub2c8\\ub2e4.\');\n      lines.push(\'\');\n    }\n    lines.push(\'\\uc804\\uc81c\\uac00 \\uc0ac\\ub78c\\ub9c8\\ub2e4 \\ub2e4\\ub97c \\uc218 \\uc788\\uc5b4\\uc11c, \\uc124\\ub4dd\\ud558\\uac70\\ub098 \\uc7ac\\ub2e8\\ud558\\uae30\\ubcf4\\ub2e4 \\uad00\\ucc30 \\uc218\\uc900\\uc73c\\ub85c\\ub9cc \\ub0a8\\uae41\\ub2c8\\ub2e4.\');\n    lines.push(\'\\uc11c\\ub85c \\ubd80\\ub2f4 \\ub358 \\uac00\\ub294 \\uc120\\uc5d0\\uc11c \\uc774\\uc57c\\uae30 \\uc774\\uc5b4\\uac00\\uba74 \\uc88b\\uaca0\\uc2b5\\ub2c8\\ub2e4. \\uc81c\\uac00 \\uc624\\ud574\\ud55c \\uc9c0\\uc810 \\uc788\\uc73c\\uba74 \\ud3b8\\ud558\\uac8c \\uc815\\uc815\\ud574 \\uc8fc\\uc138\\uc694.\');\n    lines.push(\'\');\n    lines.push(\'\\uac10\\uc0ac\\ud569\\ub2c8\\ub2e4.\');\n    return lines.join(\'\\n\');\n  }\n  function $(id){ return document.getElementById(id); }\n  var out = $(\'cpOut\'), st = $(\'cpStatus\');\n  var gen = $(\'cpGen\'), copy = $(\'cpCopy\'), clr = $(\'cpClear\');\n  if (gen) gen.addEventListener(\'click\', function(){\n    out.value = generate();\n    st.textContent = \'generated · edit before posting\';\n  });\n  if (copy) copy.addEventListener(\'click\', async function(){\n    if (!out.value.trim()) out.value = generate();\n    try {\n      await navigator.clipboard.writeText(out.value);\n      st.textContent = \'copied to clipboard\';\n    } catch (e) {\n      out.focus(); out.select();\n      try { document.execCommand(\'copy\'); st.textContent = \'copied (fallback)\'; }\n      catch (e2) { st.textContent = \'copy failed — select manually\'; }\n    }\n  });\n  if (clr) clr.addEventListener(\'click\', function(){ out.value = \'\'; st.textContent = \'cleared\'; });\n})();\n</script>\n'
+
 
 
 def render(analysis: dict, bundle: dict | None = None) -> str:
@@ -788,6 +804,43 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
 
     donut = svg_donut(sources) if sources else '<p class="muted">No source mix</p>'
 
+
+    # community post Generate+Copy seed (section HTML; JS attached after f-string)
+    _cp = analysis.get("community_post") or analysis.get("community_voice") or {}
+    if isinstance(_cp, str):
+        _cp = {"text_ko": _cp}
+    if not isinstance(_cp, dict):
+        _cp = {}
+    cp_seed = {
+        "nick": nick,
+        "id": tid,
+        "platform": platform,
+        "board": (_cp.get("board") or _cp.get("board_hint") or platform or "park"),
+        "tldr": tldr,
+        "one_line": (matrix.get("one_line") if isinstance(matrix, dict) else "") or "",
+        "preset": (_cp.get("text_ko") or _cp.get("text") or _cp.get("body") or "").strip(),
+        "trigger": (trigger.get("summary") if isinstance(trigger, dict) else "") or "",
+    }
+    cp_seed_json = esc(json.dumps(cp_seed, ensure_ascii=False))
+    community_section = (
+        '<section class="card" id="community-post">'
+        '<h2><span class="n">1b</span> Community post '
+        '<span class="muted" style="font-weight:500;font-size:12px">정중 초안 · Generate / Copy</span></h2>'
+        '<p class="muted">커뮤니티에 올릴 <b>정중 개인 의견</b> 초안. 내부 distance 태그 그대로 쓰지 않음. '
+        "신상·단정·진단 금지. 게시 전 직접 다듬을 것.</p>"
+        '<div class="cp-actions">'
+        '<button type="button" class="primary" id="cpGen">Generate</button>'
+        '<button type="button" id="cpCopy">Copy</button>'
+        '<button type="button" id="cpClear">Clear</button>'
+        "</div>"
+        '<textarea class="cp-out" id="cpOut" placeholder="Generate를 누르면 초안이 채워집니다."></textarea>'
+        '<div class="cp-status" id="cpStatus">ready</div>'
+        '<p class="muted" style="margin-top:10px"><b>Do not post:</b> 실명·연락처·직장 · 미확인 동일인 · '
+        "범죄/비위 단정 · 진단 · ops 태그(caution/avoid) 노출</p>"
+        f'<script type="application/json" id="kampff-cp-seed">{cp_seed_json}</script>'
+        "</section>"
+    )
+
     html = f'''<!DOCTYPE html>
 <html lang="{esc(meta.get("language","ko"))}">
 <head>
@@ -821,6 +874,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     <a href="#graphs">Graphs</a>
     <a href="#honesty">Collect</a>
     <a href="#distance">Distance</a>
+    <a href="#community-post">Community post</a>
     <a href="#identity">Identity</a>
     <a href="#spectro">L1–L5</a>
     <a href="#mbti">MBTI</a>
@@ -933,6 +987,8 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     <p><b>Recommendation:</b> {pill(distance)} — {esc(analysis.get("recommendation") or tldr)}</p>
   </section>
 
+  {community_section}
+
   <section class="card" id="identity">
     <h2><span class="n">2</span> Identity</h2>
     <ul>{id_ul or "<li class='muted'>No bullets</li>"}</ul>
@@ -997,6 +1053,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
 </div>
 </body>
 </html>'''
+    html = html.replace("</body>", KAMPFF_CP_JS + "</body>", 1)
     return html
 
 
