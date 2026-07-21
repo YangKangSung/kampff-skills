@@ -25,7 +25,7 @@ python scripts/render_kampff_report.py \
 
 3. Open HTML for operator. Optional md twin from same analysis.
 
-Graphs included automatically: drivers radar · MBTI radar · Big Five bars · confidence gauge · honesty triad · ACH · source donut · alliance bars · L5 timeline · distance map · fit snapshot.
+Graphs included automatically: drivers radar · MBTI radar · Big Five bars · defense levels · confidence gauge · honesty triad · ACH · source donut · alliance bars · L5 timeline · distance map · fit snapshot.
 
 ## Content order (analysis fields → HTML sections)
 
@@ -56,6 +56,10 @@ merged into §1 in HTML; keep explicit in md twin
 ### §6 MBTI (fun · low validity)
 `mbti` — default ON community
 
+### §6b Clinical / psychologist (비진단 · formulation)
+`clinical_psych` — default ON community; see `docs/lenses-clinical-psych.md`  
+**Not DSM/ICD.** Defenses · affect · attachment signals · interpersonal script · C-hypotheses.
+
 ### §7 CIA / KGB-style card
 `cia.card` + drivers + ACH — default ON community
 
@@ -66,7 +70,7 @@ merged into §1 in HTML; keep explicit in md twin
 `files` paths
 
 ### Footer
-Not medical/legal. MBTI entertainment. Tradecraft public form only.
+Not medical/legal. MBTI entertainment. Clinical_psych = public-text formulation only. Tradecraft public form only.
 
 ## Distance tags
 

@@ -26,13 +26,30 @@ Pass to `scripts/render_kampff_report.py --analysis …`.
   "identity": { "bullets": ["…"], "not_seen": "" },
   "trigger": { "url": "", "summary": "" },
   "spectrograph": { "L1": "", "L2": "", "L3": "", "L4": "", "L5": "" },
-  "timeline": [{ "t": "label", "label": "event", "color": "#hex", "note": "" }],
+  "timeline": [{ "t": "YYYY-MM", "label": "event", "color": "#hex", "n": 12, "note": "" }],
+  // n|count|activity|weight|volume = activity volume; HTML node radius ∝ sqrt(n)
   "distance_ops": [{ "tag": "neutral", "when": "…" }],
   "alliance_bars": [["label", 0-100, "teal|sky|amber|rose|violet"]],
   "mbti": {
     "type": "INTJ",
     "leans": { "E": 0-100, "I": 0-100, "S": 0-100, "N": 0-100, "T": 0-100, "F": 0-100, "J": 0-100, "P": 0-100 },
     "engage_cost": "", "confidence": "low"
+  },
+  "clinical_psych": {
+    "enabled": true,
+    "disclaimer": "Public-text formulation only — not diagnosis, not treatment.",
+    "confidence": "low|medium",
+    "one_line": "",
+    "affect": { "pattern": "", "triggers": [], "score_volatility": 0-100 },
+    "defenses": [{ "name": "splitting|projection|…", "level": 0-3, "evidence": "" }],
+    "attachment": { "signals": "anxious|avoidant|secure-lean|mixed", "note": "" },
+    "cognition": { "style": "", "rigidity": 0-100, "mentalization": 0-100 },
+    "self_other": { "pattern": "", "note": "" },
+    "interpersonal": { "script": "", "repair": "low|mid|high" },
+    "ego_threat": { "response": "", "note": "" },
+    "hypotheses": [{ "id": "C1", "label": "", "status": "lead|weak|fail", "score": 0-100 }],
+    "not_claimed": ["No DSM/ICD diagnosis"],
+    "distance_bridge": ""
   },
   "drivers": { "resource": 0-3, "control": 0-3, "status": 0-3, "belonging": 0-3, "autonomy": 0-3 },
   "ach": [{ "id": "H1", "label": "", "status": "lead|weak|fail", "score": 0-100 }],

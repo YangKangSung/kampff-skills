@@ -37,17 +37,31 @@ prebuilt:
     transport: rest
     auth: bearer
     tags: [sns, public]
+    note: "connect setup → kampff-collect connect setup --platform x"
+  - id: facebook
+    label: Facebook (Graph / export)
+    transport: rest
+    auth: bearer
+    tags: [sns, public]
+    note: "Page token or data download — connect setup --platform facebook"
+  - id: instagram
+    label: Instagram (Graph / export)
+    transport: rest
+    auth: bearer
+    tags: [sns, public]
+    note: "Business Graph or export — connect setup --platform instagram"
   - id: reddit
     label: Reddit
     transport: rest
     auth: oauth
     tags: [sns, community]
+    note: "connect setup → kampff-collect connect setup --platform reddit"
   - id: linkedin
     label: LinkedIn
     transport: file
     auth: none
     tags: [sns, export]
-    note: Official API restricted — use member data export zip
+    note: Official member export zip — connect setup --platform linkedin
   - id: discord
     label: Discord
     transport: file

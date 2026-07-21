@@ -33,6 +33,11 @@ endpoints:
     path: /user/{{ query.username }}/comments
     params:
       limit: "{{ query.limit | default(100) }}"
+  subreddit_new:
+    method: GET
+    path: /r/{{ query.subreddit }}/new
+    params:
+      limit: "{{ query.limit | default(100) }}"
 
 mapping:
   post:
@@ -49,3 +54,53 @@ mapping:
     timestamp: "{{ data.created_utc }}"
     url: "https://reddit.com{{ data.permalink }}"
     thread_id: "{{ data.link_id }}"
+
+connection:
+  preferred_mode: script_oauth
+  modes:
+    - id: script_oauth
+      label: Reddit "script" app (OAuth password grant for your bot account)
+      auth_type: oauth
+      env:
+        client_id: REDDIT_CLIENT_ID
+        client_secret: REDDIT_CLIENT_SECRET
+        user_agent: REDDIT_USER_AGENT
+        username: REDDIT_USERNAME
+        password: REDDIT_PASSWORD
+      steps:
+        - Go to https://www.reddit.com/prefs/apps → create app type "script"
+        - Set a descriptive user_agent (e.g. "kampff-collect/0.1 by u/yourname")
+        - Put client id/secret + bot account creds in env only
+        - "kampff-collect connect setup --platform reddit --ref reddit_oauth --mode script_oauth"
+        - Prefer a dedicated bot account; never paste password into agent chat
+    - id: installed_app
+      label: Installed app (refresh token / browser once)
+      auth_type: oauth_refresh
+      env:
+        client_id: REDDIT_CLIENT_ID
+        refresh_token: REDDIT_REFRESH_TOKEN
+        user_agent: REDDIT_USER_AGENT
+      steps:
+        - Create "installed app" at reddit.com/prefs/apps
+        - Complete OAuth once on your machine; store refresh_token in env
+        - "kampff-collect connect setup --platform reddit --ref reddit_oauth --mode installed_app"
+    - id: public_json
+      label: Public .json endpoints (no OAuth, heavily rate-limited)
+      auth_type: none
+      env: {}
+      steps:
+        - Guest JSON is fragile and rate-limited — use only for smoke tests
+        - Prefer OAuth modes for real runs
+        - "kampff-collect connect setup --platform reddit --ref reddit_public --mode public_json"
+  targets_snippet:
+    platform: reddit
+    url: "https://www.reddit.com/r/{subreddit}/"
+    scope: "user:{username}"
+    collect: ["post", "comment"]
+    auth_ref: reddit_oauth
+    query:
+      username: ""
+      subreddit: ""
+      limit: 100
+  lawful_note: >-
+    Reddit API terms + rate limits apply. Public posts/comments only unless you own private data exports.

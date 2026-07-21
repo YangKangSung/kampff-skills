@@ -1,0 +1,95 @@
+id: instagram
+label: Instagram (Graph API / export)
+prebuilt: true
+transport: rest
+auth: bearer
+base_url_from: fixed
+base_url: https://graph.facebook.com
+
+capabilities:
+  - post
+  - comment
+
+scopes:
+  - business:{ig_user_id}
+  - profile:{username}
+
+collect_types:
+  post:
+    source: sns_post
+    type: post
+  comment:
+    source: sns_comment
+    type: comment
+
+endpoints:
+  media:
+    method: GET
+    path: /{{ query.ig_user_id }}/media
+    params:
+      fields: "id,caption,timestamp,permalink,username"
+      limit: "{{ query.limit | default(50) }}"
+      access_token: "{{ auth.token }}"
+  media_comments:
+    method: GET
+    path: /{{ query.media_id }}/comments
+    params:
+      fields: "id,text,timestamp,username"
+      limit: "{{ query.limit | default(50) }}"
+      access_token: "{{ auth.token }}"
+
+mapping:
+  post:
+    list_path: data
+    content: "{{ caption }}"
+    author: "{{ username }}"
+    timestamp: "{{ timestamp }}"
+    url: "{{ permalink }}"
+    thread_id: "{{ id }}"
+  comment:
+    list_path: data
+    content: "{{ text }}"
+    author: "{{ username }}"
+    timestamp: "{{ timestamp }}"
+    url: "https://www.instagram.com/p/{{ query.media_shortcode }}/"
+    thread_id: "{{ id }}"
+
+connection:
+  preferred_mode: graph_business
+  modes:
+    - id: graph_business
+      label: Instagram Graph API (Business/Creator linked to Page)
+      auth_type: bearer
+      env:
+        token: INSTAGRAM_ACCESS_TOKEN
+        ig_user_id: INSTAGRAM_IG_USER_ID
+      steps:
+        - Convert/link Instagram to a Professional account connected to a Facebook Page
+        - Meta developer app → Instagram Graph API
+        - Obtain long-lived Page token with instagram_basic, pages_show_list, instagram_manage_comments (minimum needed)
+        - Resolve ig_user_id via Graph; store token in env only
+        - "kampff-collect connect setup --platform instagram --ref instagram_graph --mode graph_business"
+    - id: data_export
+      label: Instagram data download (your account)
+      auth_type: file_export
+      transport: file
+      env:
+        export_dir: INSTAGRAM_EXPORT_DIR
+      steps:
+        - Instagram → Your activity → Download your information (or Accounts Center)
+        - Unzip JSON/HTML pack outside git
+        - "set INSTAGRAM_EXPORT_DIR=/path/to/export"
+        - "kampff-collect connect setup --platform instagram --ref instagram_export --mode data_export"
+  targets_snippet:
+    platform: instagram
+    url: "https://www.instagram.com/{handle}/"
+    scope: "business:{ig_user_id}"
+    collect: ["post", "comment"]
+    auth_ref: instagram_graph
+    query:
+      ig_user_id: ""
+      handle: ""
+      limit: 50
+  lawful_note: >-
+    Graph covers Business/Creator accounts you control. Personal scrape is out of scope.
+    Prefer official export for self-dossier when API is unavailable.

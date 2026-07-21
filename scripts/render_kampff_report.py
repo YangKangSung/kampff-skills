@@ -161,30 +161,75 @@ def svg_gauge(score: float, label: str = "confidence") -> str:
 </svg>'''
 
 
+def timeline_activity(ev: dict) -> float:
+    """Activity volume for a timeline node (texts / weight)."""
+    for k in ("n", "count", "activity", "weight", "volume"):
+        if ev.get(k) is None:
+            continue
+        try:
+            v = float(ev[k])
+            if v >= 0:
+                return v
+        except (TypeError, ValueError):
+            continue
+    return 0.0
+
+
 def svg_timeline(events: list[dict]) -> str:
-    """events: {t, label, color?} sorted."""
+    """events: {t, label, color?, n|count|activity?} — node radius ∝ activity."""
     if not events:
         return '<p class="muted">No timeline events.</p>'
     w = 1040
-    h = 150
-    pad = 50
+    h = 168
+    pad = 56
     n = len(events)
     xs = [pad + i * (w - 2 * pad) / max(n - 1, 1) for i in range(n)]
-    line = f'<line x1="{pad}" y1="70" x2="{w-pad}" y2="70" stroke="#334155" stroke-width="2"/>'
+    acts = [timeline_activity(ev) for ev in events]
+    # If no activity provided, fall back to equal mid size (not index-ramp).
+    if max(acts) <= 0:
+        acts = [1.0] * n
+    # sqrt scale so large bursts don't swallow the axis
+    sacts = [math.sqrt(a) for a in acts]
+    lo, hi = min(sacts), max(sacts)
+    r_min, r_max = 6.0, 22.0
+
+    def radius(sa: float) -> float:
+        if hi <= lo:
+            return (r_min + r_max) / 2
+        return r_min + (sa - lo) / (hi - lo) * (r_max - r_min)
+
+    cy = 78
+    line = f'<line x1="{pad}" y1="{cy}" x2="{w-pad}" y2="{cy}" stroke="#334155" stroke-width="2"/>'
     nodes = []
-    for i, (ev, x) in enumerate(zip(events, xs)):
+    for i, (ev, x, a, sa) in enumerate(zip(events, xs, acts, sacts)):
         col = ev.get("color") or ("#2dd4bf" if i == n - 1 else "#38bdf8")
-        r = 7 + min(i, 4)
+        r = radius(sa)
+        lab = esc(ev.get("label", ""))[:28]
+        tlab = esc(ev.get("t", ""))
+        # count badge: prefer integer activity
+        a_int = int(round(a)) if a > 0 else 0
+        title = esc(f'{ev.get("t","")} · {ev.get("label","")} · n={a_int}')
+        # label y pushes down for fat nodes
+        lab_y = cy + r + 16
+        count_fill = "#0b0f14" if r >= 11 else col
+        count_txt = f"{a_int}" if a_int > 0 else ""
+        count_fs = 10 if r >= 12 else 9
         nodes.append(
-            f'<circle cx="{x:.0f}" cy="70" r="{r}" fill="{col}"/>'
-            f'<text x="{x:.0f}" y="42" text-anchor="middle" fill="#94a3b8" font-size="11">{esc(ev.get("t",""))}</text>'
-            f'<text x="{x:.0f}" y="100" text-anchor="middle" fill="#64748b" font-size="10">{esc(ev.get("label",""))[:28]}</text>'
+            f'<g class="tl-node" data-n="{a_int}">'
+            f'<title>{title}</title>'
+            f'<circle cx="{x:.0f}" cy="{cy}" r="{r:.1f}" fill="{col}" fill-opacity="0.92" stroke="#0b0f14" stroke-width="1.2"/>'
+            f'<text x="{x:.0f}" y="{cy + 4:.0f}" text-anchor="middle" fill="{count_fill if r >= 11 else "#e7eef8"}" '
+            f'font-size="{count_fs}" font-family="ui-monospace,monospace" font-weight="700">{count_txt}</text>'
+            f'<text x="{x:.0f}" y="{cy - r - 10:.0f}" text-anchor="middle" fill="#94a3b8" font-size="11">{tlab}</text>'
+            f'<text x="{x:.0f}" y="{lab_y:.0f}" text-anchor="middle" fill="#64748b" font-size="10">{lab}</text>'
+            f"</g>"
         )
     note = esc(events[-1].get("note", "")) if events else ""
-    return f'''<svg viewBox="0 0 {w} {h}" role="img" aria-label="ephemeris timeline">
+    legend = "node size ∝ activity (n = texts in bucket)"
+    return f'''<svg viewBox="0 0 {w} {h}" role="img" aria-label="ephemeris timeline (node size proportional to activity)">
   {line}
   {"".join(nodes)}
-  <text x="{pad}" y="{h-10}" fill="#64748b" font-size="11">{note}</text>
+  <text x="{pad}" y="{h - 8}" fill="#64748b" font-size="11">{legend}{" · " + note if note else ""}</text>
 </svg>'''
 
 
@@ -246,6 +291,7 @@ def bundle_source_counts(bundle: dict | None, person_id: str) -> list[tuple[str,
 
 
 def infer_timeline_from_bundle(bundle: dict | None, person_id: str, limit: int = 8) -> list[dict]:
+    """Month-bucket activity timeline: node n = text count in YYYY-MM."""
     if not bundle:
         return []
     texts = []
@@ -253,26 +299,111 @@ def infer_timeline_from_bundle(bundle: dict | None, person_id: str, limit: int =
         if p.get("id") == person_id:
             texts = p.get("texts") or []
             break
-    events = []
-    for t in sorted(texts, key=lambda x: x.get("timestamp") or ""):
-        ts = (t.get("timestamp") or "")[:10]
-        if not ts:
+    by_month: dict[str, list[dict]] = {}
+    for t in texts:
+        ts = (t.get("timestamp") or "")[:7]  # YYYY-MM
+        if len(ts) < 7:
             continue
-        src = t.get("type") or t.get("source") or ""
-        title = ""
-        content = t.get("content") or ""
-        m = re.search(r"\[title\]\s*(.+)", content)
-        if m:
-            title = m.group(1).split("\n")[0][:24]
+        by_month.setdefault(ts, []).append(t)
+    if not by_month:
+        return []
+    months = sorted(by_month.keys())
+    # if too many months, pick densest + edges
+    if len(months) > limit:
+        ranked = sorted(months, key=lambda m: (-len(by_month[m]), m))
+        keep = set(ranked[: max(limit - 2, 1)])
+        keep.add(months[0])
+        keep.add(months[-1])
+        months = [m for m in months if m in keep][:limit]
+        # ensure chronological
+        months = sorted(months)
+
+    events = []
+    for m in months:
+        bucket = by_month[m]
+        # pick a representative label from longest content / first post title
+        label = m
+        best = ""
+        for t in bucket:
+            content = t.get("content") or ""
+            mt = re.search(r"\[title\]\s*(.+)", content)
+            cand = (mt.group(1).split("\n")[0] if mt else content.replace("\n", " "))[:28]
+            if len(cand) > len(best):
+                best = cand
+        posts = sum(
+            1
+            for t in bucket
+            if (t.get("type") == "post") or (t.get("source") == "community_post")
+        )
+        cmts = len(bucket) - posts
+        if best:
+            label = best
+        elif posts and cmts:
+            label = f"{posts}p/{cmts}c"
+        elif posts:
+            label = f"{posts} posts"
         else:
-            title = content.replace("\n", " ")[:24]
-        events.append({"t": ts, "label": title or src, "color": "#38bdf8"})
-    # unique by day keep first+last density
-    if len(events) <= limit:
-        return events
-    step = max(1, len(events) // limit)
-    picked = events[::step][: limit - 1] + [events[-1]]
-    return picked
+            label = f"{cmts} cmts"
+        events.append(
+            {
+                "t": m,
+                "label": label,
+                "color": "#2dd4bf" if m == months[-1] else "#38bdf8",
+                "n": len(bucket),
+                "posts": posts,
+                "comments": cmts,
+            }
+        )
+    return events
+
+
+def enrich_timeline_activity(
+    timeline: list[dict], bundle: dict | None, person_id: str
+) -> list[dict]:
+    """Fill missing n/count from bundle month (or day) buckets. Keeps explicit n."""
+    if not timeline:
+        return timeline
+    if all(timeline_activity(ev) > 0 for ev in timeline):
+        return timeline
+    if not bundle:
+        return timeline
+    texts = []
+    for p in bundle.get("people") or []:
+        if p.get("id") == person_id:
+            texts = p.get("texts") or []
+            break
+    if not texts:
+        return timeline
+    by_month: Counter[str] = Counter()
+    by_day: Counter[str] = Counter()
+    for t in texts:
+        ts = t.get("timestamp") or ""
+        if len(ts) >= 7:
+            by_month[ts[:7]] += 1
+        if len(ts) >= 10:
+            by_day[ts[:10]] += 1
+    out = []
+    for ev in timeline:
+        e = dict(ev)
+        if timeline_activity(e) > 0:
+            out.append(e)
+            continue
+        key = str(e.get("t") or "")
+        n = 0
+        if len(key) >= 10 and key[:10] in by_day:
+            n = by_day[key[:10]]
+        elif len(key) >= 7 and key[:7] in by_month:
+            n = by_month[key[:7]]
+        else:
+            # fuzzy: any month key that startswith or is contained
+            for mk, mv in by_month.items():
+                if key.startswith(mk) or mk.startswith(key[:7]):
+                    n = mv
+                    break
+        if n > 0:
+            e["n"] = n
+        out.append(e)
+    return out
 
 
 # ── HTML assembly ────────────────────────────────────────────────────────────
@@ -393,7 +524,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     nick = target.get("nick") or tid
     date = meta.get("date") or datetime.now().strftime("%Y-%m-%d")
     platform = meta.get("platform") or "community"
-    protocol = meta.get("protocol") or "L1–L5 · MBTI · CIA-SAT"
+    protocol = meta.get("protocol") or "L1–L5 · MBTI · clinical · CIA-SAT"
 
     honesty = analysis.get("honesty") or {}
     posts_pct = float(honesty.get("posts_pct", 50))
@@ -406,12 +537,14 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     spectro = analysis.get("spectrograph") or analysis.get("l1_l5") or {}
     mbti = analysis.get("mbti") or {}
     cia = analysis.get("cia") or {}
+    clinical = analysis.get("clinical_psych") or analysis.get("psych") or {}
     ops = analysis.get("distance_ops") or []
     cross = analysis.get("cross_check") or []
     quotes = analysis.get("quotes") or []
     files = analysis.get("files") or {}
     trigger = analysis.get("trigger") or {}
     timeline = analysis.get("timeline") or infer_timeline_from_bundle(bundle, tid)
+    timeline = enrich_timeline_activity(timeline or [], bundle, tid)
     sources = analysis.get("source_mix") or bundle_source_counts(bundle, tid)
 
     # Big Five
@@ -456,6 +589,92 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
         {"id": "H2", "label": "alt", "status": "weak", "score": 35},
         {"id": "H3", "label": "noise", "status": "fail", "score": 15},
     ]
+
+    # Clinical / psychologist formulation (non-diagnostic)
+    clin_on = bool(clinical) and clinical.get("enabled", True) is not False
+    clin_one = clinical.get("one_line") or ""
+    clin_conf = clinical.get("confidence") or "low"
+    clin_disc = clinical.get("disclaimer") or (
+        "Public-text formulation only — not diagnosis, not treatment."
+    )
+    clin_affect = clinical.get("affect") or {}
+    clin_attach = clinical.get("attachment") or {}
+    clin_cog = clinical.get("cognition") or {}
+    clin_self = clinical.get("self_other") or {}
+    clin_ip = clinical.get("interpersonal") or {}
+    clin_ego = clinical.get("ego_threat") or {}
+    clin_bridge = clinical.get("distance_bridge") or ""
+    clin_not = clinical.get("not_claimed") or ["No DSM/ICD diagnosis"]
+    clin_defs = clinical.get("defenses") or []
+    clin_hyps = clinical.get("hypotheses") or []
+    # defense bars level 0-3 → 0-100
+    def_rows = []
+    for d in clin_defs[:8]:
+        if isinstance(d, dict):
+            lv = float(d.get("level", 0))
+            def_rows.append((str(d.get("name", "?"))[:18], min(100.0, lv * 33.3), "rose"))
+        elif isinstance(d, (list, tuple)) and len(d) >= 2:
+            def_rows.append((str(d[0])[:18], min(100.0, float(d[1]) * 33.3), "rose"))
+    clin_hyp_svg = svg_ach(clin_hyps) if clin_hyps else ""
+    clin_def_svg = svg_hbar_rows(def_rows) if def_rows else '<p class="muted">No defense ratings</p>'
+    clin_trig = clin_affect.get("triggers") or []
+    if isinstance(clin_trig, str):
+        clin_trig = [clin_trig]
+    clin_trig_html = "".join(f"<li>{esc(t)}</li>" for t in clin_trig) or "<li class='muted'>—</li>"
+    clin_not_html = "".join(f"<li>{esc(t)}</li>" for t in clin_not)
+    clin_section = ""
+    if clin_on and (clin_one or clin_defs or clin_hyps or clin_bridge):
+        clin_section = f'''
+  <section class="card" id="clinical">
+    <h2><span class="n">6b</span> Clinical / psychologist <span class="muted">(비진단 · formulation)</span></h2>
+    <div class="tldr" style="border-color:#f43f5e55"><b>Disclaimer</b> — {esc(clin_disc)}</div>
+    <p><b>One-line formulation:</b> {esc(clin_one) or "—"}</p>
+    <p class="muted">confidence: {esc(clin_conf)} · never sole distance reason · not DSM/ICD</p>
+    <div class="grid2" style="margin-top:12px">
+      <div class="chart-box">
+        <h3>Defense style (0–3 → bar)</h3>
+        {clin_def_svg}
+      </div>
+      <div class="chart-box">
+        <h3>C-hypotheses (formulation ACH)</h3>
+        {clin_hyp_svg or "<p class='muted'>No C-hypotheses</p>"}
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div>
+        <h3>Affect regulation</h3>
+        <p>{esc(clin_affect.get("pattern", "—"))}</p>
+        <p class="muted">volatility ~ {esc(str(clin_affect.get("score_volatility", "—")))}/100</p>
+        <ul>{clin_trig_html}</ul>
+      </div>
+      <div>
+        <h3>Attachment signals</h3>
+        <p><b>{esc(clin_attach.get("signals", "—"))}</b></p>
+        <p class="muted">{esc(clin_attach.get("note", ""))}</p>
+        <h3 style="margin-top:10px">Cognition</h3>
+        <p>{esc(clin_cog.get("style", "—"))}</p>
+        <p class="muted">rigidity {esc(str(clin_cog.get("rigidity", "—")))} · mentalization {esc(str(clin_cog.get("mentalization", "—")))}</p>
+      </div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div>
+        <h3>Self / other</h3>
+        <p>{esc(clin_self.get("pattern", "—"))}</p>
+        <p class="muted">{esc(clin_self.get("note", ""))}</p>
+      </div>
+      <div>
+        <h3>Interpersonal script</h3>
+        <p>{esc(clin_ip.get("script", "—"))}</p>
+        <p class="muted">repair: {esc(clin_ip.get("repair", "—"))}</p>
+        <h3 style="margin-top:10px">Ego threat response</h3>
+        <p>{esc(clin_ego.get("response", "—"))}</p>
+        <p class="muted">{esc(clin_ego.get("note", ""))}</p>
+      </div>
+    </div>
+    <p style="margin-top:12px"><b>Distance bridge:</b> {esc(clin_bridge) or "—"}</p>
+    <h3>Not claimed</h3>
+    <ul>{clin_not_html}</ul>
+  </section>'''
 
     alliance = analysis.get("alliance_bars") or [
         ("domain trust", float(matrix.get("alliance_score", 40)), "teal"),
@@ -588,6 +807,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
       <div class="chip"><b>Corpus</b>posts {esc(n_posts)} · cmts {esc(n_cmts)} · likes {esc(n_likes)}</div>
       <div class="chip"><b>Confidence</b>{esc(conf_label)} ({confidence:.0f})</div>
       <div class="chip"><b>MBTI</b>{esc(mbti_type)} · ACH {esc(ach_lead.get("id","H1"))}</div>
+      {f'<div class="chip"><b>Clinical</b>formulation · {esc(clin_conf)}</div>' if clin_on and clin_one else ''}
     </div>
     <div class="distance-banner {banner_cls}">
       <span style="font-size:12px;color:var(--muted)">Distance</span>
@@ -604,6 +824,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     <a href="#identity">Identity</a>
     <a href="#spectro">L1–L5</a>
     <a href="#mbti">MBTI</a>
+    {('<a href="#clinical">Clinical</a>' if clin_section else '')}
     <a href="#cia">CIA/KGB</a>
     <a href="#quotes">Evidence</a>
     <a href="#check">Cross-check</a>
@@ -736,6 +957,8 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     </div>
   </section>
 
+  {clin_section}
+
   <section class="card" id="cia">
     <h2><span class="n">7</span> CIA / KGB-style card</h2>
     <div class="grid2">
@@ -769,7 +992,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
   </section>
 
   <footer>
-    Kampff report · not medical/legal · MBTI entertainment · lawful sources only · {esc(date)}
+    Kampff report · not medical/legal · MBTI entertainment · clinical_psych = formulation only · lawful sources only · {esc(date)}
   </footer>
 </div>
 </body>

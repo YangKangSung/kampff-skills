@@ -27,3 +27,42 @@ file:
       content: "{{ ShareCommentary }}"
       timestamp: "{{ Date }}"
       url: "{{ ShareLink }}"
+
+connection:
+  preferred_mode: member_export
+  modes:
+    - id: member_export
+      label: Official LinkedIn data export (your account)
+      auth_type: file_export
+      transport: file
+      env:
+        export_dir: LINKEDIN_EXPORT_DIR
+      steps:
+        - LinkedIn → Settings & Privacy → Data privacy → Get a copy of your data
+        - Request "Want something in particular?" → Posts / Articles / Comments as needed
+        - Download zip when ready; unzip outside git (e.g. $KAMPFF_DATA/imports/linkedin/)
+        - "set LINKEDIN_EXPORT_DIR=/path/to/unzipped"
+        - "kampff-collect connect setup --platform linkedin --ref linkedin_export --mode member_export"
+        - targets.query.path points at that directory (or leave to auth profile path)
+    - id: marketing_api
+      label: LinkedIn Marketing / Community Management API (partner apps only)
+      auth_type: oauth
+      env:
+        client_id: LINKEDIN_CLIENT_ID
+        client_secret: LINKEDIN_CLIENT_SECRET
+        access_token: LINKEDIN_ACCESS_TOKEN
+      steps:
+        - Only if your org has approved LinkedIn developer products
+        - OAuth app credentials stay in env — never in targets.json
+        - "kampff-collect connect setup --platform linkedin --ref linkedin_api --mode marketing_api"
+        - Default kampff pack remains file export — API mapping is org-specific
+  targets_snippet:
+    platform: linkedin
+    url: "file://linkedin-export"
+    scope: export_package
+    collect: ["post", "comment"]
+    auth_ref: linkedin_export
+    query:
+      path: ""
+  lawful_note: >-
+    LinkedIn member/network scrape is out of scope. Use official export or approved APIs only.

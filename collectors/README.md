@@ -16,9 +16,15 @@ kampff-collect catalog --tags workplace
 kampff-collect show jira
 ```
 
-Jira · Confluence · GitHub · GitLab · Slack · Notion · Teams/Graph · X · Reddit · LinkedIn export · Discord export · Playwright 사내웹 · RSS …
+Jira · Confluence · GitHub · GitLab · Slack · Notion · Teams/Graph · **X · Facebook · Instagram · Reddit · LinkedIn** · Discord export · Playwright 사내웹 · RSS …
 
-→ [docs/prebuilt-platforms.md](../docs/prebuilt-platforms.md)
+→ [docs/prebuilt-platforms.md](../docs/prebuilt-platforms.md) · SNS connect: [docs/sns-connection-setup.md](../docs/sns-connection-setup.md)
+
+```bash
+kampff-collect connect list
+kampff-collect connect setup --platform x --ref x_api
+kampff-collect connect status
+```
 
 ## Custom (no fork)
 

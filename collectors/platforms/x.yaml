@@ -30,6 +30,11 @@ endpoints:
       max_results: "{{ query.limit | default(100) }}"
       tweet.fields: created_at,author_id,conversation_id
       start_time: "{{ query.since }}"
+  by_username:
+    method: GET
+    path: /2/users/by/username/{{ query.username }}
+    params:
+      user.fields: id,name,username
 
 mapping:
   post:
@@ -39,3 +44,45 @@ mapping:
     timestamp: "{{ created_at }}"
     url: "https://x.com/i/web/status/{{ id }}"
     thread_id: "{{ conversation_id }}"
+
+connection:
+  preferred_mode: api_bearer
+  modes:
+    - id: api_bearer
+      label: X API v2 Bearer (app-only)
+      auth_type: bearer
+      env:
+        token: X_BEARER_TOKEN
+      alt_env:
+        token: [TWITTER_BEARER_TOKEN, X_API_BEARER_TOKEN]
+      steps:
+        - Open https://developer.x.com/ and create a Project + App
+        - Copy the Bearer Token (app-only) for read endpoints you are entitled to
+        - "export X_BEARER_TOKEN=…   # Windows: setx X_BEARER_TOKEN …"
+        - "kampff-collect connect setup --platform x --ref x_api --mode api_bearer"
+        - "Optional - set query.user_id after username lookup"
+    - id: oauth_user
+      label: OAuth 1.0a / user context (elevated endpoints)
+      auth_type: oauth1
+      env:
+        api_key: X_API_KEY
+        api_secret: X_API_SECRET
+        access_token: X_ACCESS_TOKEN
+        access_token_secret: X_ACCESS_TOKEN_SECRET
+      steps:
+        - Same developer portal → user authentication keys for your account only
+        - Store four secrets in env — never in git or chat
+        - "kampff-collect connect setup --platform x --ref x_user --mode oauth_user"
+  targets_snippet:
+    platform: x
+    url: "https://x.com/{username}"
+    scope: "profile_by_username:{username}"
+    collect: ["post", "reply"]
+    auth_ref: x_api
+    query:
+      username: ""
+      user_id: ""
+      limit: 100
+      since: null
+  lawful_note: >-
+    Respect X API tiers, rate limits, and ToS. Public posts you may lawfully process only.

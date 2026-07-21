@@ -3,16 +3,25 @@
     "date": "2026-07-13",
     "platform": "forum.example",
     "language": "en",
-    "protocol": "L1–L5 · MBTI · CIA-SAT · synthetic"
+    "protocol": "L1–L5 · MBTI · clinical · CIA-SAT · synthetic"
   },
-  "target": { "id": "relay_ops", "nick": "relay_ops" },
-  "viewer": { "id": "north_packet" },
+  "target": {
+    "id": "relay_ops",
+    "nick": "relay_ops"
+  },
+  "viewer": {
+    "id": "north_packet"
+  },
   "distance": "neutral",
   "confidence": "medium",
   "confidence_score": 72,
   "tldr": "Verificationist craft peer on CI/observability. Soft-engage on flaky systems; neutral default community peer; avoid vendor cheer without repro. Not avoid.",
   "recommendation": "neutral default · soft-engage on CI rollback/obs · caution on empty vendor flex",
-  "corpus": { "posts": 12, "comments": 40, "likes": 8 },
+  "corpus": {
+    "posts": 12,
+    "comments": 40,
+    "likes": 8
+  },
   "honesty": {
     "posts_pct": 100,
     "comments_pct": 33,
@@ -37,7 +46,13 @@
     "stability_score": 82,
     "risk_score": 22
   },
-  "big5": { "O": 58, "C": 78, "E": 35, "A": 42, "N": 40 },
+  "big5": {
+    "O": 58,
+    "C": 78,
+    "E": 35,
+    "A": 42,
+    "N": 40
+  },
   "identity": {
     "bullets": [
       "Self-hosted runners / red-build postmortems",
@@ -59,51 +74,178 @@
     "L5": "2024 join → 2025 red-build → 2026 Vendor X cancel."
   },
   "timeline": [
-    { "t": "2024-11", "label": "join · keyboards", "color": "#64748b" },
-    { "t": "2025-03", "label": "red-build series", "color": "#38bdf8" },
-    { "t": "2025-08", "label": "Vendor X v3 praise", "color": "#a78bfa" },
-    { "t": "2026-02", "label": "self-hosted runners", "color": "#2dd4bf" },
-    { "t": "2026-07", "label": "Vendor X v4 cancel", "color": "#fbbf24", "note": "Drift: brand non-monotonic · verification threshold monotonic" }
+    {
+      "t": "2024-11",
+      "label": "join · keyboards",
+      "color": "#64748b",
+      "n": 4
+    },
+    {
+      "t": "2025-03",
+      "label": "red-build series",
+      "color": "#38bdf8",
+      "n": 12
+    },
+    {
+      "t": "2025-08",
+      "label": "Vendor X v3 praise",
+      "color": "#a78bfa",
+      "n": 7
+    },
+    {
+      "t": "2026-02",
+      "label": "self-hosted runners",
+      "color": "#2dd4bf",
+      "n": 15
+    },
+    {
+      "t": "2026-07",
+      "label": "Vendor X v4 cancel",
+      "color": "#fbbf24",
+      "note": "Drift: brand non-monotonic · verification threshold monotonic",
+      "n": 9
+    }
   ],
   "distance_ops": [
-    { "tag": "engage", "when": "CI flakiness / rollback / observability" },
-    { "tag": "neutral", "when": "Default community peer" },
-    { "tag": "caution", "when": "Vendor cheer without repro steps" },
-    { "tag": "avoid", "when": "Chronic interpersonal harm — no evidence" }
+    {
+      "tag": "engage",
+      "when": "CI flakiness / rollback / observability"
+    },
+    {
+      "tag": "neutral",
+      "when": "Default community peer"
+    },
+    {
+      "tag": "caution",
+      "when": "Vendor cheer without repro steps"
+    },
+    {
+      "tag": "avoid",
+      "when": "Chronic interpersonal harm — no evidence"
+    }
   ],
   "alliance_bars": [
-    ["Domain trust", 88, "teal"],
-    ["Craft peer", 80, "sky"],
-    ["Soft friendship", 25, "amber"],
-    ["Vendor brand ally", 15, "rose"],
-    ["Convert / persuade", 10, "rose"]
+    [
+      "Domain trust",
+      88,
+      "teal"
+    ],
+    [
+      "Craft peer",
+      80,
+      "sky"
+    ],
+    [
+      "Soft friendship",
+      25,
+      "amber"
+    ],
+    [
+      "Vendor brand ally",
+      15,
+      "rose"
+    ],
+    [
+      "Convert / persuade",
+      10,
+      "rose"
+    ]
   ],
   "mbti": {
     "type": "ISTJ",
-    "leans": { "E": 30, "I": 70, "S": 62, "N": 38, "T": 80, "F": 20, "J": 75, "P": 25 },
+    "leans": {
+      "E": 30,
+      "I": 70,
+      "S": 62,
+      "N": 38,
+      "T": 80,
+      "F": 20,
+      "J": 75,
+      "P": 25
+    },
     "engage_cost": "Low drama · high criteria · meeting-light preferred",
     "confidence": "medium"
   },
-  "drivers": { "resource": 2, "control": 3, "status": 1, "belonging": 2, "autonomy": 3 },
+  "drivers": {
+    "resource": 2,
+    "control": 3,
+    "status": 1,
+    "belonging": 2,
+    "autonomy": 3
+  },
   "ach": [
-    { "id": "H1", "label": "Verificationist", "status": "lead", "score": 92 },
-    { "id": "H2", "label": "Empty flex", "status": "fail", "score": 18 },
-    { "id": "H3", "label": "Ideologue", "status": "weak", "score": 28 },
-    { "id": "H4", "label": "Hostility→viewer", "status": "fail", "score": 12 }
+    {
+      "id": "H1",
+      "label": "Verificationist",
+      "status": "lead",
+      "score": 92
+    },
+    {
+      "id": "H2",
+      "label": "Empty flex",
+      "status": "fail",
+      "score": 18
+    },
+    {
+      "id": "H3",
+      "label": "Ideologue",
+      "status": "weak",
+      "score": 28
+    },
+    {
+      "id": "H4",
+      "label": "Hostility→viewer",
+      "status": "fail",
+      "score": 12
+    }
   ],
   "cia": {
-    "drivers": { "resource": 2, "control": 3, "status": 1, "belonging": 2, "autonomy": 3 },
+    "drivers": {
+      "resource": 2,
+      "control": 3,
+      "status": 1,
+      "belonging": 2,
+      "autonomy": 3
+    },
     "ach": [
-      { "id": "H1", "label": "Verificationist", "status": "lead", "score": 92 },
-      { "id": "H2", "label": "Empty flex", "status": "fail", "score": 18 },
-      { "id": "H3", "label": "Ideologue", "status": "weak", "score": 28 },
-      { "id": "H4", "label": "Hostility→viewer", "status": "fail", "score": 12 }
+      {
+        "id": "H1",
+        "label": "Verificationist",
+        "status": "lead",
+        "score": 92
+      },
+      {
+        "id": "H2",
+        "label": "Empty flex",
+        "status": "fail",
+        "score": 18
+      },
+      {
+        "id": "H3",
+        "label": "Ideologue",
+        "status": "weak",
+        "score": 28
+      },
+      {
+        "id": "H4",
+        "label": "Hostility→viewer",
+        "status": "fail",
+        "score": 12
+      }
     ],
     "card": "SUBJECT   relay_ops / oauth_demo_91\nBIO       forum craft peer · CI/obs · keyboards\nCHARACTER verificationist · dry · low status theater\nSTRENGTHS repro steps · rollback discipline\nPRESSURE  vendor cheer threads (time cost if empty)\nAPPROACH  CI/obs tickets · AVOID brand wars\nASSESS    NEUTRAL–soft ENGAGE · conf medium\nLEAD H    H1 verificationist"
   },
   "quotes": [
-    { "label": "POST", "timestamp": "2026-07", "text": "[synthetic] Cancelled Vendor X v4 after load test failed our SLO gate — same bar as last year." },
-    { "label": "CMT", "timestamp": "2026-02", "text": "[synthetic] Self-hosted runners cut queue time 40%; here's the dashboard." }
+    {
+      "label": "POST",
+      "timestamp": "2026-07",
+      "text": "[synthetic] Cancelled Vendor X v4 after load test failed our SLO gate — same bar as last year."
+    },
+    {
+      "label": "CMT",
+      "timestamp": "2026-02",
+      "text": "[synthetic] Self-hosted runners cut queue time 40%; here's the dashboard."
+    }
   ],
   "cross_check": [
     "Does craft peer feel right vs empty-flex?",
@@ -115,8 +257,91 @@
     "note": "synthetic public demo"
   },
   "source_mix": [
-    ["community_post", 12, "#2dd4bf"],
-    ["community_comment", 40, "#38bdf8"],
-    ["sns_comment", 5, "#94a3b8"]
-  ]
+    [
+      "community_post",
+      12,
+      "#2dd4bf"
+    ],
+    [
+      "community_comment",
+      40,
+      "#38bdf8"
+    ],
+    [
+      "sns_comment",
+      5,
+      "#94a3b8"
+    ]
+  ],
+  "clinical_psych": {
+    "enabled": true,
+    "disclaimer": "Synthetic demo · public-text formulation only — not diagnosis.",
+    "confidence": "medium",
+    "one_line": "High-criteria craft peer; affect stays task-bound; low interpersonal theater.",
+    "affect": {
+      "pattern": "irritation at flaky systems, not people",
+      "triggers": [
+        "red builds",
+        "empty vendor cheer"
+      ],
+      "score_volatility": 35
+    },
+    "defenses": [
+      {
+        "name": "intellectualization",
+        "level": 3,
+        "evidence": "SLO gate cancel"
+      },
+      {
+        "name": "humor",
+        "level": 1,
+        "evidence": "dry asides"
+      },
+      {
+        "name": "splitting",
+        "level": 0,
+        "evidence": ""
+      }
+    ],
+    "attachment": {
+      "signals": "secure-lean",
+      "note": "domain trust high; soft friendship sparse"
+    },
+    "cognition": {
+      "style": "verificationist · concrete metrics",
+      "rigidity": 55,
+      "mentalization": 70
+    },
+    "self_other": {
+      "pattern": "competence via repro, not status",
+      "note": ""
+    },
+    "interpersonal": {
+      "script": "ticket-first peer",
+      "repair": "mid"
+    },
+    "ego_threat": {
+      "response": "re-measure under same bar",
+      "note": "brand flip ≠ personality flip"
+    },
+    "hypotheses": [
+      {
+        "id": "C1",
+        "label": "Criteria-bound affect (not interpersonal hostility)",
+        "status": "lead",
+        "score": 88
+      },
+      {
+        "id": "C2",
+        "label": "Chronic devaluation / splitting",
+        "status": "fail",
+        "score": 15
+      }
+    ],
+    "not_claimed": [
+      "No DSM/ICD diagnosis",
+      "No treatment implication"
+    ],
+    "distance_bridge": "Low drama engage-cost on CI topics; skip brand wars."
+  }
 }
