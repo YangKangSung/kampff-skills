@@ -524,7 +524,7 @@ a{color:var(--accent2)}
   .chart-box{background:#f8fafc;border-color:#ddd}
 }
 """
-KAMPFF_CP_JS = '\n<script id="kampff-cp-js">\n(function(){\n  /* tone: mechanism -> no overclaim -> anchor on verifiable numbers */\n  function seed(){\n    var el = document.getElementById(\'kampff-cp-seed\');\n    if(!el) return {};\n    try { return JSON.parse(el.textContent || \'{}\'); } catch(e){ return {}; }\n  }\n  function cleanOps(s){\n    return String(s||\'\')\n      .replace(/\\b(caution|avoid|engage|ops|ROI|distance|worldview|alliance|stability|drift|risk|L[1-5]|MBTI|ACH|CIA|SAT|Big ?Five|clinical|diagnosis|doxx?|CONFIRMED|PROBABLE|SPECULATIVE)\\b/gi,\'\')\n      .replace(/(표본|수집분?|분석\\s*결과|리포트|독시어|권고\\s*태그|matrix|honesty|bundle|harvest)/gi,\'\')\n      .replace(/\\s{2,}/g,\' \').trim();\n  }\n  function tagSalad(t){\n    t = String(t||\'\').trim();\n    if (!t || t.length < 8) return true;\n    var hasStop = /[.。?!]|다\\.|요\\.|임\\.|습니다|거든요|봅니다/.test(t);\n    var parts = t.split(/[\\s·|/,:;]+/).filter(Boolean);\n    if (!hasStop && parts.length >= 3 && parts.every(function(p){ return p.length <= 12; })) return true;\n    if (/\\b(park|kin|use|cm_stock)\\b/i.test(t) && !hasStop) return true;\n    if (/(공유형|논객형|생활형|문제해결형|열기\\s*중간|공손\\s*톤|뉴스공유)/.test(t) && !hasStop) return true;\n    return false;\n  }\n  function distill(d){\n    var cands = [d.point, d.mechanism, d.claim, d.one_line, d.tldr, d.trigger].map(cleanOps).filter(Boolean);\n    for (var i=0;i<cands.length;i++){\n      var raw = cands[i];\n      if (tagSalad(raw)) continue;\n      var t = (raw.split(/(?<=[.。?!]|다\\.|요\\.|습니다\\.|거든요\\.)\\s+/)[0] || raw).trim();\n      t = t.replace(/^[\\s,.:;·\\/-]+|[\\s,.:;·\\/-]+$/g,\'\');\n      if (tagSalad(t)) continue;\n      if (t.length > 110) t = t.slice(0,108).replace(/\\s+\\S*$/,\'\') + \'\\u2026\';\n      if (t.length >= 16) return t;\n    }\n    return \'\';\n  }\n  function endDot(s){\n    s = String(s||\'\').trim();\n    if (!s) return s;\n    if (/[다요임]$|[.。]$|습니다$|거든요$|봅니다$/.test(s)) return s;\n    return s + \'.\';\n  }\n  function generate(){\n    var d = seed();\n    var preset = d.preset && String(d.preset).trim();\n    if (preset && preset.length <= 600 && preset.split(\'\\n\').length <= 10 && !tagSalad(preset)) return preset;\n\n    var mech = cleanOps(d.mechanism || \'\');\n    var claim = cleanOps(d.claim || \'\');\n    var anchor = cleanOps(d.anchor || \'\');\n    var point = distill(d);\n\n    if (mech && (claim || point)) {\n      var c = (claim || point).replace(/^["\']|["\']$/g,\'\');\n      var lines = [];\n      lines.push(endDot(mech));\n      lines.push(\'\');\n      lines.push(\'\\uadf8\\ub798\\uc11c \' + c + \'\\ub9cc \\ubcf4\\uace0 \\ub2e8\\uc815\\uae4c\\uc9c0\\ub294 \\uc798 \\uc548 \\uac11\\ub2c8\\ub2e4.\');\n      if (anchor) {\n        lines.push(\'\\ud310\\ub2e8\\uc740 \' + anchor + \' \\ucabd\\uc5d0 \\ub450\\ub294 \\ud3b8\\uc774 \\ub098\\uc74c\\ub2e4\\uace0 \\uc0dd\\uac01\\ud569\\ub2c8\\ub2e4.\');\n      } else {\n        lines.push(\'\\uac80\\uc99d \\uc5c6\\uc774 \\uc22b\\uc790\\uac00 \\uc0ac\\uc2e4\\ucc98\\ub7fc \\ub3c4\\ub294 \\ubd84\\uc704\\uae30\\ub294 \\uacbd\\uacc4\\ud558\\ub294 \\uac8c \\ub9de\\uace0, \\ud310\\ub2e8\\uc740 \\ud655\\uc778 \\uac00\\ub2a5\\ud55c \\uc22b\\uc790\\u00b7\\ub9e5\\ub77d\\uc5d0 \\ub450\\ub294 \\ud3b8\\uc774 \\ub098\\uc74c\\ub2e4\\uace0 \\uc0dd\\uac01\\ud569\\ub2c8\\ub2e4.\');\n      }\n      return lines.join(\'\\n\');\n    }\n\n    if (point && !tagSalad(point)) {\n      return [\n        endDot(point),\n        \'\',\n        \'\\ud45c\\uba74 \\uc9c0\\ud45c\\ub9cc \\ubcf4\\uace0 \\uc6d0\\uc778\\uae4c\\uc9c0 \\ud655\\uc815\\ud558\\uae34 \\uc5b4\\ub835\\ub2e4\\uace0 \\ubd05\\ub2c8\\ub2e4.\',\n        \'\\uac80\\uc99d \\uc5c6\\uc774 \\uc22b\\uc790\\uac00 \\uc0ac\\uc2e4\\ucc98\\ub7fc \\ub3c4\\ub294 \\ubd84\\uc704\\uae30\\ub294 \\uacbd\\uacc4\\ud558\\ub294 \\uac8c \\ub9de\\uace0, \\ud310\\ub2e8\\uc740 \\ud655\\uc778 \\uac00\\ub2a5\\ud55c \\uc2e4\\uc801\\u00b7\\uac00\\uaca9 \\ub9e5\\ub77d\\uc5d0 \\ub450\\ub294 \\ud3b8\\uc774 \\ub098\\uc74c\\ub2e4\\uace0 \\uc0dd\\uac01\\ud569\\ub2c8\\ub2e4.\'\n      ].join(\'\\n\');\n    }\n\n    return [\n      \'\\ud45c\\uba74\\uc73c\\ub85c \\ubcf4\\uc774\\ub294 \\uc22b\\uc790\\uc640 \\uc2e4\\uc81c \\uc6d0\\uc778(\\ubbf9\\uc2a4\\u00b7\\ud310\\uac00\\u00b7\\uc218\\uc728 \\ub4f1)\\uc740 \\ub530\\ub85c \\ubcf4\\ub294 \\ud3b8\\uc774 \\ub9de\\ub2e4\\uace0 \\ubd05\\ub2c8\\ub2e4.\',\n      \'\',\n      \'\\uc774\\uc775\\ub960 \\uac19\\uc740 \\uacb0\\uacfc \\uc9c0\\ud45c\\ub9cc\\uc73c\\ub85c \\ud2b9\\uc815 \\uc218\\uce58\\ub97c \\uc0ac\\uc2e4\\u00b7\\uac70\\uc9d3\\uc73c\\ub85c \\ubabb \\ubc15\\uae34 \\uc5b4\\ub835\\uc2b5\\ub2c8\\ub2e4.\',\n      \'\\uac80\\uc99d \\uc5c6\\uc774 \\ub5a0\\ub3c4\\ub294 \\uc22b\\uc790\\ub294 \\uacbd\\uacc4\\ud558\\uace0, \\ud310\\ub2e8\\uc740 \\uacf5\\uc2dc\\u00b7\\uc2e4\\uc801 \\ucabd \\ud655\\uc778 \\uac00\\ub2a5\\ud55c \\uadfc\\uac70\\uc5d0 \\ub450\\ub294 \\uac8c \\ub098\\uc74c\\ub2e4\\uace0 \\uc0dd\\uac01\\ud569\\ub2c8\\ub2e4.\'\n    ].join(\'\\n\');\n  }\n  function $(id){ return document.getElementById(id); }\n  var out = $(\'cpOut\'), st = $(\'cpStatus\');\n  var gen = $(\'cpGen\'), copy = $(\'cpCopy\'), clr = $(\'cpClear\');\n  if (gen) gen.addEventListener(\'click\', function(){\n    out.value = generate();\n    st.textContent = \'tone: mechanism / no overclaim / anchor\';\n  });\n  if (copy) copy.addEventListener(\'click\', async function(){\n    if (!out.value.trim()) out.value = generate();\n    try { await navigator.clipboard.writeText(out.value); st.textContent = \'copied\'; }\n    catch (e) {\n      out.focus(); out.select();\n      try { document.execCommand(\'copy\'); st.textContent = \'copied (fallback)\'; }\n      catch (e2) { st.textContent = \'copy failed\'; }\n    }\n  });\n  if (clr) clr.addEventListener(\'click\', function(){ out.value=\'\'; st.textContent=\'cleared\'; });\n})();\n</script>\n'
+KAMPFF_CP_JS = '\n<script id="kampff-cp-js">\n(function(){\n  function seed(){\n    var el = document.getElementById(\'kampff-cp-seed\');\n    if(!el) return {};\n    try { return JSON.parse(el.textContent || \'{}\'); } catch(e){ return {}; }\n  }\n  function cleanOps(s){\n    return String(s||\'\')\n      .replace(/\\b(caution|avoid|engage|ops|ROI|distance|worldview|alliance|stability|drift|risk|L[1-5]|MBTI|ACH|CIA|SAT|Big ?Five|clinical|diagnosis|doxx?|CONFIRMED|PROBABLE|SPECULATIVE)\\b/gi,\'\')\n      .replace(/(표본|수집분?|분석\\s*결과|리포트|독시어|권고\\s*태그|matrix|honesty|bundle|harvest)/gi,\'\')\n      .replace(/\\s{2,}/g,\' \').trim();\n  }\n  function tagSalad(t){\n    t = String(t||\'\').trim();\n    if (!t || t.length < 8) return true;\n    var hasStop = /[.。?!]|다\\.|요\\.|임\\.|습니다|거든요|봅니다/.test(t);\n    var parts = t.split(/[\\s·|/,:;]+/).filter(Boolean);\n    if (!hasStop && parts.length >= 3 && parts.every(function(p){ return p.length <= 12; })) return true;\n    if (/\\b(park|kin|use|cm_stock)\\b/i.test(t) && !hasStop) return true;\n    if (/(공유형|논객형|생활형|문제해결형)/.test(t) && !hasStop) return true;\n    return false;\n  }\n  function distill(d){\n    var cands = [d.point, d.mechanism, d.claim, d.one_line, d.tldr, d.trigger].map(cleanOps).filter(Boolean);\n    for (var i=0;i<cands.length;i++){\n      var raw = cands[i];\n      if (tagSalad(raw)) continue;\n      var t = (raw.split(/(?<=[.。?!]|다\\.|요\\.|습니다\\.|거든요\\.)\\s+/)[0] || raw).trim();\n      t = t.replace(/^[\\s,.:;·\\/-]+|[\\s,.:;·\\/-]+$/g,\'\');\n      if (tagSalad(t)) continue;\n      if (t.length > 110) t = t.slice(0,108).replace(/\\s+\\S*$/,\'\') + \'\\u2026\';\n      if (t.length >= 16) return t;\n    }\n    return \'\';\n  }\n  function endDot(s){\n    s = String(s||\'\').trim();\n    if (!s) return s;\n    if (/[다요임]$|[.。]$|습니다$|거든요$|봅니다$/.test(s)) return s;\n    return s + \'.\';\n  }\n  var REFUSE = \'[게시 초안 생성 불가]\\n이 칸은 회원 전반 분석(독시어)이 아닙니다.\\nanalysis seed 문장이 없어 일반 템플릿으로 채우지 않습니다.\\n→ 위 TL;DR · L1–L5 · Distance · Evidence 가 본 분석입니다.\';\n  function generate(){\n    var d = seed();\n    var preset = d.preset && String(d.preset).trim();\n    if (preset && preset.length <= 600 && preset.split(\'\\n\').length <= 10 && !tagSalad(preset)) return preset;\n    var mech = cleanOps(d.mechanism || \'\');\n    var claim = cleanOps(d.claim || \'\');\n    var anchor = cleanOps(d.anchor || \'\');\n    var point = distill(d);\n    if (mech && (claim || point)) {\n      var c = (claim || point).replace(/^["\']|["\']$/g,\'\');\n      var lines = [endDot(mech), \'\', \'그래서 \' + c + \'만 보고 단정까지는 잘 안 갑니다.\'];\n      lines.push(anchor ? (\'판단은 \' + anchor + \' 쪽에 두는 편이 낫다고 생각합니다.\') : \'판단은 확인 가능한 근거에 두는 편이 낫다고 생각합니다.\');\n      return lines.join(\'\\n\');\n    }\n    if (point && !tagSalad(point)) {\n      return [endDot(point), \'\', \'이 한 줄은 게시용 초안일 뿐, 전반 분석 전체가 아닙니다.\'].join(\'\\n\');\n    }\n    return REFUSE;\n  }\n  function $(id){ return document.getElementById(id); }\n  var out = $(\'cpOut\'), st = $(\'cpStatus\');\n  var gen = $(\'cpGen\'), copy = $(\'cpCopy\'), clr = $(\'cpClear\');\n  if (gen) gen.addEventListener(\'click\', function(){\n    out.value = generate();\n    st.textContent = out.value.indexOf(\'[게시 초안 생성 불가]\') === 0 ? \'거부 — 독시어가 분석\' : \'optional export\';\n  });\n  if (copy) copy.addEventListener(\'click\', async function(){\n    if (!out.value.trim()) out.value = generate();\n    if (out.value.indexOf(\'[게시 초안 생성 불가]\') === 0) { st.textContent = \'거부문 — copy 안 함\'; return; }\n    try { await navigator.clipboard.writeText(out.value); st.textContent = \'copied\'; }\n    catch (e) { out.focus(); out.select(); try { document.execCommand(\'copy\'); st.textContent = \'copied\'; } catch (e2) { st.textContent = \'fail\'; } }\n  });\n  if (clr) clr.addEventListener(\'click\', function(){ out.value=\'\'; st.textContent=\'cleared\'; });\n})();\n</script>\n'
 def render(analysis: dict, bundle: dict | None = None) -> str:
     meta = analysis.get("meta") or {}
     target = analysis.get("target") or {}
@@ -824,23 +824,25 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     }
     cp_seed_json = esc(json.dumps(cp_seed, ensure_ascii=False))
     community_section = (
-        '<section class="card" id="community-post">'
-        '<h2><span class="n">1b</span> Community post '
-        '<span class="muted" style="font-weight:500;font-size:12px">정중 초안 · Generate / Copy</span></h2>'
-        '<p class="muted">커뮤니티에 올릴 <b>정중 개인 의견</b> 초안. 내부 distance 태그 그대로 쓰지 않음. '
-        "신상·단정·진단 금지. 게시 전 직접 다듬을 것.</p>"
+        '<section class="card" id="optional-export" style="opacity:.92">'
+        '<h2><span class="n">Z</span> 선택 · 게시 초안 export '
+        '<span class="muted" style="font-weight:500;font-size:12px">분석 본체 아님</span></h2>'
+        '<p class="muted"><b>회원 전반 독시어는 위 섹션(TL;DR · Distance · L1–L5 · Evidence)입니다.</b> '
+        "이 칸은 커뮤니티 문장을 <i>선택적으로</i> 뽑을 때만 씁니다. "
+        "seed 없으면 일반 템플릿으로 채우지 않고 거부합니다. "
+        "신상·단정·진단·ops 태그 금지.</p>"
         '<div class="cp-actions">'
-        '<button type="button" class="primary" id="cpGen">Generate</button>'
+        '<button type="button" id="cpGen">초안 시도</button>'
         '<button type="button" id="cpCopy">Copy</button>'
         '<button type="button" id="cpClear">Clear</button>'
         "</div>"
-        '<textarea class="cp-out" id="cpOut" placeholder="Generate를 누르면 초안이 채워집니다."></textarea>'
-        '<div class="cp-status" id="cpStatus">ready</div>'
-        '<p class="muted" style="margin-top:10px"><b>Do not post:</b> 실명·연락처·직장 · 미확인 동일인 · '
-        "범죄/비위 단정 · 진단 · ops 태그(caution/avoid) 노출</p>"
+        '<textarea class="cp-out" id="cpOut" placeholder="비어 있음=정상. seed 없으면 거부."></textarea>'
+        '<div class="cp-status" id="cpStatus">optional export · not the dossier</div>'
+        '<p class="muted" style="margin-top:10px"><b>Do not post:</b> 실명·연락처 · 단정 · 진단 · ops 태그</p>'
         f'<script type="application/json" id="kampff-cp-seed">{cp_seed_json}</script>'
         "</section>"
     )
+
 
     html = f'''<!DOCTYPE html>
 <html lang="{esc(meta.get("language","ko"))}">
@@ -853,8 +855,8 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
 <body>
 <div class="wrap">
   <header class="hero">
-    <p class="kicker">Kampff dossier · {esc(protocol)} · offline graphs</p>
-    <h1>{esc(nick)} — person analysis</h1>
+    <p class="kicker">Kampff · 회원 전반 독시어 · 게시 초안≠분석</p>
+    <h1>{esc(nick)} — 회원 전반 분석</h1>
     <p class="sub">{esc(date)} · {esc(platform)} · id <b>{esc(tid)}</b> · viewer {esc(viewer.get("id","me"))}</p>
     <div class="meta">
       <div class="chip"><b>Target</b>{esc(nick)} · {esc(tid)}</div>
@@ -875,7 +877,6 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     <a href="#graphs">Graphs</a>
     <a href="#honesty">Collect</a>
     <a href="#distance">Distance</a>
-    <a href="#community-post">Community post</a>
     <a href="#identity">Identity</a>
     <a href="#spectro">L1–L5</a>
     <a href="#mbti">MBTI</a>
@@ -883,6 +884,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     <a href="#cia">CIA/KGB</a>
     <a href="#quotes">Evidence</a>
     <a href="#check">Cross-check</a>
+    <a href="#optional-export" style="opacity:.7">선택 export</a>
   </nav>
 
   <section class="card" id="graphs">
@@ -988,8 +990,6 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     <p><b>Recommendation:</b> {pill(distance)} — {esc(analysis.get("recommendation") or tldr)}</p>
   </section>
 
-  {community_section}
-
   <section class="card" id="identity">
     <h2><span class="n">2</span> Identity</h2>
     <ul>{id_ul or "<li class='muted'>No bullets</li>"}</ul>
@@ -1047,6 +1047,8 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     <h2><span class="n">9</span> Files</h2>
     <div class="muted">{files_html}</div>
   </section>
+
+  {community_section}
 
   <footer>
     Kampff report · not medical/legal · MBTI entertainment · clinical_psych = formulation only · lawful sources only · {esc(date)}
