@@ -46,3 +46,13 @@ Generic public collectors only in this tree. See [collectors.md](collectors.md),
 ## Contributing
 
 [CONTRIBUTING.md](../CONTRIBUTING.md) · [SECURITY.md](../SECURITY.md)
+
+## VS Code / dual-store (product)
+
+| Doc | Topic |
+|-----|--------|
+| [community-post.md](community-post.md) | Optional peer/short/board draft export |
+| [dual-store-wiki.md](dual-store-wiki.md) | dataRoot vs wikiRoot |
+| [vscode-bridge.md](vscode-bridge.md) | Extension ↔ this repo |
+| [sites.schema.json](sites.schema.json) | Registerable sites schema |
+

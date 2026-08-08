@@ -8,6 +8,10 @@ Format inspired by [Keep a Changelog](https://keepachangelog.com/). Dates are UT
 
 ### Added
 
+- `scripts/community_post.py` — optional peer/short/board community draft (VS Code parity)
+- `scripts/wiki_store.py` — dual-store prior evidence + wiki promote helpers
+- Docs: community-post, dual-store-wiki, vscode-bridge, sites schema
+
 - `CONTRIBUTING.md`, issue/PR templates, `docs/README.md` index
 
 ## [0.1.x] — 2026-07
