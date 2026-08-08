@@ -1,0 +1,24 @@
+name: Bug report
+description: Something broken in skill, scripts, or sample reports
+title: "bug: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: Expected vs actual
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Repro steps
+      description: Commands, harness, OS
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit / tag
+      placeholder: main @ sha or tag

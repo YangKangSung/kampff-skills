@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Live sample report
+    url: https://yangkangsung.github.io/kampff-skills/sample-community-report.html
+    about: See output shape before filing a docs issue
