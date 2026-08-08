@@ -5,6 +5,8 @@
 [![Stars](https://img.shields.io/github/stars/YangKangSung/kampff-skills?style=social)](https://github.com/YangKangSung/kampff-skills/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skill](https://img.shields.io/badge/agent-SKILL.md-0ea5e9)](kampff/SKILL.md)
+[![Docs](https://img.shields.io/badge/docs-index-informational)](docs/README.md)
+[![Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-blue)](CHANGELOG.md)
 
 [![Kampff demo reel](docs/demo-reel.gif)](https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html)
 
@@ -227,3 +229,13 @@ Third-party tools: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 graphify  →  code  →  graph
 kampff    →  text  →  human spectrum
 ```
+
+---
+
+## Contributing
+
+Public PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).  
+Docs map: [docs/README.md](docs/README.md) · [CHANGELOG.md](CHANGELOG.md)
+
+Security reports: [SECURITY.md](SECURITY.md)
+
