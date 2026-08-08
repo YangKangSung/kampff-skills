@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/YangKangSung/kampff-skills/docs/sites.schema.json",
+  "title": "Kampff registerable sites",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["id", "label", "baseUrl", "kind", "enabled"],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^[a-z0-9_]{1,40}$",
+        "description": "Stable slug (settings + SecretStorage key fragment)"
+      },
+      "label": { "type": "string" },
+      "baseUrl": {
+        "type": "string",
+        "description": "https origin without trailing slash"
+      },
+      "loginUrl": {
+        "type": "string",
+        "description": "Optional login page; clien defaults to /service/auth/login"
+      },
+      "username": {
+        "type": "string",
+        "description": "Non-secret account id/email for prefill only"
+      },
+      "kind": {
+        "type": "string",
+        "enum": ["clien", "generic"]
+      },
+      "enabled": { "type": "boolean" },
+      "hasPassword": {
+        "type": "boolean",
+        "description": "True if SecretStorage holds a password — never the password itself"
+      }
+    }
+  }
+}

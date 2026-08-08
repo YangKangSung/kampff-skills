@@ -57,9 +57,24 @@ Pass to `scripts/render_kampff_report.py --analysis …`.
   "quotes": [{ "label": "POST|CMT", "timestamp": "", "text": "" }],
   "cross_check": ["…"],
   "files": { "bundle": "", "html": "" },
-  "source_mix": null
+  "source_mix": null,
+  "community_post": {
+    "board": "park",
+    "tone": "peer",
+    "mechanism": "optional public-pattern sentence",
+    "claim": "optional weak-claim sentence",
+    "anchor": "checkable original text / date",
+    "point": "optional",
+    "text_ko": "optional full board draft",
+    "text_ko_short": "optional short draft",
+    "preset": "alias of text_ko",
+    "preset_short": "alias of text_ko_short"
+  }
 }
 ```
+
+**Optional community draft** (not the dossier body): see [community-post.md](community-post.md) · CLI `python scripts/community_post.py -a analysis.json`.
+
 
 **Render**
 

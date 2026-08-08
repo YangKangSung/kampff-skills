@@ -1,0 +1,12 @@
+[
+  {
+    "id": "clien",
+    "label": "Clien",
+    "baseUrl": "https://www.clien.net",
+    "loginUrl": "https://www.clien.net/service/auth/login",
+    "username": "",
+    "kind": "clien",
+    "enabled": true,
+    "hasPassword": false
+  }
+]
