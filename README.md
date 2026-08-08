@@ -14,6 +14,10 @@
 
 ---
 
+## Live site
+
+→ <a href="https://yangkangsung.github.io/kampff-skills/" target="_blank" rel="noopener noreferrer"><strong>Pages home</strong></a> (product landing) · docs table: [docs/docs-index.md](docs/docs-index.md)
+
 ## Sample report
 
 ### → <a href="https://yangkangsung.github.io/kampff-skills/sample-community-report.html" target="_blank" rel="noopener noreferrer"><strong>Open sample HTML report</strong></a> ↗

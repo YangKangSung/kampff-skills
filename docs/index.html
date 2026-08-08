@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Kampff · read the board, not the vibes</title>
+<meta name="description" content="Agent skill + spectrograph: distance judgment from published text. Live sample report and demo for Grok · Claude · Hermes."/>
+<meta property="og:title" content="Kampff · agent skill for distance judgment"/>
+<meta property="og:description" content="Evidence-backed engage / neutral / caution / avoid from text traces. MIT. Live HTML sample."/>
+<meta property="og:url" content="https://yangkangsung.github.io/kampff-skills/"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="canonical" href="https://yangkangsung.github.io/kampff-skills/"/>
+<style>
+:root {
+  --bg:#0b0f14; --panel:#121821; --panel2:#18202b; --line:#243041;
+  --text:#e7eef8; --muted:#93a4bb; --accent:#5eead4; --accent2:#38bdf8;
+  --mono:"JetBrains Mono","SF Mono",Consolas,monospace;
+  --sans:"Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--sans);color:var(--text);line-height:1.55;
+  background:
+    radial-gradient(1200px 600px at 10% -10%,#12324a55,transparent),
+    radial-gradient(900px 500px at 100% 0%,#0f3d3555,transparent),
+    var(--bg);
+}
+a{color:var(--accent2)}
+a:hover{color:var(--accent)}
+.wrap{max-width:980px;margin:0 auto;padding:28px 18px 72px}
+.topnav{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;
+  margin-bottom:18px;
+}
+.brand{font-family:var(--mono);font-size:13px;letter-spacing:.08em;color:var(--accent);text-decoration:none}
+.navlinks{display:flex;flex-wrap:wrap;gap:6px}
+.navlinks a{
+  color:var(--muted);text-decoration:none;font-size:12px;padding:6px 10px;
+  border:1px solid transparent;border-radius:999px;
+}
+.navlinks a:hover{color:var(--text);border-color:var(--line);background:var(--panel)}
+.hero{
+  border:1px solid var(--line);
+  background:linear-gradient(180deg,var(--panel2),var(--panel));
+  border-radius:18px;padding:28px 26px;margin-bottom:16px;position:relative;overflow:hidden;
+}
+.hero::before{content:"";position:absolute;inset:0 auto 0 0;width:5px;background:linear-gradient(180deg,var(--accent),var(--accent2))}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+h1{margin:0 0 8px;font-size:clamp(24px,4vw,32px);letter-spacing:-.03em;line-height:1.15}
+.tagline{color:var(--muted);font-size:15px;margin:0 0 16px;max-width:42em}
+.quote{
+  margin:0 0 18px;padding:12px 14px;border-radius:12px;
+  background:linear-gradient(90deg,#0c1c28,#0d1a16);border:1px solid #1e4d45;
+  font-size:14px;color:#cfe7ff;
+}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;padding:11px 16px;border-radius:12px;
+  font-size:14px;font-weight:600;text-decoration:none;border:1px solid transparent;
+}
+.btn-primary{background:linear-gradient(180deg,#14b8a6,#0d9488);color:#042f2e;border-color:#2dd4bf}
+.btn-primary:hover{filter:brightness(1.06);color:#042f2e}
+.btn-ghost{background:#0d131b;color:var(--text);border-color:var(--line)}
+.btn-ghost:hover{border-color:#3b82f6;color:#dbeafe}
+.btn-soft{background:#0b1726;color:#bfdbfe;border-color:#1e3a5f}
+.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:14px;margin-bottom:14px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 18px 16px;
+}
+.card h2{margin:0 0 10px;font-size:15px;letter-spacing:-.01em}
+.card p,.card li{color:#d5e0ee;font-size:13.5px;margin:0 0 8px}
+.card ul{padding-left:1.1rem;margin:0 0 8px}
+.demo-frame{
+  border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#05080c;
+  aspect-ratio:16/10;display:grid;place-items:center;position:relative;
+}
+.demo-frame img{width:100%;height:100%;object-fit:cover;display:block;opacity:.92}
+.demo-frame .overlay{
+  position:absolute;inset:auto 12px 12px 12px;display:flex;flex-wrap:wrap;gap:8px;
+}
+.pill{
+  display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;
+  font-family:var(--mono);font-size:11px;border:1px solid #475569;background:#1e293bcc;color:#e2e8f0;
+}
+.table{width:100%;border-collapse:collapse;font-size:12.5px;margin:6px 0 0}
+.table th,.table td{border:1px solid var(--line);padding:8px 9px;text-align:left;vertical-align:top}
+.table th{background:#0e1520;color:var(--muted);font-weight:600}
+.table tr:nth-child(even) td{background:#0f1620}
+.table a{text-decoration:none}
+.foot{
+  margin-top:18px;padding-top:14px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:12px;display:flex;flex-wrap:wrap;gap:10px 16px;justify-content:space-between;
+}
+.foot a{color:var(--muted)}
+.foot a:hover{color:var(--accent2)}
+.badge-row{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
+.badge{font-family:var(--mono);font-size:10px;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:#0d131b}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topnav">
+    <a class="brand" href="./">KAMPFF · SKILLS</a>
+    <nav class="navlinks" aria-label="Primary">
+      <a href="sample-community-report.html">Sample report</a>
+      <a href="demo-kampff-walkthrough.html">Walkthrough</a>
+      <a href="docs-index.html">Docs index</a>
+      <a href="https://github.com/YangKangSung/kampff-skills" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="https://github.com/sponsors/YangKangSung" target="_blank" rel="noopener noreferrer">Sponsors</a>
+    </nav>
+  </div>
+
+  <header class="hero">
+    <p class="kicker">Agent skill · spectrograph L1–L5</p>
+    <h1>Read the board.<br/>Not the vibes.</h1>
+    <p class="tagline">
+      Kampff turns published text into a <strong>distance decision</strong> —
+      <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">engage · neutral · caution · avoid</code> —
+      with evidence quotes. Works with Grok · Claude · Hermes.
+    </p>
+    <p class="quote">
+      sickn33 profiles customers. i-am profiles you.<br/>
+      <strong>Kampff profiles everyone on the board — including you.</strong>
+    </p>
+    <div class="cta">
+      <a class="btn btn-primary" href="sample-community-report.html">Open sample HTML report</a>
+      <a class="btn btn-ghost" href="demo-kampff-walkthrough.html">Interactive walkthrough</a>
+      <a class="btn btn-soft" href="https://github.com/YangKangSung/kampff-skills" target="_blank" rel="noopener noreferrer">★ Star on GitHub</a>
+    </div>
+    <div class="badge-row">
+      <span class="badge">MIT</span>
+      <span class="badge">synthetic demos only</span>
+      <span class="badge">no third-party dossiers in-repo</span>
+      <span class="badge">Pages live (not blob source)</span>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>What you get</h2>
+      <ul>
+        <li><strong>Distance</strong> — engage / neutral / caution / avoid</li>
+        <li><strong>Fit</strong> — worldview + alliance vs <em>you</em></li>
+        <li><strong>Time</strong> — ephemeris drift across posts</li>
+        <li><strong>Proof</strong> — claims tied to quotes (or marked low-confidence)</li>
+      </ul>
+      <p style="margin-top:10px;color:var(--muted);font-size:12.5px">
+        Collection stays separate. The skill reads a normalized bundle — see
+        <a href="usage.html">usage</a> · <a href="spectrograph.html">spectrograph</a> ·
+        <a href="input-schema.html">input schema</a>.
+      </p>
+    </section>
+    <section class="card">
+      <h2>Demo reel</h2>
+      <a class="demo-frame" href="demo-kampff-walkthrough.html" aria-label="Open interactive walkthrough">
+        <img src="demo-reel.gif" alt="Kampff demo reel GIF"/>
+        <div class="overlay">
+          <span class="pill">click · Space to pause in walkthrough</span>
+        </div>
+      </a>
+      <p style="margin-top:10px;font-size:12.5px;color:var(--muted)">
+        Also <a href="demo-reel.mp4">mp4</a> · report twin
+        <a href="sample-community-report.md">markdown</a>
+      </p>
+    </section>
+  </div>
+
+  <section class="card">
+    <h2>Live pages</h2>
+    <table class="table">
+      <thead>
+        <tr><th>Asset</th><th>Open</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Sample HTML dossier</td>
+          <td><a href="sample-community-report.html"><strong>sample-community-report.html</strong></a></td>
+        </tr>
+        <tr>
+          <td>Interactive walkthrough</td>
+          <td><a href="demo-kampff-walkthrough.html">demo-kampff-walkthrough.html</a></td>
+        </tr>
+        <tr>
+          <td>Demo video</td>
+          <td><a href="demo-reel.mp4">demo-reel.mp4</a></td>
+        </tr>
+        <tr>
+          <td>Full docs table</td>
+          <td><a href="docs-index.html">docs index</a> (usage, lenses, collectors…)</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card">
+    <h2>Install (public tree)</h2>
+    <pre style="margin:0;padding:12px 14px;border-radius:12px;background:#0a1018;border:1px solid var(--line);overflow:auto;font-family:var(--mono);font-size:12px;color:#dbeafe">git clone https://github.com/YangKangSung/kampff-skills.git
+# drop kampff/ into your agent skills path (Hermes / Claude / Grok)</pre>
+    <p style="margin:10px 0 0;font-size:12.5px;color:var(--muted)">
+      Details: repo <a href="https://github.com/YangKangSung/kampff-skills#readme" target="_blank" rel="noopener noreferrer">README</a>
+      · <a href="usage.html">usage.md</a>
+    </p>
+  </section>
+
+  <footer class="foot">
+    <span>YangKangSung · MIT where marked · synthetic sample person <code style="font-family:var(--mono)">relay_ops</code></span>
+    <span>
+      <a href="https://github.com/YangKangSung/kampff-skills" target="_blank" rel="noopener noreferrer">github.com/YangKangSung/kampff-skills</a>
+      ·
+      <a href="https://github.com/sponsors/YangKangSung" target="_blank" rel="noopener noreferrer">sponsors</a>
+    </span>
+  </footer>
+</div>
+</body>
+</html>
