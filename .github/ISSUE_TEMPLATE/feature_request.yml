@@ -1,0 +1,26 @@
+name: Feature request
+description: New lens, harness path, docs, or sample
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: who
+    attributes:
+      label: Who benefits
+      description: Agent builders, community ops, researchers, …
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Minimal proposal
+      description: Smallest useful surface — avoid megascope
+    validations:
+      required: true
+  - type: checkboxes
+    id: synthetic
+    attributes:
+      label: Data safety
+      options:
+        - label: No real third-party dossier content in the proposal
+          required: true
