@@ -1,19 +1,13 @@
 #!/usr/bin/env python3
 """
-Kampff HTML report renderer — professional, graph-heavy, offline-first.
+Kampff HTML report renderer — dual track (pro + plain), offline-first.
 
 Usage:
   python scripts/render_kampff_report.py --analysis path/to/analysis.json -o out/report.html
-  python scripts/render_kampff_report.py --analysis a.json --bundle b.json -o out/report.html
+  python scripts/render_kampff_report.py -a a.json -b b.json -o out/report.html --track both
+  # --track pro | easy | both   (default both)
 
-analysis.json schema: see docs/report-analysis.schema.md (inline below in MODULE DOC).
-
-Design goals:
-  - User-friendly: sticky TOC, hero distance, TL;DR, print CSS
-  - Professional: CIA/MBTI/L1–L5 cards, honesty triad, dossier
-  - Graphs: radar (drivers/MBTI/Big5), honesty bars, ACH, timeline,
-            source donut, confidence gauge, alliance bars, distance map
-  - Offline: pure SVG/CSS, no CDN
+See docs/report-tracks.md
 """
 from __future__ import annotations
 
@@ -559,6 +553,24 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
     timeline = analysis.get("timeline") or infer_timeline_from_bundle(bundle, tid)
     timeline = enrich_timeline_activity(timeline or [], bundle, tid)
     sources = analysis.get("source_mix") or bundle_source_counts(bundle, tid)
+    # accept dict {label: n} or list of [label, n] / [label, n, color]
+    if isinstance(sources, dict):
+        _cols = ["#2dd4bf", "#38bdf8", "#a78bfa", "#fbbf24", "#f87171", "#94a3b8"]
+        sources = [
+            [str(k), float(v), _cols[i % len(_cols)]]
+            for i, (k, v) in enumerate(sources.items())
+        ]
+    elif isinstance(sources, list) and sources and not isinstance(sources[0], (list, tuple)):
+        sources = bundle_source_counts(bundle, tid)
+    elif isinstance(sources, list):
+        norm = []
+        _cols = ["#2dd4bf", "#38bdf8", "#a78bfa", "#fbbf24", "#f87171", "#94a3b8"]
+        for i, row in enumerate(sources):
+            if isinstance(row, (list, tuple)) and len(row) >= 2:
+                lab, val = row[0], float(row[1])
+                col = row[2] if len(row) >= 3 else _cols[i % len(_cols)]
+                norm.append([str(lab), val, col])
+        sources = norm
 
     # Big Five
     big5 = analysis.get("big5") or spectro.get("big5") or {
@@ -832,7 +844,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
         '<section class="card" id="optional-export" style="opacity:.92">'
         '<h2><span class="n">Z</span> 선택 · 게시 초안 export '
         '<span class="muted" style="font-weight:500;font-size:12px">분석 본체 아님</span></h2>'
-        '<p class="muted"><b>회원 전반 독시어는 위 섹션(TL;DR · Distance · L1–L5 · Evidence)입니다.</b> '
+        '<p class="muted"><b>회원 전반 dossier는 위 섹션(TL;DR · Distance · L1–L5 · Evidence)입니다.</b> '
         "이 칸은 커뮤니티 문장을 <i>선택적으로</i> 뽑을 때만 씁니다. "
         "seed 없으면 일반 템플릿으로 채우지 않고 거부합니다. "
         "신상·단정·진단·ops 태그 금지.</p>"
@@ -860,7 +872,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
 <body>
 <div class="wrap">
   <header class="hero">
-    <p class="kicker">Kampff · 회원 전반 독시어 · 게시 초안≠분석</p>
+    <p class="kicker">Kampff · 회원 전반 dossier · 게시 초안≠분석</p>
     <h1>{esc(nick)} — 회원 전반 분석</h1>
     <p class="sub">{esc(date)} · {esc(platform)} · id <b>{esc(tid)}</b> · viewer {esc(viewer.get("id","me"))}</p>
     <div class="meta">
@@ -1070,14 +1082,38 @@ def main() -> None:
     ap.add_argument("--analysis", "-a", required=True, help="analysis.json path")
     ap.add_argument("--bundle", "-b", default="", help="optional bundle.json")
     ap.add_argument("--output", "-o", required=True, help="output .html")
+    ap.add_argument(
+        "--track",
+        choices=("pro", "easy", "both"),
+        default="both",
+        help="pro=legacy full; easy=plain KO only; both=one HTML with toggle (default)",
+    )
     args = ap.parse_args()
     analysis = json.loads(Path(args.analysis).read_text(encoding="utf-8"))
     bundle = None
     if args.bundle:
         bundle = json.loads(Path(args.bundle).read_text(encoding="utf-8"))
-    html = render(analysis, bundle)
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
+
+    if args.track == "easy":
+        from kampff_report_easy import render_easy_document
+
+        out.write_text(render_easy_document(analysis), encoding="utf-8")
+        print(out)
+        return
+
+    html = render(analysis, bundle)
+    if args.track == "both":
+        # dual-track: keep pro body, add plain KO panel + toggle
+        import sys
+
+        scripts_dir = str(Path(__file__).resolve().parent)
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
+        from kampff_report_easy import wrap_pro_with_easy
+
+        html = wrap_pro_with_easy(html, analysis)
     out.write_text(html, encoding="utf-8")
     print(out)
 

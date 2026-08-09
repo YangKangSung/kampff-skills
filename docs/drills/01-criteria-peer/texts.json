@@ -1,0 +1,44 @@
+[
+  {
+    "id": "t1",
+    "timestamp": "2025-08-12T11:02:00Z",
+    "source": "community_post",
+    "url": "https://forum.example/t/vendor-x-v3",
+    "content": "Vendor X v3 cut our p95 queue 28% on self-hosted runners. Dashboard link in thread. If you can't repro, don't @ me with vibes."
+  },
+  {
+    "id": "t2",
+    "timestamp": "2025-08-12T14:40:00Z",
+    "source": "community_comment",
+    "url": "https://forum.example/t/vendor-x-v3#c12",
+    "content": "Not a brand post. Here's the Grafana panel and the load script. Green that means something > logo."
+  },
+  {
+    "id": "t3",
+    "timestamp": "2026-02-03T09:15:00Z",
+    "source": "community_post",
+    "url": "https://forum.example/t/runners-homelab",
+    "content": "Moved flaky jobs off shared runners. Queue time down 40%. Keyboard build log is unrelated hobby — don't merge the threads."
+  },
+  {
+    "id": "t4",
+    "timestamp": "2026-07-02T18:22:00Z",
+    "source": "community_post",
+    "url": "https://forum.example/t/vendor-x-v4-cancel",
+    "content": "Cancelled Vendor X v4 after load test failed our SLO gate — same bar as last year. Not drama. Numbers failed."
+  },
+  {
+    "id": "t5",
+    "timestamp": "2026-07-02T19:01:00Z",
+    "source": "community_comment",
+    "url": "https://forum.example/t/vendor-x-v4-cancel#c3",
+    "content": "If your counter is 'but everyone uses it', that's not a measurement. Post a repro or move on."
+  },
+  {
+    "id": "t6",
+    "timestamp": "2026-07-10T08:05:00Z",
+    "source": "community_comment",
+    "url": "https://forum.example/t/offtopic-drinks#c44",
+    "content": "Skip the meetup pitch. I'll review a failing pipeline PR. Not interested in vendor happy hour."
+  }
+]

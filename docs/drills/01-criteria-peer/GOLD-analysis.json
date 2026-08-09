@@ -1,0 +1,48 @@
+{
+  "meta": {
+    "drill_id": "01",
+    "slug": "criteria-peer",
+    "protocol": "GOLD key · synthetic · not full dossier"
+  },
+  "target": { "id": "gate_runner", "nick": "gate_runner" },
+  "distance": "neutral",
+  "distance_accept": ["neutral", "engage"],
+  "distance_note": "neutral default peer · soft-engage on CI/obs tickets only",
+  "confidence": "medium",
+  "tldr": "Verificationist craft peer. Brand stance can flip; measurement bar does not. Soft-engage on pipelines; skip brand wars and social meetups.",
+  "spectrograph": {
+    "L1": "High C lean · low-mid E · conflict via criteria/repro not insult.",
+    "L3": "chronic verification threshold; brand non-monotonic is same trait under new data — not instability.",
+    "L5": "v3 praise (2025-08) → v4 cancel (2026-07) under same SLO gate language."
+  },
+  "clinical_psych": {
+    "enabled": true,
+    "confidence": "medium",
+    "one_line": "Affect stays task-bound (flaky systems/vendors); low interpersonal theater.",
+    "defenses": [
+      { "name": "intellectualization", "level": 3, "evidence": "t4 SLO gate" },
+      { "name": "humor", "level": 1, "evidence": "dry asides" }
+    ],
+    "ego_threat": {
+      "response": "re-measure under same bar",
+      "note": "brand flip ≠ personality flip"
+    },
+    "distance_bridge": "Low drama on CI topics; high time-cost if pulled into vendor cheer threads."
+  },
+  "ach": [
+    { "id": "H1", "label": "Verificationist craft peer", "status": "lead", "score": 90 },
+    { "id": "H2", "label": "Empty status flex", "status": "fail", "score": 15 },
+    { "id": "H3", "label": "Personal hostility to viewer", "status": "fail", "score": 10 }
+  ],
+  "must_quote_ids": ["t1", "t4"],
+  "must_not": [
+    "DSM/ICD as fact",
+    "Treat brand flip as flip-flop personality",
+    "default avoid"
+  ],
+  "scoring_hints": {
+    "distance": "neutral or soft-engage/engage both OK if scoped to CI",
+    "stability": "chronic criteria · not chronic hostility",
+    "clinical": "intellectualization + task-bound affect"
+  }
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "id": "t1",
+    "timestamp": "2026-03-01T20:10:00Z",
+    "source": "community_comment",
+    "url": "https://forum.example/t/hot-ai-thread#c2",
+    "content": "Lol half this board still doesn't get it. I was in the room with people who actually ship. Not explaining again."
+  },
+  {
+    "id": "t2",
+    "timestamp": "2026-03-08T12:00:00Z",
+    "source": "community_post",
+    "url": "https://forum.example/t/my-stack-flex",
+    "content": "Stack tour (again): three frameworks, two clouds, 'advisor' on a thing you haven't heard of. DM for collab if you're serious — serious people know what that means."
+  },
+  {
+    "id": "t3",
+    "timestamp": "2026-04-02T16:44:00Z",
+    "source": "community_comment",
+    "url": "https://forum.example/t/ask-for-repro#c9",
+    "content": "Asking for logs is junior energy. When you've scaled what I've scaled you stop asking basic questions."
+  },
+  {
+    "id": "t4",
+    "timestamp": "2026-05-11T09:30:00Z",
+    "source": "community_comment",
+    "url": "https://forum.example/t/meetup#c1",
+    "content": "Who's coming to the mixer? I can intro you to the right circle. Bring a deck. Leave the ticket nitpicks at home."
+  },
+  {
+    "id": "t5",
+    "timestamp": "2026-06-20T21:15:00Z",
+    "source": "community_comment",
+    "url": "https://forum.example/t/outage-postmortem#c18",
+    "content": "Cute postmortem. Real operators don't write essays for free on forums. Some of us were on calls you weren't invited to."
+  },
+  {
+    "id": "t6",
+    "timestamp": "2026-07-01T10:02:00Z",
+    "source": "community_comment",
+    "url": "https://forum.example/t/outage-postmortem#c33",
+    "content": "If my tone bothers you, that's a you problem. High performers are intense. Adapt or stay average."
+  }
+]

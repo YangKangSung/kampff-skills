@@ -97,6 +97,20 @@ pre.dossier{background:#070b10;border:1px solid var(--line);border-radius:12px;p
 .q figcaption{color:var(--muted);font-size:.78rem;margin-bottom:6px}
 .q pre{white-space:pre-wrap;margin:0;font:13px/1.45 var(--mono);color:#d5deea}
 .muted{color:var(--muted);font-size:12.5px}
+.cp-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.cp-actions button{
+  font:inherit;cursor:pointer;border-radius:10px;padding:8px 14px;
+  border:1px solid var(--line);background:#0d1520;color:var(--text);
+}
+.cp-actions button.primary{border-color:#1e4d45;background:#0c1c28;color:var(--accent)}
+.cp-actions button:hover{filter:brightness(1.08)}
+.cp-out{
+  width:100%;min-height:140px;box-sizing:border-box;resize:vertical;
+  font:14px/1.55 var(--sans);color:var(--text);
+  background:#070b10;border:1px solid #1e4d45;border-radius:12px;padding:12px 14px;
+}
+.cp-status{font-size:12px;color:var(--muted);min-height:1.2em;margin-top:6px}
+
 footer{margin-top:24px;color:var(--muted);font-size:11px;text-align:center}
 a{color:var(--accent2)}
 @media print{
@@ -105,13 +119,54 @@ a{color:var(--accent2)}
   section.card,header.hero{break-inside:avoid;border-color:#ccc;background:#fff}
   .chart-box{background:#f8fafc;border-color:#ddd}
 }
+
+.track-switch{
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+  margin:0 0 14px;padding:8px;border-radius:14px;
+  background:#0d131b;border:1px solid var(--line);
+}
+.track-switch .lbl{font-size:11px;color:var(--muted);margin:0 4px 0 6px;font-family:var(--mono)}
+.track-switch button{
+  font:inherit;cursor:pointer;border-radius:999px;padding:7px 14px;
+  border:1px solid var(--line);background:#121821;color:var(--muted);font-size:13px;
+}
+.track-switch button.active{
+  color:#042f2e;background:linear-gradient(90deg,#5eead4,#38bdf8);
+  border-color:transparent;font-weight:600;
+}
+.track-panel[hidden]{display:none!important}
+.easy-hero-title{font-size:22px;margin:0 0 8px}
+.easy-lead{font-size:16px;line-height:1.6;margin:10px 0 0}
+.easy-box{
+  margin:10px 0;padding:14px 16px;border-radius:12px;
+  background:#0d151f;border:1px solid var(--line);
+}
+.easy-box h3{margin:0 0 8px;font-size:14px;color:var(--accent)}
+.easy-box ul{margin:6px 0;padding-left:1.15rem}
+.easy-box li{margin:4px 0}
+.easy-do{border-color:#1f5c4a;background:#0c1f1a}
+.easy-dont{border-color:#7c4a0a;background:#1c1408}
+.easy-plain{font-size:15px;line-height:1.65;color:#e2e8f0}
+@media print{
+  .track-switch{display:none}
+  .track-panel{display:block!important}
+}
+
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="hero">
-    <p class="kicker">Kampff dossier · L1–L5 · MBTI · clinical · CIA-SAT · synthetic · offline graphs</p>
-    <h1>relay_ops — person analysis</h1>
+  
+  <div class="track-switch" role="tablist" aria-label="리포트 트랙">
+    <span class="lbl">TRACK</span>
+    <button type="button" id="btn-track-easy" class="active">쉬운 말</button>
+    <button type="button" id="btn-track-pro">전문 분석</button>
+  </div>
+
+  <div class="track-panel" id="track-pro" hidden>
+<header class="hero">
+    <p class="kicker">Kampff · 회원 전반 dossier · 게시 초안≠분석</p>
+    <h1>relay_ops — 회원 전반 분석</h1>
     <p class="sub">2026-07-13 · forum.example · id <b>relay_ops</b> · viewer north_packet</p>
     <div class="meta">
       <div class="chip"><b>Target</b>relay_ops · relay_ops</div>
@@ -139,6 +194,7 @@ a{color:var(--accent2)}
     <a href="#cia">CIA/KGB</a>
     <a href="#quotes">Evidence</a>
     <a href="#check">Cross-check</a>
+    <a href="#optional-export" style="opacity:.7">선택 export</a>
   </nav>
 
   <section class="card" id="graphs">
@@ -434,9 +490,284 @@ LEAD H    H1 verificationist</pre>
     <div class="muted">html: docs/sample-community-report.html<br/>note: synthetic public demo</div>
   </section>
 
+  <section class="card" id="optional-export" style="opacity:.92"><h2><span class="n">Z</span> 선택 · 게시 초안 export <span class="muted" style="font-weight:500;font-size:12px">분석 본체 아님</span></h2><p class="muted"><b>회원 전반 dossier는 위 섹션(TL;DR · Distance · L1–L5 · Evidence)입니다.</b> 이 칸은 커뮤니티 문장을 <i>선택적으로</i> 뽑을 때만 씁니다. seed 없으면 일반 템플릿으로 채우지 않고 거부합니다. 신상·단정·진단·ops 태그 금지.</p><div class="cp-actions" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><label class="muted" style="font-size:12px">tone <select id="cpTone" style="margin-left:4px;padding:6px 8px;border-radius:6px"><option value="peer" selected>peer · 동료 톤</option><option value="short">short · 2–3줄</option><option value="board">board · text_ko</option></select></label><button type="button" id="cpGen">게시 초안 만들기</button><button type="button" id="cpCopy">Copy</button><button type="button" id="cpClear">Clear</button></div><textarea class="cp-out" id="cpOut" placeholder="seed 있으면 자동 채움 · 없으면 거부"></textarea><div class="cp-status" id="cpStatus">optional export · not the dossier</div><p class="muted" style="margin-top:10px"><b>Do not post:</b> 실명·연락처 · 단정 · 진단 · ops 태그</p><script type="application/json" id="kampff-cp-seed">{"nick": "relay_ops", "id": "relay_ops", "platform": "forum.example", "board": "forum.example", "tldr": "Verificationist craft peer on CI/observability. Soft-engage on flaky systems; neutral default community peer; avoid vendor cheer without repro. Not avoid.", "one_line": "verificationist · domain trust high · not empty flex", "preset": "", "trigger": "Synthetic trigger thread: Vendor X v4 cancel after measurement fail.", "mechanism": "", "claim": "", "anchor": "", "point": "", "preset_short": "", "tone": "peer"}</script></section>
+
   <footer>
     Kampff report · not medical/legal · MBTI entertainment · clinical_psych = formulation only · lawful sources only · 2026-07-13
   </footer>
 </div>
+
+<script id="kampff-cp-js">
+(function(){
+  /* tone SoT: vault Agents/Kampff/community-post-tone.md */
+  function unescapeHtml(s){
+    s = String(s || '');
+    if (s.indexOf('&') === -1) return s;
+    var t = document.createElement('textarea');
+    t.innerHTML = s;
+    return t.value;
+  }
+  function seed(){
+    var el = document.getElementById('kampff-cp-seed');
+    if(!el) return {};
+    var raw = el.textContent || el.innerText || '{}';
+    try { return JSON.parse(raw); } catch(e1){
+      try { return JSON.parse(unescapeHtml(raw)); } catch(e2){ return {}; }
+    }
+  }
+  function $(id){ return document.getElementById(id); }
+  function tone(){
+    var el = $('cpTone');
+    var v = (el && el.value) || (seed().tone) || 'peer';
+    v = String(v).toLowerCase();
+    if (v === 'short' || v === 's' || v === 'brief') return 'short';
+    if (v === 'board' || v === 'b' || v === 'full') return 'board';
+    return 'peer';
+  }
+  function cleanOps(s){
+    return String(s||'')
+      .replace(/\b(caution|avoid|engage|ops|ROI|distance|worldview|alliance|stability|drift|risk|L[1-5]|MBTI|ACH|CIA|SAT|Big ?Five|clinical|diagnosis|doxx?|CONFIRMED|PROBABLE|SPECULATIVE)\b/gi,'')
+      .replace(/(이 한 줄은|전반 분석|독시어|dossier 요약|게시용으로 다듬|다음과 같습니다|나아가|결론적으로|요약하자면)/gi,'')
+      .replace(/(표본|수집분?|분석\s*결과|리포트|독시어|권고\s*태그|matrix|honesty|bundle|harvest)/gi,'')
+      .replace(/\s{2,}/g,' ').trim();
+  }
+  function tagSalad(t){
+    t = String(t||'').trim();
+    if (!t || t.length < 8) return true;
+    var hasStop = /[.。?!]|다\.|요\.|임\.|습니다|거든요|봅니다/.test(t);
+    var parts = t.split(/[\s·|/,:;]+/).filter(Boolean);
+    if (!hasStop && parts.length >= 3 && parts.every(function(p){ return p.length <= 12; })) return true;
+    if (/\b(park|kin|use|cm_stock)\b/i.test(t) && !hasStop) return true;
+    if (/(공유형|논객형|생활형|문제해결형)/.test(t) && !hasStop) return true;
+    return false;
+  }
+  function humanizePreset(s){
+    var t = String(s||'').trim();
+    if (!t) return '';
+    t = t.replace(/(이 한 줄은|전반 분석|독시어|dossier 요약|게시용으로 다듬)/gi,'');
+    if (/^#\s/.test(t) || /\n##\s/.test(t)) {
+      var m = t.match(/##\s*본문[^\n]*\n([\s\S]*?)(?=\n##\s|$)/);
+      if (m && m[1].trim().length >= 40) t = m[1].trim();
+    }
+    return t.replace(/\n{3,}/g,'\n\n').trim();
+  }
+  function distill(d){
+    var cands = [d.point, d.mechanism, d.claim, d.one_line, d.tldr, d.trigger].map(cleanOps).filter(Boolean);
+    for (var i=0;i<cands.length;i++){
+      var raw = cands[i];
+      if (tagSalad(raw)) continue;
+      var parts = raw.split(/(?<=[.。?!]|다\.|요\.|습니다\.|거든요\.)\s+/);
+      if (!parts.length) parts = [raw];
+      for (var j=0;j<parts.length;j++){
+        var t = String(parts[j]||'').replace(/^[\s,.:;·\/-]+|[\s,.:;·\/-]+$/g,'').trim();
+        if (tagSalad(t)) continue;
+        if (t.length > 110) t = t.slice(0,108).replace(/\s+\S*$/,'') + '\u2026';
+        if (t.length >= 16) return t;
+      }
+    }
+    return '';
+  }
+  function endDot(s){
+    s = String(s||'').trim();
+    if (!s) return s;
+    if (/[다요임]$|[.。]$|습니다$|거든요$|봅니다$|생각합니다$/.test(s)) return s;
+    return s + '.';
+  }
+  function whoLabel(d){
+    var nick = String(d.nick||'').trim();
+    var id = String(d.id||'').trim();
+    if (nick && id && nick !== id) return nick + '(id ' + id + ')';
+    return nick || id || '';
+  }
+  function stripQ(s){ return String(s||'').replace(/^["']+|["']+$/g,'').trim(); }
+  function peerBody(d, mech, claim, anchor, point){
+    var who = whoLabel(d);
+    var nickOnly = String(d.nick||'').trim() || who.split('(')[0];
+    var m = endDot(mech);
+    if (who && nickOnly && m.indexOf(nickOnly) === -1) {
+      m = who + ' 님 쪽 공개 글을 기준으로만 보면, ' + m;
+    }
+    var c = stripQ(claim || point);
+    var mid = c
+      ? ('그래서 ' + c + '만 보고 단정까지는 잘 안 갑니다.')
+      : '그래서 겉으로 보이는 빈도만 보고 단정까지는 잘 안 갑니다.';
+    var a;
+    if (anchor) {
+      var tail = /쪽|근거|원문|분포|공시|실적|가격/.test(anchor) ? '' : ' 쪽';
+      a = '판단은 ' + anchor + tail + '에 두는 편이 낫다고 봅니다.';
+    } else {
+      a = '판단은 확인 가능한 원문·날짜 쪽에 두는 편이 낫다고 봅니다.';
+    }
+    return [m, '', mid, a, '전제 다른 부분 있으면 그 부분만 짚어 주시면 됩니다.'].join('\n');
+  }
+  function shortBody(mech, claim, anchor, point){
+    var line1 = endDot(mech || point);
+    var c = stripQ(claim || point);
+    var line2 = c ? ('그래서 ' + c + '만 보고 단정까지는 잘 안 갑니다.') : '단정까지는 잘 안 갑니다.';
+    var line3 = anchor
+      ? ('판단은 ' + anchor + (/쪽|근거|원문/.test(anchor) ? '' : ' 쪽') + '에 두는 편이 낫다고 봅니다.')
+      : '판단은 확인 가능한 근거 쪽에 두는 편이 낫다고 봅니다.';
+    return [line1, line2, line3].join('\n');
+  }
+  var REFUSE = '[게시 초안 생성 불가]\n이 칸은 회원 전반 분석(dossier)이 아닙니다.\nanalysis seed 문장이 없어 일반 템플릿으로 채우지 않습니다.\n→ 위 TL;DR · L1–L5 · Distance · Evidence 가 본 분석입니다.';
+  function generate(){
+    var d = seed();
+    var tn = tone();
+    var full = humanizePreset(d.preset || '');
+    var shortP = humanizePreset(d.preset_short || '');
+    if (tn === 'board' && full && full.length >= 24 && full.length <= 8000 && !tagSalad(full)) return full;
+    if (tn === 'short' && shortP && shortP.length >= 16) return shortP;
+    if (full && full.length >= 24 && full.length <= 8000 && !tagSalad(full)) {
+      if (tn === 'short') {
+        var paras = full.split(/\n\s*\n/).filter(function(p){ return p.trim(); });
+        if (paras.length >= 2) return paras.slice(0,2).join('\n\n');
+        return full.split(/\n/).filter(function(l){ return l.trim(); }).slice(0,3).join('\n');
+      }
+      return full;
+    }
+    var mech = cleanOps(d.mechanism || '');
+    var claim = cleanOps(d.claim || '');
+    var anchor = cleanOps(d.anchor || '');
+    var point = distill(d);
+    if (mech && (claim || point)) {
+      return tn === 'short' ? shortBody(mech, claim, anchor, point) : peerBody(d, mech, claim, anchor, point);
+    }
+    if (point && !tagSalad(point)) {
+      if (tn === 'short') return [endDot(point), '판단은 확인 가능한 근거 쪽에 두는 편이 낫다고 봅니다.'].join('\n');
+      return peerBody(d, point, '', anchor, point);
+    }
+    return REFUSE;
+  }
+  var out = $('cpOut'), st = $('cpStatus');
+  var gen = $('cpGen'), copy = $('cpCopy'), clr = $('cpClear');
+  function fill(){
+    var t = generate();
+    if (out) out.value = t;
+    if (st) st.textContent = t.indexOf('[게시 초안 생성 불가]') === 0
+      ? '거부 — seed 없음'
+      : ('게시용 · tone=' + tone() + ' · Copy 가능');
+    return t;
+  }
+  if (gen) gen.addEventListener('click', fill);
+  var toneEl = $('cpTone');
+  if (toneEl) toneEl.addEventListener('change', fill);
+  if (copy) copy.addEventListener('click', async function(){
+    if (!out || !out.value.trim()) fill();
+    if (!out || out.value.indexOf('[게시 초안 생성 불가]') === 0) { if(st) st.textContent = '거부문 — copy 안 함'; return; }
+    try { await navigator.clipboard.writeText(out.value); if(st) st.textContent = 'copied'; }
+    catch (e) {
+      out.focus(); out.select();
+      try { document.execCommand('copy'); if(st) st.textContent = 'copied'; }
+      catch (e2) { if(st) st.textContent = 'fail'; }
+    }
+  });
+  if (clr) clr.addEventListener('click', function(){ if(out) out.value=''; if(st) st.textContent='cleared'; });
+  try {
+    var d0 = seed();
+    if ((d0.preset && String(d0.preset).trim().length >= 24) || (d0.mechanism && d0.claim)) fill();
+  } catch (e) {}
+})();
+</script>
+  </div><!-- /track-pro -->
+  <div class="track-panel" id="track-easy">
+
+  <header class="hero">
+    <p class="kicker">Kampff · 쉬운 말 트랙 · 공개 글만 · 진단 아님</p>
+    <h1 class="easy-hero-title">relay_ops — 한눈에 보기</h1>
+    <p class="sub">2026-07-13 · forum.example · id <b>relay_ops</b></p>
+    <div class="meta">
+      <div class="chip"><b>거리</b>평소 거리</div>
+      <div class="chip"><b>확신</b>medium (72)</div>
+      <div class="chip"><b>글 수</b>게시 12 · 댓글 40</div>
+    </div>
+    <div class="distance-banner neutral">
+      <span class="pill neutral">neutral</span>
+      <span class="easy-plain"><b>평소 거리</b> — 특별히 다가가거나 피할 필요는 없습니다. 상황 보고 두면 됩니다.</span>
+    </div>
+    <div class="tldr easy-lead"><b>한 줄</b> — Verificationist craft peer on CI/observability. Soft-engage on flaky systems; neutral default community peer; avoid vendor cheer without repro.</div>
+  </header>
+
+  <section class="card" id="easy-who">
+    <h2><span class="n">1</span> 이 사람은 (공개 글 기준)</h2>
+    <ul class="easy-plain"><li>Self-hosted runners / red-build postmortems</li><li>Vendor X praise then cancel under same verification bar</li><li>Keyboard hobby + CI craft identity</li><li>Low soft-friendship signal; high domain peer signal</li></ul>
+    
+  </section>
+
+  <section class="card" id="easy-do">
+    <h2><span class="n">2</span> 이렇게 / 이렇게는 말고</h2>
+    <div class="grid2">
+      <div class="easy-box easy-do">
+        <h3>해도 되는 쪽</h3>
+        <ul><li>필요할 때만 짧게</li><li>공개 글·날짜를 기준으로 판단</li></ul>
+      </div>
+      <div class="easy-box easy-dont">
+        <h3>피하는 쪽</h3>
+        <ul><li>성급히 가깝다고 가정하기</li><li>수집이 얇은 축을 확신으로 쓰기</li></ul>
+      </div>
+    </div>
+    <p class="easy-plain" style="margin-top:12px"><b>운영 메모</b> — neutral default · soft-engage on CI rollback/obs · caution on empty vendor flex</p>
+  </section>
+
+  <section class="card" id="easy-when">
+    <h2><span class="n">3</span> 상황별 거리</h2>
+    <table>
+      <tr><th>상황</th><th>쉬운 말</th></tr>
+      <tr><td>CI flakiness / rollback / observability</td><td>편하게 맞춰도 됨</td></tr><tr><td>Default community peer</td><td>평소 거리</td></tr><tr><td>Vendor cheer without repro steps</td><td>조심해서 거리 두기</td></tr><tr><td>Chronic interpersonal harm — no evidence</td><td>가급적 피하기</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="easy-collect">
+    <h2><span class="n">4</span> 자료는 얼마나 봤나</h2>
+    <ul class="easy-plain"><li>모아 본 공개 글: 게시 12건 · 댓글 40건</li><li>게시글 수집: 12/12 bodies</li><li>댓글 수집: 40/120 recent-only cap</li><li>공감/좋아요: 8/45 sparse pages</li><li>메모: Synthetic demo · platform caps: comments recent-only · likes sparse</li></ul>
+    <p class="muted">확신이 낮으면 위를 더 의심하세요. 좋아요/공감 축이 비어 있으면 그 부분은 모릅니다.</p>
+  </section>
+
+  <section class="card" id="easy-quotes">
+    <h2><span class="n">5</span> 근거로 남긴 말 (일부)</h2>
+    <blockquote>「[synthetic] Cancelled Vendor X v4 after load test failed our SLO gate — same bar as last year.」</blockquote><blockquote>「[synthetic] Self-hosted runners cut queue time 40%; here&#x27;s the dashboard.」</blockquote>
+  </section>
+
+  <section class="card" id="easy-limit">
+    <h2><span class="n">6</span> 한계</h2>
+    <ul class="easy-plain">
+      <li>공개된 글·댓글만 봅니다. 사생활·진단·법률 조언이 아닙니다.</li>
+      <li>MBTI·임상 표현은 재미/가설용이며, 거리 결정의 유일한 이유가 되면 안 됩니다.</li>
+      <li>더 촘촘한 표·그래프·레이어는 위쪽 <b>전문 분석</b> 트랙에 있습니다.</li>
+    </ul>
+  </section>
+
+  </div><!-- /track-easy -->
+
+<script id="kampff-track-js">
+(function(){
+  function setTrack(name){
+    var pro = document.getElementById('track-pro');
+    var easy = document.getElementById('track-easy');
+    var bPro = document.getElementById('btn-track-pro');
+    var bEasy = document.getElementById('btn-track-easy');
+    if(!pro || !easy) return;
+    var isEasy = name === 'easy';
+    pro.hidden = isEasy;
+    easy.hidden = !isEasy;
+    if(bPro) bPro.classList.toggle('active', !isEasy);
+    if(bEasy) bEasy.classList.toggle('active', isEasy);
+    try { localStorage.setItem('kampff-report-track', isEasy ? 'easy' : 'pro'); } catch(e){}
+  }
+  var bPro = document.getElementById('btn-track-pro');
+  var bEasy = document.getElementById('btn-track-easy');
+  if(bPro) bPro.addEventListener('click', function(){ setTrack('pro'); });
+  if(bEasy) bEasy.addEventListener('click', function(){ setTrack('easy'); });
+  var init = 'easy';
+  try {
+    if (location.hash === '#pro') init = 'pro';
+    else if (location.hash === '#easy') init = 'easy';
+    else {
+      var s = localStorage.getItem('kampff-report-track');
+      if (s === 'easy' || s === 'pro') init = s;
+    }
+  } catch(e){}
+  setTrack(init);
+})();
+</script>
 </body>
 </html>

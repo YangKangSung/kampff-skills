@@ -3,6 +3,8 @@ __pycache__/
 .venv/
 kampff-data/
 docs/_demo_frames/
+docs/_verify_out/
+docs/_verify_subject1.py
 scripts/__pycache__/
 
 # secrets — never commit
@@ -15,3 +17,21 @@ auth/
 *.pem
 *.key
 KAMPFF_AUTH_DIR/
+
+# harness / local agent junk
+.agents/
+.clinerules/
+.cursor/
+.opencode/
+.windsurf/
+AGENTS.md
+skills-lock.json
+*.db
+@AutomationLog.txt
+WHERE_TO_WORK.txt
+
+# run artifacts
+inbox/
+out/
+raw/
+.agent-browser-profile/
