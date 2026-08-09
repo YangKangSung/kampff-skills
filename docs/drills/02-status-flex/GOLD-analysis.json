@@ -1,0 +1,53 @@
+{
+  "meta": {
+    "drill_id": "02",
+    "slug": "status-flex",
+    "protocol": "GOLD key · synthetic · not full dossier"
+  },
+  "target": { "id": "orbit_loud", "nick": "orbit_loud" },
+  "distance": "caution",
+  "distance_accept": ["caution"],
+  "distance_note": "caution default — high ego/meeting cost; not automatic avoid unless chronic targeted harassment appears",
+  "confidence": "medium",
+  "tldr": "Status-performance poster. Thin workload proof; challenge → hierarchy shame. Limit surface; no curiosity-theater meetings.",
+  "spectrograph": {
+    "L1": "High E lean · low A signals in conflict · status-sensitive.",
+    "L3": "chronic flex + audience performance across months; not a one-bad-day spike.",
+    "L4": "low reciprocity for craft help; high cost for viewer time/ego."
+  },
+  "clinical_psych": {
+    "enabled": true,
+    "confidence": "medium",
+    "one_line": "Ego regulated via status display and devaluation when criteria are requested.",
+    "defenses": [
+      { "name": "devaluation", "level": 3, "evidence": "t3 junior energy" },
+      { "name": "grandiosity_signals", "level": 2, "evidence": "t2 stack tour / t5 calls" },
+      { "name": "projection", "level": 2, "evidence": "t6 you problem" }
+    ],
+    "ego_threat": {
+      "response": "double-down hierarchy + shame challenger",
+      "note": "repro request treated as status attack"
+    },
+    "interpersonal": {
+      "script": "recruit to circle / lecture / pile status",
+      "repair": "low"
+    },
+    "distance_bridge": "Engage cost high for ticket work; soft-social mixer is trap for this viewer."
+  },
+  "ach": [
+    { "id": "H1", "label": "Empty status flex / audience performance", "status": "lead", "score": 88 },
+    { "id": "H2", "label": "Quiet high-competence operator (modest)", "status": "fail", "score": 12 },
+    { "id": "H3", "label": "One-off bad week", "status": "weak", "score": 20 }
+  ],
+  "must_quote_ids": ["t3", "t6"],
+  "must_not": [
+    "NPD/ASPD as fact diagnosis",
+    "engage as default peer",
+    "persuade-them coaching as main output"
+  ],
+  "scoring_hints": {
+    "distance": "caution required; avoid only if you argue chronic targeted harm (thin here)",
+    "stability": "chronic across Mar–Jul",
+    "clinical": "devaluation + status ego threat; not task-bound irritation"
+  }
+}

@@ -27,6 +27,8 @@ Live page (not GitHub source). Markdown twin: [sample-community-report.md](docs/
 > **Synthetic only.** Demo person `relay_ops` @ `forum.example`.  
 > Real third-party dossiers never belong in this repo.
 
+**Dual-track HTML (default):** top toggle **쉬운 말** (plain distance / do·don't) · **전문 분석** (graphs · L1–L5 · lenses). First open defaults to 쉬운 말; choice sticks in `localStorage`. See [report-tracks.md](docs/report-tracks.md).
+
 ### Excerpt — matrix + distance
 
 | id | worldview_fit | alliance_fit | stability | drift | risk | one_line |
@@ -60,9 +62,10 @@ Live page (not GitHub source). Markdown twin: [sample-community-report.md](docs/
 |------|----------------|
 | **MBTI** (fun) | `ISTJ` lean · I~70 S~62 T~80 J~75 |
 | **CIA-SAT / ACH** | **H1 Verificationist** lead · drivers: control 3 · autonomy 3 · status 1 |
+| **Clinical** (비진단) | Task-bound affect · not a DSM label |
 | **L5 drift** | Vendor X v3 praise → v4 cancel = same trait (verify utility, not brand) |
 
-Inside the HTML: driver radar · Big Five · timeline · force-directed text graph · full L1–L5 · KGB-style dossier card.
+Inside the HTML: driver radar · Big Five · timeline · force-directed text graph · full L1–L5 · KGB-style dossier card · easy/pro track toggle.
 
 ---
 
@@ -108,9 +111,26 @@ cp -r kampff-skills/kampff ~/.hermes/skills/kampff   # pick your path
 /kampff analyze path/to/bundle.json
 /kampff member {platform} {id}     # community pipeline
 /kampff today
+/kampff drill                      # synthetic practice (hide GOLD first)
+/kampff drill 01
 ```
 
 Optional data dir: `export KAMPFF_DATA=~/kampff-data` (Windows: `setx KAMPFF_DATA "..."`)
+
+### Render HTML (offline)
+
+```bash
+# dual-track default (쉬운 말 + 전문 분석 toggle)
+python scripts/render_kampff_report.py \
+  -a path/to-analysis.json \
+  -o path/to-report.html
+
+# pro only · easy only
+python scripts/render_kampff_report.py -a … -o … --track pro
+python scripts/render_kampff_report.py -a … -o …-easy.html --track easy
+```
+
+Needs a filled `analysis.json` (agent output or [sample-analysis.json](docs/sample-analysis.json)). Schema notes: [report-analysis.schema.md](docs/report-analysis.schema.md).
 
 ---
 
@@ -123,7 +143,7 @@ Optional data dir: `export KAMPFF_DATA=~/kampff-data` (Windows: `setx KAMPFF_DAT
 └─────────────┘     └──────────────┘     └────────┬────────┘
                                                   ▼
                                          distance report
-                                      (.html DEFAULT · .md twin)
+                              (.html dual-track DEFAULT · .md twin)
 ```
 
 1. **Collect** lawful text (your tools, or optional `kampff-collect`)
@@ -152,11 +172,32 @@ Community boards are a **first-class pipeline**, not a one-off script:
 | Lens | Vibe |
 |------|------|
 | [MBTI](docs/lenses-mbti.md) | Fun · low validity · never sole `avoid` |
+| [Clinical](docs/lenses-clinical-psych.md) | Formulation only · **비진단** · never sole `avoid` |
 | [CIA-SAT + dossier card](docs/lenses-cia-sat.md) | Public analytic form · ACH · not ops |
 
 ```yaml
-analysis_lenses: ["personal", "mbti", "cia_sat"]
+analysis_lenses: ["personal", "mbti", "cia_sat", "clinical"]
 ```
+
+---
+
+## Practice drills (synthetic)
+
+Train distance + quote discipline **without** real people.
+
+| ID | Case | Gold distance (after score) | Trains |
+|----|------|------------------------------|--------|
+| **01** | [`docs/drills/01-criteria-peer/`](docs/drills/01-criteria-peer/) | neutral ~ soft-engage | brand flip ≠ flip-flop · criteria-bound affect |
+| **02** | [`docs/drills/02-status-flex/`](docs/drills/02-status-flex/) | caution | empty flex · meeting cost |
+
+```text
+/kampff drill 01          # brief + texts only — hide GOLD
+/kampff drill score 01    # then open GOLD + rubric
+```
+
+Rubric: [docs/drills/rubric.md](docs/drills/rubric.md) · craft map: [docs/profiling-craft.md](docs/profiling-craft.md)
+
+**Local smoke (this tree):** subject `gate_runner` (drill 01) scored **90/100 sharp** with dual-track HTML render green (2026-08-09 ad-hoc). Artifacts stay out of git.
 
 ---
 
@@ -186,7 +227,7 @@ analysis_lenses: ["personal", "mbti", "cia_sat"]
 - Commit real people, tokens, or host dumps to this repo  
 - Confuse “deleted a file” with “gone from git history”
 
-Samples use fiction only: `relay_ops`, `user_42`, `north_packet`.
+Samples + drills use fiction only: `relay_ops`, `gate_runner`, `north_packet`, `forum.example`.
 
 ---
 
@@ -197,10 +238,13 @@ kampff/                 ← the skill (copy this)
   SKILL.md
   references/           ← pipeline · honesty · lenses · template
 docs/
-  targets.template.json ← GENERAL run input (site url + target)
-  RUN-INPUT.md          ← how to fill targets → collect → analyze
-  demo-kampff-walkthrough.html
+  drills/               ← synthetic deliberate practice
+  report-tracks.md      ← dual-track HTML (easy / pro)
   sample-*.md · spectrograph · collectors
+  RUN-INPUT.md
+scripts/
+  render_kampff_report.py
+  kampff_report_easy.py
 collectors/             ← optional YAML packs (adapters maturing)
 kampff-data/            ← local runs only (gitignored)
 ```
@@ -211,7 +255,7 @@ kampff-data/            ← local runs only (gitignored)
 
 | ⭐ | Unlock |
 |----|--------|
-| shipped | L1–L5 + community pipeline + sample HTML |
+| shipped | L1–L5 + community pipeline + dual-track sample HTML + drills |
 | 100 | Ephemeris templates |
 | 300 | HR lens pack |
 | 500 | OSINT lens pack |
@@ -242,4 +286,3 @@ Public PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 Docs map: [docs/README.md](docs/README.md) · [CHANGELOG.md](CHANGELOG.md)
 
 Security reports: [SECURITY.md](SECURITY.md)
-
