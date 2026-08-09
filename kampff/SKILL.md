@@ -90,9 +90,10 @@ Analyze **all commenters on a single post**: intent signals, malice-risk heurist
 | | |
 |--|--|
 | Spec | `references/thread-actor-analysis.md` |
-| Runner | `scripts/thread_actor_analyze.py` |
+| Runner | `scripts/thread_actor_analyze.py` (seed HTML/URL) |
 | Trigger | `/kampff thread {url}` |
-| Default out | `{KAMPFF_DATA}/out/{date}-thread-{board}_{sn}-actors.html` |
+| Default out | `{KAMPFF_DATA}/out/{date}-thread-{id}-actors.html` |
+| Cohort expand | operator collectors + custom site URL templates — **not** a regional preset in this repo |
 
 Not a guilty verdict — **signals + graph**. Feeds hot actors into later member collect.
 
@@ -220,7 +221,7 @@ Community analyze **always** ends with HTML (not optional). Markdown is a twin/s
 - `references/lenses-cia-sat.md`
 - `references/github-smoke.md`
 - Repo demos: `docs/sample-community-report.{md,html}` · `docs/sample-output.md`
-- `scripts/thread_actor_cohort.py` — directed network + optional slow cohort expand
+- `scripts/thread_actor_analyze.py` — seed thread → directed reply graph (HTML/JSON/md)
 - `scripts/human_browse.py` — jitter delays, cache, bot-wall stop, resume
 
 ## License
