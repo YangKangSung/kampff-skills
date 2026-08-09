@@ -114,7 +114,7 @@ def parse_thread(html: str, url: str) -> dict:
                 row,
                 re.I,
             )
-        # clien often uses comment_content wrapping without comment_view class in some skins
+        # some boards nest comment bodies without a dedicated comment_view class
         if not content_m:
             content_m = re.search(
                 r'comment_content"[^>]*>\s*<div[^>]*class="[^"]*"[^>]*>([\s\S]*?)</div>',
@@ -783,7 +783,7 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--html", type=Path, default=DEFAULT_HTML)
     ap.add_argument("--url", default=DEFAULT_URL)
-    ap.add_argument("--focus", default="151990173")
+    ap.add_argument("--focus", default="", help="optional focus comment id")
     args = ap.parse_args()
 
     html = args.html.read_text(encoding="utf-8", errors="ignore")
@@ -791,7 +791,7 @@ def main() -> None:
     # re-parse comments with improved body extraction if many empty
     result = analyze(thread, focus_id=args.focus or None)
 
-    board_sn = "park_19230278"
+    board_sn = "thread"
     m = re.search(r"/board/([a-zA-Z0-9_]+)/(\d+)", args.url)
     if m:
         board_sn = f"{m.group(1)}_{m.group(2)}"
