@@ -1,22 +1,9 @@
 # Prebuilt platforms
 
-유명 시스템은 **`collectors/platforms/{id}.yaml`** 로 미리 제공.  
-조직마다 다른 건 **`query` / selector override** 만 — 새 YAML fork 불필요.
+Product surface: **famous SNS only**.  
+Everything else is **custom URL** (register `baseUrl` + `urlTemplates`) or a private `_template.yaml` fork — not a shipped preset.
 
-## Workplace & dev
-
-| id | 이름 | transport | 인증 |
-|----|------|-----------|------|
-| `jira` | Jira | rest | atlassian |
-| `confluence` | Confluence | rest | atlassian |
-| `github` | GitHub / GHE | rest | github token |
-| `gitlab` | GitLab | rest | bearer |
-| `slack` | Slack | rest | bot token |
-| `notion` | Notion | rest | integration token |
-| `microsoft_graph` | Teams / M365 | rest | azure app |
-| `internal_web` | 사내 웹 (SSO) | playwright | storage_state |
-
-## SNS & public
+## SNS (prebuilt)
 
 | id | 이름 | transport | 비고 |
 |----|------|-----------|------|
@@ -25,10 +12,8 @@
 | `instagram` | Instagram | rest/file | Business Graph 또는 export |
 | `reddit` | Reddit | rest | OAuth · `connect setup --platform reddit` |
 | `linkedin` | LinkedIn | file | member export · `connect setup --platform linkedin` |
-| `rss` | RSS/Atom | rest | 블로그·공지 |
-| `maigret` | Maigret username map | **cli** (optional) | 계정 존재·URL 확장만. 본문 수집 아님. `scripts/expand_handles_maigret.py` · [THIRD_PARTY_NOTICES](../THIRD_PARTY_NOTICES.md) |
 
-**Connection setup (SNS):** [sns-connection-setup.md](sns-connection-setup.md)
+**Connection setup:** [sns-connection-setup.md](sns-connection-setup.md)
 
 ```bash
 kampff-collect connect list
@@ -36,48 +21,60 @@ kampff-collect connect setup --platform x --ref x_api
 kampff-collect connect status
 ```
 
-## Export / file packs
+Catalog SoT: `collectors/platforms/catalog.yaml`
 
-| id | 이름 | transport |
-|----|------|-----------|
-| `discord` | Discord | file (data export) |
-| `google_workspace` | Gmail Takeout | file (.mbox) |
+## Custom URL (not prebuilt)
 
-전체 목록: `kampff-collect catalog`
+No regional board pack ships in this tree. Operator brings the origin.
 
-## 사용 예
+1. **Sites config** (extension / JSON) — preferred for Analyze dropdown  
+   - Schema: [sites.schema.json](sites.schema.json)  
+   - SNS seeds: [sites-default.json](sites-default.json)  
+   - Custom example: [sites-custom.example.json](sites-custom.example.json)
 
 ```json
 {
-  "platform": "slack",
-  "url": "https://slack.com/api",
-  "scope": "channel:C012345",
-  "collect": ["message"],
-  "match_people": ["user_42"],
-  "auth_ref": "slack_bot",
-  "query": { "channel_id": "C012345", "oldest": "1704067200" }
+  "id": "my_forum",
+  "label": "My forum",
+  "baseUrl": "https://forum.example",
+  "loginUrl": "https://forum.example/login",
+  "kind": "generic",
+  "enabled": true,
+  "urlTemplates": {
+    "profile": "{baseUrl}/u/{handle}",
+    "member": "{baseUrl}/member/{id}",
+    "post": "{baseUrl}/t/{id}",
+    "searchAuthor": "{baseUrl}/search?author={id}"
+  }
 }
 ```
 
+Placeholders: `{baseUrl}` `{id}` `{handle}` `{username}`.
+
+2. **Collector YAML** (optional deep adapter)  
+   - Copy `collectors/platforms/_template.yaml` → `platforms/my_forum.yaml`  
+   - `prebuilt: false`  
+   - No need to edit `catalog.yaml`
+
 ```json
 {
-  "platform": "internal_web",
-  "url": "https://portal.company.local/board",
-  "scope": "board",
+  "platform": "generic",
+  "url": "https://forum.example/u/alice",
+  "scope": "profile",
   "collect": ["post", "comment"],
-  "auth_ref": "corp_sso",
-  "query": { "author": "김OO", "content_selector": ".post-body" }
+  "match_people": ["target_id"],
+  "query": {
+    "base_url": "https://forum.example",
+    "author_id": "alice",
+    "profile_template": "{baseUrl}/u/{handle}"
+  }
 }
 ```
 
-## Custom
+## Not in product catalog
 
-목록에 없으면:
-
-1. 가장 가까운 prebuilt 복사 (예: `internal_web` ← 사내 게시판)
-2. 또는 `platforms/_template.yaml` → `platforms/my_crm.yaml`
-3. `catalog.yaml` 에는 등록 안 해도 됨 — `platforms/my_crm.yaml` 만 있으면 동작
+Workplace packs (Jira, Slack, …), RSS, Maigret, intranet crawl YAMLs may still exist as files for private experiments — they are **not** product prebuilts. Do not re-add Korean community origins to defaults.
 
 ## kampff skill
 
-Prebuilt 여부와 무관 — 출력은 항상 동일 `bundle.json`.
+Prebuilt vs custom does not change analyze output shape — always the same `bundle.json` / analysis contract.

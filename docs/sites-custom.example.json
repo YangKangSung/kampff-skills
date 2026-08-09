@@ -1,0 +1,19 @@
+[
+  {
+    "id": "forum_example",
+    "label": "Example forum (custom URL)",
+    "baseUrl": "https://forum.example",
+    "loginUrl": "https://forum.example/login",
+    "username": "",
+    "kind": "generic",
+    "enabled": true,
+    "hasPassword": false,
+    "urlTemplates": {
+      "profile": "{baseUrl}/u/{handle}",
+      "member": "{baseUrl}/member/{id}",
+      "post": "{baseUrl}/t/{id}",
+      "searchAuthor": "{baseUrl}/search?author={id}"
+    },
+    "notes": "Operator fills real baseUrl + templates. Never ship personal board URLs in defaults or public samples."
+  }
+]

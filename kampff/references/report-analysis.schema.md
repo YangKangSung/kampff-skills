@@ -4,7 +4,7 @@ Pass to `scripts/render_kampff_report.py --analysis …`.
 
 ```json
 {
-  "meta": { "date": "YYYY-MM-DD", "platform": "clien|damoang|…", "language": "ko", "protocol": "L1–L5 · MBTI · CIA-SAT" },
+  "meta": { "date": "YYYY-MM-DD", "platform": "x|reddit|facebook|instagram|linkedin|generic|…", "language": "ko|en|…", "protocol": "L1–L5 · MBTI · CIA-SAT" },
   "target": { "id": "member_id", "nick": "display" },
   "viewer": { "id": "me" },
   "distance": "engage|neutral|caution|avoid",

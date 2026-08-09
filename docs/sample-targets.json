@@ -4,66 +4,48 @@
   "people": [
     {
       "id": "me",
-      "aliases": ["viewer@company.com", "viewercorp", "홍길동"]
+      "aliases": ["viewer"]
     },
     {
-      "id": "user_42",
-      "aliases": ["kim.oo@company.com", "user42corp", "김OO", "jira:712020:abc"]
+      "id": "target_id",
+      "aliases": ["@their_x", "u/their_reddit"]
     }
   ],
   "targets": [
-    {
-      "url": "https://wiki.company.com/wiki/spaces/ENG",
-      "platform": "confluence",
-      "scope": "space",
-      "collect": ["wiki_page", "comment"],
-      "match_people": ["user_42"],
-      "auth_ref": "confluence_prod",
-      "query": {
-        "cql": "contributor = \"kim.oo@company.com\" AND lastModified >= 2025-01-01"
-      }
-    },
-    {
-      "url": "https://jira.company.com/projects/PROJ",
-      "platform": "jira",
-      "scope": "project",
-      "collect": ["issue", "comment"],
-      "match_people": ["user_42"],
-      "auth_ref": "jira_prod",
-      "query": {
-        "jql": "project = PROJ AND (reporter = user42 OR assignee = user42) ORDER BY updated DESC"
-      }
-    },
-    {
-      "url": "https://github.company.com/org/platform",
-      "platform": "github",
-      "scope": "repo",
-      "collect": ["issue", "issue_comment", "pr_comment"],
-      "match_people": ["user_42"],
-      "auth_ref": "github_enterprise",
-      "query": { "author_login": "user42corp", "since": "2025-01-01" }
-    },
-    {
-      "url": "https://portal.company.local/community/engineering",
-      "platform": "internal_web",
-      "scope": "board",
-      "collect": ["post", "comment"],
-      "match_people": ["me", "user_42"],
-      "auth_ref": "corp_sso",
-      "query": {
-        "author": "김OO",
-        "max_pages": 30,
-        "item_selector": "[data-post]",
-        "content_selector": ".post-body"
-      }
-    },
     {
       "url": "https://x.com/their_x",
       "platform": "x",
       "scope": "profile",
       "collect": ["post", "reply"],
-      "match_people": ["user_42"]
+      "match_people": ["target_id"],
+      "auth_ref": "x_api",
+      "query": { "username": "their_x", "limit": 100 }
+    },
+    {
+      "url": "https://www.reddit.com/user/their_reddit/",
+      "platform": "reddit",
+      "scope": "user:their_reddit",
+      "collect": ["post", "comment"],
+      "match_people": ["target_id"],
+      "auth_ref": "reddit_oauth",
+      "query": { "username": "their_reddit", "limit": 100 }
+    },
+    {
+      "url": "https://forum.example/u/alice",
+      "platform": "generic",
+      "scope": "profile",
+      "collect": ["post", "comment"],
+      "match_people": ["target_id"],
+      "query": {
+        "base_url": "https://forum.example",
+        "handle": "alice",
+        "profile_template": "{baseUrl}/u/{handle}",
+        "post_template": "{baseUrl}/t/{id}"
+      }
     }
   ],
-  "meta": { "since": "2025-01-01", "on_prem": true, "no_egress": true }
+  "meta": {
+    "language": "en",
+    "notes": "SNS + one custom URL target. No regional board presets."
+  }
 }

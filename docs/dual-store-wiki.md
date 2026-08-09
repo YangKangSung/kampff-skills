@@ -1,6 +1,6 @@
 # Dual store: dataRoot vs wikiRoot
 
-Product model from **Kampff VS Code 0.8.3+** (`wikiStore.ts`, dual-path settings), now documented + CLI-backed in skills-dev.
+Product model shared with the optional **Kampff VS Code** extension (`wikiStore`, dual-path settings), with CLI helpers in this repo.
 
 ## Two roots
 
@@ -49,17 +49,17 @@ Copy analysis + report into:
 ## CLI (`scripts/wiki_store.py`)
 
 ```bash
-export KAMPFF_DATA="~/kampff-skills/kampff-data"
-export KAMPFF_WIKI="~/kampff-wiki"   # example shelf
+export KAMPFF_DATA="${KAMPFF_DATA:-$PWD/kampff-data}"
+export KAMPFF_WIKI="${KAMPFF_WIKI:-$PWD/wiki}"   # optional durable shelf
 
 python scripts/wiki_store.py init-wiki --wiki "$KAMPFF_WIKI"
 
-python scripts/wiki_store.py prior --id member_id --platform clien --prompt
+python scripts/wiki_store.py prior --id member_id --platform reddit --prompt
 
 python scripts/wiki_store.py promote \
-  --id member_id --platform clien \
-  -a kampff-data/out/2026-08-08-member_id-analysis.json \
-  -r kampff-data/out/2026-08-08-member_id-report.html
+  --id member_id --platform reddit \
+  -a "$KAMPFF_DATA/out/YYYY-MM-DD-member_id-analysis.json" \
+  -r "$KAMPFF_DATA/out/YYYY-MM-DD-member_id-report.html"
 ```
 
 ## Do not
@@ -73,5 +73,4 @@ python scripts/wiki_store.py promote \
 ## Related
 
 - [vscode-bridge.md](vscode-bridge.md)
-- [LOCAL_DEV.md](LOCAL_DEV.md)
 - [RUN-INPUT.md](RUN-INPUT.md)

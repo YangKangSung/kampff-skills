@@ -37,7 +37,7 @@ Built an agent skill for analyzing people from text they already published — w
 - **Not** customer profiling (sickn33) or self-only (i-am)
 - **spectrograph** 7 layers: psych, worldview, behavior, alliance, ephemeris
 - Viewer is in the pool — comparison with evidence quotes
-- Collectors are separate YAML-driven package (15 prebuilt platforms; adapters still WIP)
+- Collectors are separate YAML-driven package (5 famous-SNS prebuilt platforms (+ custom URL); adapters still WIP)
 
 ```bash
 cp -r kampff ~/.grok/skills/kampff      # or ~/.claude/skills/kampff · ~/.hermes/skills/kampff

@@ -2,6 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://github.com/YangKangSung/kampff-skills/docs/sites.schema.json",
   "title": "Kampff registerable sites",
+  "description": "Product surface: famous SNS seeds + operator-defined custom URLs. No regional board presets. Passwords never in JSON.",
   "type": "array",
   "items": {
     "type": "object",
@@ -16,11 +17,11 @@
       "label": { "type": "string" },
       "baseUrl": {
         "type": "string",
-        "description": "https origin without trailing slash"
+        "description": "https origin without trailing slash (required for custom URL sites)"
       },
       "loginUrl": {
         "type": "string",
-        "description": "Optional login page; clien defaults to /service/auth/login"
+        "description": "Optional login page absolute URL"
       },
       "username": {
         "type": "string",
@@ -28,12 +29,45 @@
       },
       "kind": {
         "type": "string",
-        "enum": ["clien", "generic"]
+        "enum": ["sns", "generic"],
+        "description": "sns = known major network adapter id; generic = custom baseUrl + urlTemplates"
+      },
+      "snsId": {
+        "type": "string",
+        "enum": ["x", "facebook", "instagram", "reddit", "linkedin"],
+        "description": "When kind=sns, which major network (must match collectors platform id when used)"
       },
       "enabled": { "type": "boolean" },
       "hasPassword": {
         "type": "boolean",
         "description": "True if SecretStorage holds a password — never the password itself"
+      },
+      "urlTemplates": {
+        "type": "object",
+        "additionalProperties": false,
+        "description": "Custom URL shapes. Placeholders: {id} {handle} {username} {baseUrl}",
+        "properties": {
+          "profile": {
+            "type": "string",
+            "description": "e.g. {baseUrl}/u/{handle}"
+          },
+          "member": {
+            "type": "string",
+            "description": "e.g. {baseUrl}/member/{id}"
+          },
+          "post": {
+            "type": "string",
+            "description": "e.g. {baseUrl}/t/{id}"
+          },
+          "searchAuthor": {
+            "type": "string",
+            "description": "e.g. {baseUrl}/search?author={id}"
+          }
+        }
+      },
+      "notes": {
+        "type": "string",
+        "description": "Operator-only free text; strip before any public sample"
       }
     }
   }
