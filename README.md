@@ -17,6 +17,18 @@
 
 ---
 
+
+---
+
+## Run modes
+
+| Mode | How |
+|------|-----|
+| **Standalone** | Install `kampff/` into an agent · optional `kampff-collect` · `scripts/render_kampff_report.py` |
+| **VS Code** (optional) | Extension shell → `skillsDevRoot` at this clone → Analyze |
+
+Map: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · scripts: [scripts/README.md](scripts/README.md)
+
 ## Live site
 
 → <a href="https://yangkangsung.github.io/kampff-skills/" target="_blank" rel="noopener noreferrer"><strong>Pages home</strong></a> (product landing) · docs table: [docs/docs-index.md](docs/docs-index.md)

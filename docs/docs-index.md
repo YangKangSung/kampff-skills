@@ -17,6 +17,7 @@ Repo install + pitch: [README](https://github.com/YangKangSung/kampff-skills#rea
 
 | Doc | Topic |
 |-----|--------|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Standalone vs VS Code runtime |
 | [usage.md](usage.md) | How to run / bind the skill |
 | [spectrograph.md](spectrograph.md) | Layer model |
 | [input-schema.md](input-schema.md) | Bundle input shape |
@@ -60,3 +61,9 @@ Generic public collectors only in this tree. See [collectors.md](collectors.md),
 | [sites.schema.json](sites.schema.json) | Registerable sites schema |
 | [sites-default.json](sites-default.json) | Famous SNS seeds only |
 | [sites-custom.example.json](sites-custom.example.json) | Custom URL template (`forum.example`) |
+
+## Scripts
+
+| Doc | Topic |
+|-----|--------|
+| [../scripts/README.md](../scripts/README.md) | Public script inventory |
