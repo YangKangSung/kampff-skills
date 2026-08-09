@@ -248,7 +248,7 @@ def maybe_harvest(req: dict, root: Path, skills: Path) -> str | None:
     need_login = need_otp or hard_need_login
     if need_login:
         msg = (
-            "NEED_OTP: password ok — finish device/OTP in agent Edge"
+            "NEED_OTP: password ok — finish device/OTP in agent browser"
             if need_otp
             else "NEED_LOGIN: site session missing — register login or finish agent browser auth"
         )
@@ -339,7 +339,7 @@ def main() -> None:
             status_path,
             phase="error",
             msg=(
-                "NEED_OTP: 기기인증/OTP를 agent Edge에서 끝낸 뒤 Go"
+                "NEED_OTP: finish device/OTP in agent browser, then Go"
                 if otp
                 else "NEED_LOGIN: register site login in Kampff (or agent session), then retry"
             ),
@@ -351,7 +351,7 @@ def main() -> None:
             (
                 "NEED_OTP — finish device/OTP trust on agent browser, then Go"
                 if otp
-                else "NEED_LOGIN — Kampff · 사이트 등록 (username/password), then Go again"
+                else "NEED_LOGIN — register site username/password in Kampff, then Go again"
             ),
             rc=3,
         )
