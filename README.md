@@ -3,6 +3,7 @@
 ### Read the board. Not the vibes.
 
 [![Stars](https://img.shields.io/github/stars/YangKangSung/kampff-skills?style=social)](https://github.com/YangKangSung/kampff-skills/stargazers)
+[![Sponsor](https://img.shields.io/badge/Sponsor-YangKangSung-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/YangKangSung)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skill](https://img.shields.io/badge/agent-SKILL.md-0ea5e9)](kampff/SKILL.md)
 [![Docs](https://img.shields.io/badge/docs-index-informational)](docs/README.md)
@@ -11,6 +12,8 @@
 [![Kampff demo reel](docs/demo-reel.gif)](https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html)
 
 **▶** GIF autoplays above · click for <a href="https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html" target="_blank" rel="noopener noreferrer"><strong>interactive demo</strong></a> (`Space` pause) · <a href="https://yangkangsung.github.io/kampff-skills/demo-reel.mp4" target="_blank" rel="noopener noreferrer">mp4</a>
+
+**Support independent OSS:** <a href="https://github.com/sponsors/YangKangSung" target="_blank" rel="noopener noreferrer"><strong>github.com/sponsors/YangKangSung</strong></a>
 
 ---
 
