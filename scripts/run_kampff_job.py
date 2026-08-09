@@ -341,7 +341,7 @@ def main() -> None:
             msg=(
                 "NEED_OTP: 기기인증/OTP를 agent Edge에서 끝낸 뒤 Go"
                 if otp
-                else "NEED_LOGIN: Kampff 사이트 등록에 클리앙 ID/비밀번호를 넣은 뒤 다시 시작"
+                else "NEED_LOGIN: register site login in Kampff (or agent session), then retry"
             ),
             activity="기기인증/OTP 필요" if otp else "로그인 필요",
             current=author,
