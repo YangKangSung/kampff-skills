@@ -1,6 +1,6 @@
 # Kampff run input (general)
 
-Public skill SoT: `C:\prjs\kampff-skills`  
+Public skill SoT: this repo (`YangKangSung/kampff-skills`)  
 Template: [targets.template.json](targets.template.json) · Schema: [collection-targets.md](collection-targets.md) · Bundle: [input-schema.md](input-schema.md)
 
 ## 1) Fill this first (minimum)
@@ -60,14 +60,12 @@ cp docs/targets.template.json kampff-data/inbox/$(date +%Y-%m-%d)/targets.json
 
 | platform | url example | query keys |
 |----------|-------------|------------|
-| `community` | `https://www.clien.net/service/` | `author_id`, `author_display` |
-| `reddit` | `https://www.reddit.com/r/…/` | `username` / `author` |
 | `x` | `https://x.com/handle` | `username` / `user_id` |
+| `reddit` | `https://www.reddit.com/user/…/` | `username` / `author` |
 | `facebook` | Page URL | `page_id` |
 | `instagram` | profile URL | `ig_user_id`, `handle` |
 | `linkedin` | `file://linkedin-export` | `path` (export dir) |
-| `github` | `https://github.com/org/repo` | `author_login` |
-| `internal_web` | corp board URL | selectors + `author_display` |
+| `generic` | custom `baseUrl` + path (see [sites-custom.example.json](sites-custom.example.json)) | `author_id`, `handle`, `urlTemplates` |
 
 SNS OAuth/token/export 연결:
 
@@ -90,8 +88,8 @@ targets.json  →  collect (lawful)  →  bundle.json + COLLECTION_HONESTY.md
 Data root: env `KAMPFF_DATA` or `./kampff-data` under this repo.
 
 ```bash
-cd C:/prjs/kampff-skills
-export KAMPFF_DATA="C:/prjs/kampff-skills/kampff-data"
+cd /path/to/kampff-skills
+export KAMPFF_DATA="${KAMPFF_DATA:-$PWD/kampff-data}"
 # collect using your adapters / agent scripts
 # then:
 # /kampff analyze $KAMPFF_DATA/inbox/YYYY-MM-DD/bundle.json

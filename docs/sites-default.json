@@ -1,12 +1,74 @@
 [
   {
-    "id": "clien",
-    "label": "Clien",
-    "baseUrl": "https://www.clien.net",
-    "loginUrl": "https://www.clien.net/service/auth/login",
+    "id": "x",
+    "label": "X",
+    "baseUrl": "https://x.com",
+    "loginUrl": "https://x.com/i/flow/login",
     "username": "",
-    "kind": "clien",
+    "kind": "sns",
+    "snsId": "x",
     "enabled": true,
-    "hasPassword": false
+    "hasPassword": false,
+    "urlTemplates": {
+      "profile": "{baseUrl}/{handle}",
+      "post": "{baseUrl}/{handle}/status/{id}"
+    }
+  },
+  {
+    "id": "reddit",
+    "label": "Reddit",
+    "baseUrl": "https://www.reddit.com",
+    "loginUrl": "https://www.reddit.com/login",
+    "username": "",
+    "kind": "sns",
+    "snsId": "reddit",
+    "enabled": true,
+    "hasPassword": false,
+    "urlTemplates": {
+      "profile": "{baseUrl}/user/{username}/",
+      "post": "{baseUrl}/comments/{id}/"
+    }
+  },
+  {
+    "id": "facebook",
+    "label": "Facebook",
+    "baseUrl": "https://www.facebook.com",
+    "loginUrl": "https://www.facebook.com/login",
+    "username": "",
+    "kind": "sns",
+    "snsId": "facebook",
+    "enabled": true,
+    "hasPassword": false,
+    "urlTemplates": {
+      "profile": "{baseUrl}/{id}"
+    }
+  },
+  {
+    "id": "instagram",
+    "label": "Instagram",
+    "baseUrl": "https://www.instagram.com",
+    "loginUrl": "https://www.instagram.com/accounts/login/",
+    "username": "",
+    "kind": "sns",
+    "snsId": "instagram",
+    "enabled": true,
+    "hasPassword": false,
+    "urlTemplates": {
+      "profile": "{baseUrl}/{handle}/"
+    }
+  },
+  {
+    "id": "linkedin",
+    "label": "LinkedIn",
+    "baseUrl": "https://www.linkedin.com",
+    "loginUrl": "https://www.linkedin.com/login",
+    "username": "",
+    "kind": "sns",
+    "snsId": "linkedin",
+    "enabled": true,
+    "hasPassword": false,
+    "urlTemplates": {
+      "profile": "{baseUrl}/in/{handle}/"
+    }
   }
 ]

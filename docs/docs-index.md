@@ -58,3 +58,5 @@ Generic public collectors only in this tree. See [collectors.md](collectors.md),
 | [dual-store-wiki.md](dual-store-wiki.md) | dataRoot vs wikiRoot |
 | [vscode-bridge.md](vscode-bridge.md) | Extension ↔ this repo |
 | [sites.schema.json](sites.schema.json) | Registerable sites schema |
+| [sites-default.json](sites-default.json) | Famous SNS seeds only |
+| [sites-custom.example.json](sites-custom.example.json) | Custom URL template (`forum.example`) |
