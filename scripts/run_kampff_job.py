@@ -250,7 +250,7 @@ def maybe_harvest(req: dict, root: Path, skills: Path) -> str | None:
         msg = (
             "NEED_OTP: password ok — finish device/OTP in agent Edge"
             if need_otp
-            else "NEED_LOGIN: clien session missing — Kampff 사이트 등록 또는 agent Edge 로그인"
+            else "NEED_LOGIN: site session missing — register login or finish agent browser auth"
         )
         write_status(
             write_status_path,
@@ -349,7 +349,7 @@ def main() -> None:
         )
         die(
             (
-                "NEED_OTP — run scripts/clien_otp_wait.py or finish device trust, then Go"
+                "NEED_OTP — finish device/OTP trust on agent browser, then Go"
                 if otp
                 else "NEED_LOGIN — Kampff · 사이트 등록 (username/password), then Go again"
             ),
