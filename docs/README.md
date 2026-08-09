@@ -1,15 +1,27 @@
-# docs/
+# Docs index
 
-**Live site home:** https://yangkangsung.github.io/kampff-skills/ (`index.html`)
+Public product documentation for **kampff-skills**.
 
-Full markdown doc table: [docs-index.md](docs-index.md)
+## Start here
 
-| Start here | |
-|------------|--|
-| Sample HTML | [sample-community-report.html](sample-community-report.html) (dual-track) |
-| Report tracks | [report-tracks.md](report-tracks.md) |
-| Drills | [drills/](drills/) |
-| Clinical lens | [lenses-clinical-psych.md](lenses-clinical-psych.md) |
-| Craft map | [profiling-craft.md](profiling-craft.md) |
+| Doc | When |
+|-----|------|
+| **[ARCHITECTURE.md](ARCHITECTURE.md)** | Standalone vs VS Code, data roots |
+| **[usage.md](usage.md)** | `/kampff` skill calls |
+| **[vscode-bridge.md](vscode-bridge.md)** | Optional extension wiring |
+| **[docs-index.md](docs-index.md)** | Full table + Pages links |
 
-Do not use `github.com/.../blob/main/docs/*.html` as the demo CTA — open the Pages URL (rendered HTML).
+## Runtime
+
+| Doc | Topic |
+|-----|--------|
+| [RUN-INPUT.md](RUN-INPUT.md) | targets / platforms |
+| [dual-store-wiki.md](dual-store-wiki.md) | dataRoot vs wikiRoot |
+| [report-tracks.md](report-tracks.md) | easy / pro HTML |
+| [sites.schema.json](sites.schema.json) · [sites-default.json](sites-default.json) | SNS + custom URL |
+| [prebuilt-platforms.md](prebuilt-platforms.md) | collectors catalog |
+| [../scripts/README.md](../scripts/README.md) | script list |
+
+## Samples & drills
+
+[sample-analysis.json](sample-analysis.json) · [sample-community-report.html](sample-community-report.html) · [drills/](drills/)

@@ -2,6 +2,9 @@
 
 수집은 **별도 logic**. skill/agent는 **정규화된 입력 파일**만 읽는다.
 
+**실행 모드 전체 지도:** [ARCHITECTURE.md](ARCHITECTURE.md) (standalone · VS Code).  
+로컬 세팅: [LOCAL_DEV.md](LOCAL_DEV.md).
+
 ## 호출 방법
 
 ### 0) URL 지정 + 사람 검색 (수집 → 분석)
@@ -31,6 +34,20 @@ kampff-collect connect status
 ```
 
 → [sns-connection-setup.md](sns-connection-setup.md) · [sample-targets-sns.json](sample-targets-sns.json)
+
+---
+
+## 호출 방법 — 드릴 (의도적 연습)
+
+프로파일링/심리학 **실력**용. 합성 케이스만. 실명 GOLD 없음.
+
+```text
+/kampff drill
+/kampff drill 01
+/kampff drill score 01
+```
+
+→ [drills/README.md](drills/README.md) · 공부 맵 [profiling-craft.md](profiling-craft.md) · 채점 [drills/rubric.md](drills/rubric.md)
 
 ---
 
