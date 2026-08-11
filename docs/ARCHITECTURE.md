@@ -1,7 +1,7 @@
 # Kampff architecture
 
 Public product: **this repo** (`kampff-skills`).  
-Optional UI shell: sibling **Kampff VS Code** extension (`ksyang.kampff`) — not vendored here.
+Optional UI shell: sibling **Kampff VS Code** extension (`YangKangSung.kampff`) — not vendored here.
 
 ## Two run modes
 
@@ -15,7 +15,7 @@ Optional UI shell: sibling **Kampff VS Code** extension (`ksyang.kampff`) — no
            ▼                                                 ▼
  ┌─────────────────────┐                          ┌──────────────────────┐
  │ A) STANDALONE       │                          │ B) VS CODE EXTENSION │
- │ CLI / agent / Python│                          │ ksyang.kampff        │
+ │ CLI / agent / Python│                          │ YangKangSung.kampff        │
  └─────────────────────┘                          └──────────────────────┘
    hermes · slash /kampff                           webview Analyze · queue
    kampff-collect CLI                               jobRunner → run_kampff_job
