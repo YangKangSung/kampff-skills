@@ -1,7 +1,24 @@
 # VS Code extension ↔ skills repo bridge
 
-Local UI: sibling repo **`kampff-vscode`** (extension id `ksyang.kampff`).  
+Local UI: sibling repo **`kampff-vscode`** (Marketplace id **`YangKangSung.kampff`**).
+Public product surface (Marketplace `repository`/`homepage`): **this repo**.  
 Skills / scripts SoT: **this repo** (`kampff-skills`).
+
+
+## Release flow (formal)
+
+```text
+kampff-vscode  →  kampff-skills-dev (private)  →  kampff-skills (this public repo)
+     │                      │                            │
+  UI / VSIX            CLI+docs+filter              OSS + Market links
+```
+
+| Step | Where | What |
+|------|--------|------|
+| 1 | `kampff-vscode` | UI/contract · package VSIX |
+| 2 | `kampff-skills-dev` | Port scripts/docs only (no `src/` / `.vsix`) |
+| 3 | `kampff-skills` | Product-only publish |
+| 4 | Marketplace | `YangKangSung.kampff` · links → this repo |
 
 System map: [ARCHITECTURE.md](ARCHITECTURE.md) §B.  
 Docs hub: [README.md](README.md).
