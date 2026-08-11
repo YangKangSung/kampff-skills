@@ -35,3 +35,8 @@ inbox/
 out/
 raw/
 .agent-browser-profile/
+
+# VS Code extension workspace
+extension/node_modules/
+extension/out/
+extension/*.vsix

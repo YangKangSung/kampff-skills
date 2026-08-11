@@ -1,7 +1,7 @@
 # Kampff architecture
 
 Public product: **this repo** (`kampff-skills`).  
-Optional UI shell: sibling **Kampff VS Code** extension (`YangKangSung.kampff`) — not vendored here.
+Optional UI shell: **`extension/`** in this repo (Marketplace `YangKangSung.kampff`).
 
 ## Two run modes
 
