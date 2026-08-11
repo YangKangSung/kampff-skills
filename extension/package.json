@@ -1,0 +1,728 @@
+{
+  "name": "kampff",
+  "displayName": "Kampff",
+  "description": "Kampff operator shell: queue analyze jobs against a kampff-skills clone, open dual-track reports. Default site X. Requires Hermes. Respect rate limits.",
+  "version": "0.9.6",
+  "publisher": "YangKangSung",
+  "author": "YangKangSung (ksyang)",
+  "license": "MIT",
+  "private": false,
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Visualization"
+  ],
+  "keywords": [
+    "kampff",
+    "dossier",
+    "distance",
+    "osint",
+    "community",
+    "analysis",
+    "report"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#0f1011",
+    "theme": "dark"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "Kampff",
+      "properties": {
+        "kampff.dataRoot": {
+          "type": "string",
+          "default": "",
+          "order": 1,
+          "markdownDescription": "Runtime **KAMPFF_DATA** only: `inbox/`, `queue/`, `out/` (scratch + job poll). Empty until Setup. Not the Obsidian vault root."
+        },
+        "kampff.wikiRoot": {
+          "type": "string",
+          "default": "",
+          "order": 2,
+          "markdownDescription": "Optional durable shelf: `people/`, `reports/`, `Index.md`. Empty = skip wiki promote until set."
+        },
+        "kampff.skillsDevRoot": {
+          "type": "string",
+          "default": "",
+          "order": 3,
+          "markdownDescription": "Clone of **kampff-skills** (scripts + skill). Required for one-click jobs (`run_kampff_job.py`)."
+        },
+        "kampff.peopleRoot": {
+          "type": "string",
+          "default": "",
+          "order": 4,
+          "markdownDescription": "People accumulate store. Empty = `{wikiRoot}/people` if wiki set, else `{dataRoot}/people`."
+        },
+        "kampff.wikiReportsRoot": {
+          "type": "string",
+          "default": "",
+          "order": 5,
+          "markdownDescription": "Final report copies. Empty = `{wikiRoot}/reports`."
+        },
+        "kampff.pythonPath": {
+          "type": "string",
+          "default": "python",
+          "order": 6,
+          "description": "Python executable for queue helpers / hermes runner."
+        },
+        "kampff.hermesCommand": {
+          "type": "string",
+          "default": "",
+          "order": 7,
+          "description": "Hermes CLI when analyzeLaunch = hermes/auto. Empty = auto-detect (%LOCALAPPDATA%/hermes/hermes-agent/venv/Scripts/hermes.exe, then legacy venvs path)."
+        },
+        "kampff.analyzeLaunch": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "hermes",
+            "terminal",
+            "none"
+          ],
+          "default": "auto",
+          "order": 10,
+          "markdownDescription": "**auto/hermes** — ① 누르면 Hermes 실행 + 진행률 + 끝나면 리포트 자동 오픈.\n**none** — 큐 파일만 (고급).\n**terminal** — helper 안내만.",
+          "description": "auto/hermes: one-click run with progress. none: queue files only. terminal: print helper."
+        },
+        "kampff.defaultPlatform": {
+          "type": "string",
+          "enum": [
+            "facebook",
+            "x",
+            "instagram",
+            "reddit",
+            "linkedin",
+            "custom"
+          ],
+          "default": "x",
+          "order": 11,
+          "description": "Default platform in Analyze view."
+        },
+        "kampff.defaultMode": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "member",
+            "thread",
+            "profile"
+          ],
+          "default": "member",
+          "order": 12,
+          "description": "Default analyze kind: member = full person dossier (not community post).",
+          "markdownDescription": "분석 종류 기본값. **member** = 회원 전반 dossier (권장). thread/profile/auto는 특수 케이스. 게시 초안 모드 아님."
+        },
+        "kampff.defaultDepth": {
+          "type": "string",
+          "enum": [
+            "quick",
+            "full"
+          ],
+          "default": "quick",
+          "order": 13,
+          "description": "Default depth (quick = light; full = full collect).",
+          "markdownDescription": "**quick** (default) = light collect. **full** hits rate limits faster (X and others). Prefer quick for large accounts."
+        },
+        "kampff.enabledPlatforms": {
+          "type": "array",
+          "default": [
+            "x",
+            "facebook",
+            "instagram",
+            "reddit",
+            "linkedin",
+            "custom"
+          ],
+          "items": {
+            "type": "string",
+            "enum": [
+              "facebook",
+              "x",
+              "instagram",
+              "reddit",
+              "linkedin",
+              "custom"
+            ]
+          },
+          "order": 14,
+          "description": "Platforms shown in Analyze site dropdown."
+        },
+        "kampff.customPlatforms": {
+          "type": "array",
+          "default": [],
+          "order": 15,
+          "markdownDescription": "Legacy extra platforms: `{ id, label, urlTemplate }`. Prefer **kampff.sites** + `Kampff: 사이트 등록…`.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "urlTemplate": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "kampff.sites": {
+          "type": "array",
+          "order": 14.5,
+          "markdownDescription": "Registered sites for Analyze. Default: **X** only (no password). Add more via Setup. Passwords → SecretStorage only. Demo handle form only: @elonmusk (public profile URL shape — not a bundled dossier).",
+          "default": [
+            {
+              "id": "x",
+              "label": "X",
+              "baseUrl": "https://x.com",
+              "loginUrl": "https://x.com/i/flow/login",
+              "username": "",
+              "kind": "generic",
+              "enabled": true,
+              "hasPassword": false
+            }
+          ],
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "baseUrl"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Selection key (e.g. x)."
+              },
+              "label": {
+                "type": "string"
+              },
+              "baseUrl": {
+                "type": "string",
+                "description": "https://www.example.com"
+              },
+              "loginUrl": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string",
+                "description": "Login id (not password)."
+              },
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "generic"
+                ],
+                "default": "generic"
+              },
+              "enabled": {
+                "type": "boolean",
+                "default": true
+              },
+              "hasPassword": {
+                "type": "boolean",
+                "default": false,
+                "description": "UI flag only — real password is in SecretStorage."
+              }
+            }
+          }
+        },
+        "kampff.autoOpenPrompt": {
+          "type": "boolean",
+          "default": false,
+          "order": 16,
+          "description": "Open hermes prompt file after queue."
+        },
+        "kampff.notifyOnQueue": {
+          "type": "boolean",
+          "default": false,
+          "order": 17,
+          "markdownDescription": "After queue: status bar only if true. Default **off** — no Prompt/Report modal."
+        },
+        "kampff.promptIncludeClinical": {
+          "type": "boolean",
+          "default": true,
+          "order": 20,
+          "markdownDescription": "Prompt asks for **clinical_psych** lens (non-diagnostic)."
+        },
+        "kampff.promptIncludeAuthorship": {
+          "type": "boolean",
+          "default": true,
+          "order": 21,
+          "markdownDescription": "Prompt asks for **authorship_integrity** (ID sale/org CIB-lite)."
+        },
+        "kampff.promptIncludeAccumulate": {
+          "type": "boolean",
+          "default": true,
+          "order": 22,
+          "markdownDescription": "Prompt asks to run **accumulate_person** into people/."
+        },
+        "kampff.harvestPolite": {
+          "type": "boolean",
+          "default": true,
+          "order": 23,
+          "markdownDescription": "Human-like pacing for harvest (all sites). X and other platforms rate-limit; keep on unless debugging."
+        },
+        "kampff.reportOpenMode": {
+          "type": "string",
+          "enum": [
+            "panel",
+            "browser",
+            "both"
+          ],
+          "default": "panel",
+          "order": 30,
+          "description": "How Open Report opens HTML."
+        },
+        "kampff.openReportOnComplete": {
+          "type": "boolean",
+          "default": true,
+          "order": 31,
+          "description": "Open dossier HTML when one-click job finishes."
+        },
+        "kampff.maxReportsListed": {
+          "type": "number",
+          "default": 80,
+          "minimum": 10,
+          "maximum": 500,
+          "order": 32,
+          "description": "Max reports in Reports tree."
+        },
+        "kampff.showPeopleView": {
+          "type": "boolean",
+          "default": true,
+          "order": 33,
+          "description": "Show People accumulate tree (requires reload if toggled)."
+        },
+        "kampff.autoRefreshMs": {
+          "type": "number",
+          "default": 15000,
+          "minimum": 0,
+          "maximum": 120000,
+          "order": 40,
+          "markdownDescription": "Reports/People/Inbox **tree** refresh interval (ms). `0` = manual only. Does **not** re-focus the Analyze webview (avoids stealing keyboard from editor/terminal)."
+        },
+        "kampff.showStatusBar": {
+          "type": "boolean",
+          "default": true,
+          "order": 41,
+          "description": "Show Kampff status bar item."
+        },
+        "kampff.statusBarClick": {
+          "type": "string",
+          "enum": [
+            "menu",
+            "analyze",
+            "latestReport"
+          ],
+          "default": "menu",
+          "order": 42,
+          "markdownDescription": "Status bar click:\n- **menu** — pick action\n- **analyze** — open analyze flow\n- **latestReport** — open newest report"
+        },
+        "kampff.uiLanguage": {
+          "type": "string",
+          "enum": [
+            "ko",
+            "en"
+          ],
+          "default": "ko",
+          "order": 50,
+          "description": "Analyze webview labels (ko | en)."
+        },
+        "kampff.harvestDelayMinSec": {
+          "type": "number",
+          "default": 2.8,
+          "minimum": 1,
+          "maximum": 30,
+          "order": 24,
+          "description": "Min seconds between harvest navigations (all sites)."
+        },
+        "kampff.harvestDelayMaxSec": {
+          "type": "number",
+          "default": 6.5,
+          "minimum": 2,
+          "maximum": 60,
+          "order": 25,
+          "description": "Max seconds between harvest navigations (all sites)."
+        },
+        "kampff.harvestMaxFetch": {
+          "type": "number",
+          "default": 40,
+          "minimum": 5,
+          "maximum": 200,
+          "order": 26,
+          "description": "Max fresh fetches per job (reuse prior raw first)."
+        },
+        "kampff.harvestBurstEvery": {
+          "type": "number",
+          "default": 6,
+          "minimum": 2,
+          "maximum": 50,
+          "order": 27,
+          "description": "Longer pause every N pages."
+        },
+        "kampff.harvestBurstPauseSec": {
+          "type": "number",
+          "default": 10,
+          "minimum": 3,
+          "maximum": 120,
+          "order": 28,
+          "description": "Longer pause seconds every burst."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "kampff",
+          "title": "Kampff",
+          "icon": "media/activitybar.svg"
+        }
+      ]
+    },
+    "views": {
+      "kampff": [
+        {
+          "type": "webview",
+          "id": "kampff.analyze",
+          "name": "이 사람 분석",
+          "contextualTitle": "한 사람 전반 분석 · 게시 초안은 선택",
+          "icon": "$(edit)"
+        },
+        {
+          "id": "kampff.reports",
+          "name": "보고서",
+          "contextualTitle": "완성 HTML · 색=관계 거리(distance)",
+          "icon": "$(graph)"
+        },
+        {
+          "id": "kampff.people",
+          "name": "사람 누적",
+          "contextualTitle": "같은 사람 메모·이력 폴더",
+          "icon": "$(organization)",
+          "when": "config.kampff.showPeopleView"
+        },
+        {
+          "id": "kampff.inbox",
+          "name": "수집함",
+          "contextualTitle": "아직 보고서로 안 만든 원본 묶음",
+          "icon": "$(inbox)"
+        },
+        {
+          "id": "kampff.raw",
+          "name": "원본 수집",
+          "contextualTitle": "사이트에서 긁어 온 raw 트리",
+          "icon": "$(database)"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "kampff.analyze",
+        "contents": "**이 사람 분석** — 한 계정의 글·댓글을 모아 보는 화면입니다.\n게시글 초안은 분석이 끝난 뒤 선택.\n점선 밑줄 단어에 마우스를 올리면 뜻이 뜹니다.\n\n[분석 뷰 열기](command:kampff.focusReportBuilder)\n[경로 Setup](command:kampff.setup)"
+      },
+      {
+        "view": "kampff.reports",
+        "contents": "완성된 HTML 보고서가 아직 없습니다 (`out/` 또는 wiki `reports/`).\n\n라벨은 **닉 · ID**, 색은 **distance**(나와의 관계 거리 가설).\n항목에 마우스를 올리면 짧은 설명이 뜹니다.\n\n[이 사람 분석](command:kampff.focusReportBuilder)\n[경로 Setup](command:kampff.setup)"
+      },
+      {
+        "view": "kampff.people",
+        "contents": "사람별 누적 폴더가 비었습니다.\n\n분석을 돌리면 wiki `people/사이트/ID` 아래에 NOTES·이력이 쌓입니다 (wikiRoot).\n\n[이 사람 분석](command:kampff.focusReportBuilder)\n[people 폴더](command:kampff.openPeopleRoot)"
+      },
+      {
+        "view": "kampff.inbox",
+        "contents": "수집함이 비었습니다.\n여기 있는 건 아직 보고서 전 단계의 원본 묶음입니다 (runtime dataRoot).\n\n[데이터 폴더](command:kampff.openDataRoot)\n[wiki shelf](command:kampff.openWikiRoot)\n[새로고침](command:kampff.refresh)"
+      }
+    ],
+    "commands": [
+      {
+        "command": "kampff.startMemberJob",
+        "title": "이 사람 분석 시작 (원클릭)",
+        "category": "Kampff"
+      },
+      {
+        "command": "kampff.analyze",
+        "title": "이 사람 분석 요청…",
+        "category": "Kampff",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "kampff.focusReportBuilder",
+        "title": "이 사람 분석 뷰 열기",
+        "category": "Kampff",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "kampff.renderReport",
+        "title": "이 사람 HTML dossier",
+        "category": "Kampff",
+        "icon": "$(file-code)"
+      },
+      {
+        "command": "kampff.refresh",
+        "title": "트리 새로고침",
+        "category": "Kampff",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "kampff.cancelJob",
+        "title": "분석 중단 (kill)",
+        "category": "Kampff",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "kampff.togglePauseJob",
+        "title": "분석 일시정지/재개",
+        "category": "Kampff",
+        "icon": "$(debug-pause)"
+      },
+      {
+        "command": "kampff.pauseJob",
+        "title": "분석 일시정지/재개",
+        "category": "Kampff",
+        "icon": "$(debug-pause)"
+      },
+      {
+        "command": "kampff.resumeJob",
+        "title": "분석 일시정지/재개",
+        "category": "Kampff",
+        "icon": "$(debug-continue)"
+      },
+      {
+        "command": "kampff.showLog",
+        "title": "Output 로그 보기",
+        "category": "Kampff",
+        "icon": "$(output)"
+      },
+      {
+        "command": "kampff.setup",
+        "title": "Setup… (경로 + 사이트)",
+        "category": "Kampff",
+        "icon": "$(tools)"
+      },
+      {
+        "command": "kampff.manageSites",
+        "title": "사이트 등록…",
+        "category": "Kampff",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "kampff.statusBarAction",
+        "title": "상태바 메뉴",
+        "category": "Kampff"
+      },
+      {
+        "command": "kampff.openReport",
+        "title": "리포트 열기",
+        "category": "Kampff",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "kampff.generateCommunityPost",
+        "title": "게시 초안 내보내기 (선택 · 분석 후)",
+        "category": "Kampff",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "kampff.openHtmlExternal",
+        "title": "브라우저로 HTML",
+        "category": "Kampff",
+        "icon": "$(link-external)"
+      },
+      {
+        "command": "kampff.openAnalysisJson",
+        "title": "analysis.json 열기",
+        "category": "Kampff",
+        "icon": "$(json)"
+      },
+      {
+        "command": "kampff.openDataRoot",
+        "title": "dataRoot 열기 (runtime)",
+        "category": "Kampff",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "kampff.openWikiRoot",
+        "title": "wikiRoot 열기 (LLM Wiki)",
+        "category": "Kampff",
+        "icon": "$(book)"
+      },
+      {
+        "command": "kampff.openPeopleRoot",
+        "title": "people 열기",
+        "category": "Kampff",
+        "icon": "$(organization)"
+      },
+      {
+        "command": "kampff.openPeopleNotes",
+        "title": "NOTES 열기",
+        "category": "Kampff",
+        "icon": "$(markdown)"
+      },
+      {
+        "command": "kampff.openSettings",
+        "title": "설정",
+        "category": "Kampff",
+        "icon": "$(gear)"
+      },
+      {
+        "command": "kampff.openQueue",
+        "title": "큐 폴더",
+        "category": "Kampff",
+        "icon": "$(list-ordered)"
+      },
+      {
+        "command": "kampff.copyPath",
+        "title": "경로 복사",
+        "category": "Kampff",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "kampff.reveal",
+        "title": "OS에서 보기",
+        "category": "Kampff",
+        "icon": "$(file-directory)"
+      },
+      {
+        "command": "kampff.focusAnalyze",
+        "title": "이 사람 분석 뷰 포커스",
+        "category": "Kampff",
+        "icon": "$(search)"
+      },
+      {
+        "command": "kampff.refreshStatus",
+        "title": "상태바 갱신",
+        "category": "Kampff"
+      },
+      {
+        "command": "kampff.openReportPath",
+        "title": "경로로 리포트 열기",
+        "category": "Kampff"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "kampff.pauseJob",
+          "when": "false"
+        },
+        {
+          "command": "kampff.resumeJob",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "kampff.analyze",
+          "when": "view =~ /^kampff\\./",
+          "group": "navigation@0"
+        },
+        {
+          "command": "kampff.refresh",
+          "when": "view =~ /^kampff\\./",
+          "group": "navigation@1"
+        },
+        {
+          "command": "kampff.openDataRoot",
+          "when": "view =~ /^kampff\\./",
+          "group": "navigation@2"
+        },
+        {
+          "command": "kampff.setup",
+          "when": "view =~ /^kampff\\./",
+          "group": "navigation@3"
+        },
+        {
+          "command": "kampff.openSettings",
+          "when": "view =~ /^kampff\\./",
+          "group": "navigation@4"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "kampff.openReport",
+          "when": "viewItem == kampff.report || viewItem == kampff.html",
+          "group": "inline@1"
+        },
+        {
+          "command": "kampff.openHtmlExternal",
+          "when": "viewItem == kampff.report || viewItem == kampff.html",
+          "group": "1_open@1"
+        },
+        {
+          "command": "kampff.openAnalysisJson",
+          "when": "viewItem == kampff.report || viewItem == kampff.analysis",
+          "group": "1_open@2"
+        },
+        {
+          "command": "kampff.generateCommunityPost",
+          "when": "viewItem == kampff.report || viewItem == kampff.html || viewItem == kampff.analysis",
+          "group": "1_open@3"
+        },
+        {
+          "command": "kampff.openPeopleNotes",
+          "when": "viewItem == kampff.people.person",
+          "group": "inline@1"
+        },
+        {
+          "command": "kampff.copyPath",
+          "when": "viewItem =~ /^kampff\\./",
+          "group": "2_clip@1"
+        },
+        {
+          "command": "kampff.reveal",
+          "when": "viewItem =~ /^kampff\\./",
+          "group": "2_clip@2"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "kampff.analyze",
+        "key": "ctrl+alt+shift+k",
+        "mac": "cmd+alt+shift+k"
+      },
+      {
+        "command": "kampff.refresh",
+        "key": "ctrl+alt+k",
+        "mac": "cmd+alt+k"
+      },
+      {
+        "command": "kampff.focusAnalyze",
+        "key": "ctrl+alt+shift+a",
+        "mac": "cmd+alt+shift+a"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "dev:link": "node scripts/dev-link.js",
+    "dev:unlink": "node scripts/dev-link.js --unlink",
+    "dev": "node scripts/dev-always.js",
+    "package": "vsce package --no-dependencies",
+    "lint": "tsc -p ./ --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.2",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YangKangSung/kampff-skills.git"
+  },
+  "homepage": "https://github.com/YangKangSung/kampff-skills#readme",
+  "bugs": {
+    "url": "https://github.com/YangKangSung/kampff-skills/issues"
+  },
+  "qna": "https://github.com/YangKangSung/kampff-skills/issues"
+}

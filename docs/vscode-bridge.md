@@ -1,29 +1,22 @@
 # VS Code extension ↔ skills repo bridge
 
-Local UI: sibling repo **`kampff-vscode`** (Marketplace id **`YangKangSung.kampff`**).
-Public product surface (Marketplace `repository`/`homepage`): **this repo**.  
-Skills / scripts SoT: **this repo** (`kampff-skills`).
-
+Local UI: **`extension/`** in this repo (Marketplace id **`YangKangSung.kampff`**).  
+Skills / scripts SoT: **repo root** (`kampff-skills`).
 
 ## Release flow (formal)
 
 ```text
-kampff-vscode  →  kampff-skills-dev (private)  →  kampff-skills (this public repo)
-     │                      │                            │
-  UI / VSIX            CLI+docs+filter              OSS + Market links
+edit extension/ + scripts/  →  (private skills-dev)  →  kampff-skills (this repo)  →  Marketplace
 ```
 
 | Step | Where | What |
 |------|--------|------|
-| 1 | `kampff-vscode` | UI/contract · package VSIX |
-| 2 | `kampff-skills-dev` | Port scripts/docs only (no `src/` / `.vsix`) |
-| 3 | `kampff-skills` | Product-only publish |
-| 4 | Marketplace | `YangKangSung.kampff` · links → this repo |
+| 1 | `extension/` + product scripts/docs | change · build under `extension/` |
+| 2 | private SoT | filter / product-only |
+| 3 | `kampff-skills` | this public tree includes `extension/` |
+| 4 | Marketplace | VSIX from **`extension/kampff-*.vsix`** · id `YangKangSung.kampff` |
 
-System map: [ARCHITECTURE.md](ARCHITECTURE.md) §B.  
-Docs hub: [README.md](README.md).
-
-The extension does **not** re-implement L1–L5 analysis. It queues jobs, calls Hermes, and runs **this** tree’s scripts.
+Build: [../extension/BUILD.md](../extension/BUILD.md).
 
 ## Path settings (extension)
 
