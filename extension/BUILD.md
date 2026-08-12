@@ -38,3 +38,15 @@ Or Manage UI: upload the VSIX from **this** directory only.
 `kampff.skillsDevRoot` = **parent** of `extension/` (repo root), not this folder.
 
 Daily private SoT remains `kampff-skills-dev`. Public window: `kampff-skills`.
+
+## Live dev (operator)
+
+```bash
+cd extension
+export NODE_ENV=development
+npm run dev          # junction + tsc -watch
+# once: Developer: Reload Window
+```
+
+**Single SoT:** edit here under `kampff-skills-dev`. Legacy standalone `kampff-vscode` repo is retired.
+

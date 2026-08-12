@@ -1,0 +1,9 @@
+{
+  "task.allowAutomaticTasks": "on",
+  "task.autoDetect": "on",
+  "typescript.tsc.autoDetect": "off",
+  "files.watcherExclude": {
+    "**/out/**": false,
+    "**/media/**": false
+  }
+}
