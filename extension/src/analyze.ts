@@ -128,33 +128,47 @@ export function parseAnalyzeInput(
        : "x";
 
 
-  // Social handle → profile URL
+  // Social handle → profile URL (first token only — nick must never ride along)
+  const handleToken =
+    input.replace(/^@/, "").trim().split(/[\s|,]+/)[0] || "";
+  if (!handleToken) {
+    return { kind: "raw", platform: plat, display: input };
+  }
+
   const def = platformById(plat as PlatformId);
   if (def?.urlFromHandle) {
-    const url = def.urlFromHandle(input);
+    const url = def.urlFromHandle(handleToken);
     return {
       kind: "handle",
       platform: plat,
-      handle: input.replace(/^@/, ""),
+      handle: handleToken,
       url,
-      display: `${def.label}:${input}`,
+      display: `${def.label}:@${handleToken}`,
     };
   }
 
   // custom platforms from settings
   const custom = getConfig().customPlatforms.find((c) => c.id === plat);
   if (custom) {
-    const url = custom.urlTemplate.replace(/\{handle\}/gi, encodeURIComponent(input.replace(/^@/, "")));
+    const url = custom.urlTemplate.replace(
+      /\{handle\}/gi,
+      encodeURIComponent(handleToken)
+    );
     return {
       kind: "handle",
       platform: plat,
-      handle: input,
+      handle: handleToken,
       url,
-      display: `${custom.label}:${input}`,
+      display: `${custom.label}:@${handleToken}`,
     };
   }
 
-  return { kind: "raw", platform: plat, display: input, handle: input };
+  return {
+    kind: "raw",
+    platform: plat,
+    display: handleToken,
+    handle: handleToken,
+  };
 }
 
 function todayKst(): string {
@@ -531,15 +545,12 @@ export async function submitAnalyze(opts: {
             );
           }
 
-      // Prefer explicit author id as subject for member-style member analysis.
-    // Do NOT let a leftover post URL become the primary subject when id is present.
+      // Prefer explicit author id as subject. Nick never enters primaryInput
+    // (would poison X/urlFromHandle and out/* target names).
     let primaryInput = inputRaw;
-    if (
-      boardLike &&
-      explicitId &&
-      !/^https?:\/\//i.test(explicitId)
-    ) {
-      primaryInput = explicitNick ? `${explicitId} ${explicitNick}` : explicitId;
+    if (explicitId && !/^https?:\/\//i.test(explicitId)) {
+      // id-only primary even when UI/buildInput once concatenated nick
+      primaryInput = explicitId;
     } else if (!primaryInput) {
       primaryInput =
         customUrl ||
@@ -548,6 +559,11 @@ export async function submitAnalyze(opts: {
         opts.links?.[0]?.handle ||
         explicitId ||
         "";
+    } else if (primaryInput && !/^https?:\/\//i.test(primaryInput)) {
+      // defense: collapse "handle Nick Name" → handle
+      primaryInput =
+        primaryInput.trim().replace(/^@/, "").split(/[\s|,]+/)[0] ||
+        primaryInput;
     }
 
     let parsed = parseAnalyzeInput(
@@ -555,18 +571,32 @@ export async function submitAnalyze(opts: {
       platformHint === "auto" ? "auto" : adapterPlatform
     );
 
-    // Overlay explicit id/nick when parse only got a URL or raw free text.
-    if (explicitId && boardLike) {
-      if (!parsed.authorId || parsed.kind === "url") {
+    // Overlay explicit id/nick always (not gated on removed board adapter).
+    if (explicitId && !/^https?:\/\//i.test(explicitId)) {
+      const id = explicitId.replace(/^@/, "");
+      if (!parsed.authorId || parsed.kind === "url" || parsed.kind === "raw") {
+        const keepUrl =
+          parsed.kind === "handle" || parsed.kind === "url"
+            ? parsed.url
+            : undefined;
+        const profileUrl =
+          keepUrl ||
+          (() => {
+            const def = platformById(adapterPlatform as PlatformId);
+            return def?.urlFromHandle
+              ? def.urlFromHandle(id)
+              : parsed.url;
+          })();
         parsed = {
           ...parsed,
-          kind: "author",
-          platform: adapterPlatform,
-          authorId: explicitId,
+          // keep handle+url for SNS profile links; authorId for person subject
+          kind: profileUrl ? "handle" : "author",
+          platform: adapterPlatform || parsed.platform,
+          authorId: id,
+          handle: id,
+          url: profileUrl || parsed.url,
           nick: explicitNick || parsed.nick,
-          display: explicitNick
-            ? `${explicitId} (${explicitNick})`
-            : explicitId,
+          display: explicitNick ? `${id} (${explicitNick})` : id,
         };
       } else if (explicitNick && !parsed.nick) {
         parsed = {
@@ -575,7 +605,7 @@ export async function submitAnalyze(opts: {
           display: `${parsed.authorId} (${explicitNick})`,
         };
       }
-    } else if (explicitNick && false && !parsed.nick) {
+    } else if (explicitNick && !parsed.nick) {
       parsed = { ...parsed, nick: explicitNick };
     }
 
@@ -613,12 +643,11 @@ export async function submitAnalyze(opts: {
     }
   }
 
-  // Member subject = author id. Strip primary post url so normalizeLinks won't treat it as subject.
-  if (parsed.authorId && parsed.kind === "author") {
+  // Person subject = author id. Clear board leftovers only — keep SNS profile url.
+  if (parsed.authorId && (parsed.kind === "author" || parsed.kind === "handle")) {
     const keepTrigger = parsed.triggerUrl || triggerUrl;
     parsed = {
       ...parsed,
-      url: undefined,
       board: undefined,
       sn: undefined,
       triggerUrl: keepTrigger || parsed.triggerUrl,
@@ -626,22 +655,21 @@ export async function submitAnalyze(opts: {
   }
 
   if (mode === "auto") {
-      if (false && parsed.authorId) mode = "member";
-      else if (false && parsed.kind === "url") mode = "thread";
-            else mode = "profile";
-    }
+    // Person id → member (dossier). Bare URL without id → profile (SNS default post-Clien).
+    if (parsed.authorId) mode = "member";
+    else if (parsed.kind === "url" && triggerUrlIn) mode = "thread";
+    else mode = "profile";
+  }
 
-    // Member-style + author id + mode member is the 4-axis path even if UI left mode=thread by mistake
-    // when only id was filled (no url). Keep thread only when no author id or explicit thread+url.
-    if (
-      false &&
-      parsed.authorId &&
-      mode === "thread" &&
-      !triggerUrl &&
-      !parsed.url
-    ) {
-      mode = "member";
-    }
+  // Id filled + mode left on thread by mistake → person job
+  if (
+    parsed.authorId &&
+    mode === "thread" &&
+    !triggerUrl &&
+    !triggerUrlIn
+  ) {
+    mode = "member";
+  }
 
   // merge custom URL into links
   const linkIn = [...(opts.links || [])];
@@ -913,10 +941,8 @@ export async function analyzeFromPalette(): Promise<void> {
     if (typed === undefined) return;
     input = typed;
   } else if (picked.id) {
-    input =
-      plat.id === "x" && picked.nick
-        ? `${picked.id} ${picked.nick}`
-        : picked.id;
+    // id only — nick is separate field on Analyze webview / submitAnalyze
+    input = picked.id;
   }
 
   const more = await vscode.window.showQuickPick(
