@@ -3,3 +3,8 @@ out/
 *.vsix
 .vscode-test/
 *.tsbuildinfo
+.kampff-dev
+scripts/.cache
+.tmp*/
+tool/
+.firecrawl/
