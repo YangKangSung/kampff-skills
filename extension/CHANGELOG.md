@@ -2,6 +2,14 @@
 
 All notable changes to the **Kampff** VS Code extension are documented here.
 
+## [0.9.7] — 2026-08-12
+
+### Fixed
+- Person primary = **handle/id only** — nick no longer concatenated into input/URL (`elonmusk Elon Musk` → broken `x.com/…`)
+- Explicit `authorId`/`nick` overlay runs without removed `boardLike` gate; SNS profile URL kept on handle
+- Job `targetId` prefers `authorId`/`handle` first token (not full input+nick)
+- Unix job cancel: spawn detached process group + kill `-pid` fallback to pid
+
 ## [0.9.6] — 2026-08-10
 
 ### Removed

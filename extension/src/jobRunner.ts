@@ -719,9 +719,15 @@ export async function startJobFromRequest(
   }
   phaseBeforePause = undefined;
 
-  const targetId =
-    (req.parsed.authorId || req.parsed.nick || req.input || "").trim() ||
-    "unknown";
+  const targetId = (
+    req.parsed.authorId ||
+    req.parsed.handle ||
+    (req.input || "").trim().replace(/^@/, "").split(/[\s|,]+/)[0] ||
+    req.parsed.nick ||
+    "unknown"
+  )
+    .trim()
+    .replace(/^@/, "");
   const nick = (req.parsed.nick || "").trim() || undefined;
   const startedAt = new Date().toISOString();
   let steps = stepsTemplate();
@@ -882,6 +888,9 @@ export async function startJobFromRequest(
             KAMPFF_SITE_AUTH_FILE: siteAuthPath,
           },
           windowsHide: true,
+          // Unix: new process group so cancel can signal -pid (wrapper + hermes tree).
+          // Windows: taskkill /T covers the tree; detached changes session semantics — skip.
+          detached: process.platform !== "win32",
         }
       );
   } catch (e) {
@@ -984,10 +993,15 @@ function killProcessTree(proc?: ChildProcessWithoutNullStreams): void {
         timeout: 15000,
       });
     } else {
+      // Negative PID = process group (requires spawn detached on non-win).
       try {
         process.kill(-pid, "SIGTERM");
       } catch {
-        proc.kill("SIGTERM");
+        try {
+          process.kill(pid, "SIGTERM");
+        } catch {
+          proc.kill("SIGTERM");
+        }
       }
     }
   } catch (e) {

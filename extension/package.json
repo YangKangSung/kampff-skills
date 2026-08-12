@@ -2,7 +2,7 @@
   "name": "kampff",
   "displayName": "Kampff",
   "description": "Kampff operator shell: queue analyze jobs against a kampff-skills clone, open dual-track reports. Default site X. Requires Hermes. Respect rate limits.",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "publisher": "YangKangSung",
   "author": "YangKangSung (ksyang)",
   "license": "MIT",
@@ -711,10 +711,10 @@
     "lint": "tsc -p ./ --noEmit"
   },
   "devDependencies": {
-    "@types/node": "^20.19.43",
+    "@types/node": "^20.11.0",
     "@types/vscode": "^1.85.0",
-    "@vscode/vsce": "^3.9.2",
-    "typescript": "^5.9.3"
+    "@vscode/vsce": "^3.2.1",
+    "typescript": "^5.3.3"
   },
   "repository": {
     "type": "git",

@@ -316,8 +316,10 @@ export class AnalyzeViewProvider implements vscode.WebviewViewProvider {
       const nick = (msg.nick || msg.targetNick || "").trim();
 
       if (url) return url;
-      if (free && (/^https?:\/\//i.test(free) || free.includes(" "))) return free;
-      if (id) return nick ? `${id} ${nick}` : id;
+      // free text URL only — never fold nick into handle string
+      if (free && /^https?:\/\//i.test(free)) return free;
+      if (id) return id;
+      if (free) return free.trim().split(/[\s|,]+/)[0] || free;
       if (nick) return nick;
       return free;
     }
