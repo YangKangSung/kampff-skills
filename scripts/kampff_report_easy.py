@@ -355,10 +355,10 @@ TRACK_JS = """
   var bEasy = document.getElementById('btn-track-easy');
   if(bPro) bPro.addEventListener('click', function(){ setTrack('pro'); });
   if(bEasy) bEasy.addEventListener('click', function(){ setTrack('easy'); });
-  var init = 'easy';
+  var init = 'pro';
   try {
-    if (location.hash === '#pro') init = 'pro';
-    else if (location.hash === '#easy') init = 'easy';
+    if (location.hash === '#easy' || location.hash === '#ko') init = 'easy';
+    else if (location.hash === '#pro' || location.hash === '#en') init = 'pro';
     else {
       var s = localStorage.getItem('kampff-report-track');
       if (s === 'easy' || s === 'pro') init = s;
@@ -451,10 +451,10 @@ def wrap_pro_with_easy(pro_html: str, analysis: dict) -> str:
         pro_html = pro_html.replace("</style>", EASY_CSS + "\n</style>", 1)
 
     switcher = """
-  <div class="track-switch" role="tablist" aria-label="리포트 트랙">
-    <span class="lbl">TRACK</span>
-    <button type="button" id="btn-track-easy" class="active">쉬운 말</button>
-    <button type="button" id="btn-track-pro">전문 분석</button>
+  <div class="track-switch" role="tablist" aria-label="Report language">
+    <span class="lbl">LANG</span>
+    <button type="button" id="btn-track-pro" class="active">English</button>
+    <button type="button" id="btn-track-easy">한국어</button>
   </div>
 """
 
@@ -466,7 +466,7 @@ def wrap_pro_with_easy(pro_html: str, analysis: dict) -> str:
     # Find last footer + close wrap — wrap existing content as track-pro
     # Simpler: after wrap open, insert switcher + track-pro open; before final footer close track-pro and add easy
 
-    pro_html = pro_html[:insert_at] + switcher + '\n  <div class="track-panel" id="track-pro" hidden>\n' + pro_html[insert_at:]
+    pro_html = pro_html[:insert_at] + switcher + '\n  <div class="track-panel" id="track-pro">\n' + pro_html[insert_at:]
 
     # Before last </div>\n</body> that closes wrap — find footer
     foot = re.search(r'(<footer>[\s\S]*?</footer>\s*)(</div>\s*</body>)', pro_html)
@@ -474,7 +474,7 @@ def wrap_pro_with_easy(pro_html: str, analysis: dict) -> str:
         pro_html = (
             pro_html[: foot.start()]
             + "  </div><!-- /track-pro -->\n"
-            + f'  <div class="track-panel" id="track-easy">\n{easy_inner}\n  </div><!-- /track-easy -->\n'
+            + f'  <div class="track-panel" id="track-easy" hidden>\n{easy_inner}\n  </div><!-- /track-easy -->\n'
             + foot.group(1)
             + foot.group(2)
             + pro_html[foot.end() :]
