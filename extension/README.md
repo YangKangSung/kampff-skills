@@ -40,7 +40,7 @@ Or search **Kampff** in Extensions.
 
 ```bash
 npm run package
-code --install-extension ./kampff-0.9.4.vsix --force
+code --install-extension ./kampff-0.9.7.vsix --force
 ```
 
 Reload Window after install.
@@ -68,8 +68,8 @@ Do not commit real dossiers. Respect each platform’s terms and limits.
 3. Pick folders (all optional until you run a job):  
    - **dataRoot** — runtime `inbox/` `queue/` `out/`  
    - **wikiRoot** — durable shelf (optional)  
-   - **skillsDevRoot** — your **kampff-skills** clone (**required** for Go)  
-4. **사이트 등록…** if you need a logged-in board (optional). Passwords go to **SecretStorage**, never settings JSON.  
+   - **skillsDevRoot** — **this repo root** (parent of `extension/`; public clones use `kampff-skills`) — **required** for Go  
+4. **Register site…** if you need a logged-in board (optional). Passwords go to **SecretStorage**, never settings JSON.  
 5. Analyze → target → **Go**
 
 Empty defaults on purpose: no machine-specific paths ship in the VSIX.
@@ -82,7 +82,7 @@ Empty defaults on purpose: no machine-specific paths ship in the VSIX.
 |---------|------|
 | `dataRoot` | Runtime scratch |
 | `wikiRoot` | Durable people/reports |
-| `skillsDevRoot` | kampff-skills clone |
+| `skillsDevRoot` | This repo root (parent of `extension/`) |
 | `hermesCommand` | Empty = auto-detect |
 | `sites` | Registered sites (no passwords) |
 | `defaultPlatform` | Default `x` (change freely) |

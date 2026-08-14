@@ -1,22 +1,28 @@
-# VS Code extension ↔ skills repo bridge
+# VS Code extension ↔ skills-dev bridge
 
 Local UI: **`extension/`** in this repo (Marketplace id **`YangKangSung.kampff`**).  
-Skills / scripts SoT: **repo root** (`kampff-skills`).
+Skills / scripts SoT: **repo root** (`kampff-skills`).  
+Public product surface: **`kampff-skills`** (includes `extension/`).
 
 ## Release flow (formal)
 
 ```text
-edit extension/ + scripts/  →  (private skills-dev)  →  kampff-skills (this repo)  →  Marketplace
+edit extension/ + scripts/  →  private SoT  →  this public repo  →  Marketplace
 ```
 
 | Step | Where | What |
 |------|--------|------|
-| 1 | `extension/` + product scripts/docs | change · build under `extension/` |
-| 2 | private SoT | filter / product-only |
-| 3 | `kampff-skills` | this public tree includes `extension/` |
-| 4 | Marketplace | VSIX from **`extension/kampff-*.vsix`** · id `YangKangSung.kampff` |
+| 1 | `extension/` + product scripts/docs | change · `npm run package` under `extension/` |
+| 2 | private SoT | product-only filter |
+| 3 | `kampff-skills` | product-only copy (include `extension/`, no harvest) |
+| 4 | Marketplace | VSIX built **from** `extension/` · id `YangKangSung.kampff` |
 
 Build: [../extension/BUILD.md](../extension/BUILD.md).
+
+System map: [ARCHITECTURE.md](ARCHITECTURE.md) §B.  
+Docs hub: [README.md](README.md).
+
+The extension does **not** re-implement L1–L5 analysis. It queues jobs, calls Hermes, and runs **this** tree’s scripts.
 
 ## Path settings (extension)
 
@@ -61,10 +67,10 @@ See [ARCHITECTURE.md](ARCHITECTURE.md) §A5.
 
 - Webview Analyze UI, job live activity, pause/cancel, SecretStorage passwords  
 - Tree views (People / Reports / Inbox / Raw)  
-- Dev live-reload (`npm run dev`), VSIX packaging  
+- Dev live-reload (`npm run dev` in `extension/`), VSIX packaging  
 - Operator **personal** site rows (real `baseUrl` / username) in User settings  
 
-Do **not** copy `media/**`, `src/`, or `.vsix` into this git tree.
+`extension/src`, `media/`, and `.vsix` **belong here**. Do not ship harvest, `node_modules/`, or `kampff-data/` inside the VSIX.
 
 ## Sites — product filter
 
@@ -86,20 +92,22 @@ Do **not** copy `media/**`, `src/`, or `.vsix` into this git tree.
 3. `kind=generic` → require `baseUrl`; expand `{baseUrl}` `{id}` `{handle}` `{username}`  
 4. No hard-coded regional origin fallback  
 
-## Dev loop (two folders)
+## Dev loop (one repo)
 
 ```bash
-# skills / scripts
-cd /path/to/kampff-skills repo
-# … edit scripts/docs …
+cd /path/to/kampff-skills
+# scripts / skill
+# … edit scripts/ docs/ kampff/ …
 
-# UI
-cd /path/to/kampff-vscode
-npm run compile   # or: npm run dev
-# Reload Window once if host is stale
+# UI (same checkout)
+cd extension
+export NODE_ENV=development
+npm run dev          # junction + tsc -watch
+# once: Developer: Reload Window
 ```
 
-`kampff.skillsDevRoot` must point at the skills repo path you edited.
+`kampff.skillsDevRoot` = **repo root** (parent of `extension/`), not the `extension/` folder.  
+Do not open a retired `kampff-vscode` clone.
 
 ## Troubleshooting (short)
 
@@ -110,7 +118,7 @@ npm run compile   # or: npm run dev
 | Login wall | site SecretStorage or agent Edge profile under dataRoot (not user Default Edge) |
 | Old UI | version triangle: package.json vs `code --list-extensions` vs junction |
 
-Deep ops: extension skill `kampff-vscode` (Hermes), not this file.
+Deep ops: Hermes skill `kampff-vscode` (extension host playbook), not this file.
 
 ## Related
 

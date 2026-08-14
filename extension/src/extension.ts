@@ -421,7 +421,7 @@ export function activate(context: vscode.ExtensionContext): void {
             const id = await vscode.window.showInputBox({
               title: "Kampff · Render report",
               prompt: "author id (analysis.json must exist in out/)",
-              placeHolder: "dkwmfkdpf",
+              placeHolder: "member_id",
             });
             if (!id) return;
             const a = findLatestAnalysis(id.trim());

@@ -2,12 +2,12 @@
 
 **Dossier ≠ board post.** This is a **select export** only.
 
-Parity with:
+Ported into skills-dev from:
 
 | Source | Role |
 |--------|------|
-| ``communityPost.ts` (private VS Code UI)` | VS Code generator |
-| Internal tone law notes | peer / short / board voice |
+| `extension/src/communityPost.ts` | VS Code generator |
+| Vault `Agents/Kampff/community-post-tone.md` | Tone law |
 | `scripts/render_kampff_report.py` § CP JS | HTML report UI |
 
 CLI / library: **`scripts/community_post.py`**

@@ -838,7 +838,7 @@ from __future__ import annotations
 import json, sys
 from pathlib import Path
 qpath = Path(sys.argv[1])
-skills = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(r"C:\\prjs\\kampff-skills-dev")
+skills = Path(sys.argv[2]) if len(sys.argv) > 2 else Path(r".")
 req = json.loads(qpath.read_text(encoding="utf-8"))
 p = req.get("parsed") or {}
 print("=" * 60)
