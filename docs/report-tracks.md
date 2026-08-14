@@ -1,38 +1,38 @@
-# Report tracks: pro + easy
+# Report language
 
-HTML reports are **dual-track** by default (`--track both`).
+Default language for Kampff product reports is **English**.
 
-| Track | Who for | Content |
-|-------|---------|---------|
-| **쉬운 말** (`easy`) | 빠른 판단, 비분석 독자 | 거리 뜻, 해도/피하기, 상황표, 수집 한계, 인용 몇 개 |
-| **전문 분석** (`pro`) | 분석가 | graphs, matrix, L1–L5, MBTI, clinical, CIA/ACH, honesty… |
+HTML is dual-track (`--track both`). Korean is an **optional** second panel, not the first screen.
+
+| Track | Language | Who for |
+|-------|----------|---------|
+| **English** (`pro`) | EN | default; graphs, matrix, L1–L5, MBTI, CIA/ACH |
+| **한국어** (`easy`) | KO | optional; distance in plain Korean, no new facts |
 
 ## Generate
 
 ```bash
-# default: one HTML, top toggle (쉬운 말 | 전문 분석)
+# default: one HTML, English open, 한국어 toggle
 python scripts/render_kampff_report.py \
   -a kampff-data/out/DATE-ID-analysis.json \
   -o kampff-data/out/DATE-ID-report.html
 
-# pro only (legacy single track)
+# English only
 python scripts/render_kampff_report.py -a … -o … --track pro
 
-# easy only file
-python scripts/render_kampff_report.py -a … -o …-easy.html --track easy
-
-# wrap an already-built pro HTML
-python scripts/kampff_report_easy.py -a … --wrap-pro path/to-report.html
+# Korean-only file
+python scripts/render_kampff_report.py -a … -o …-ko.html --track easy
 ```
 
 ## UX
 
-- Top **TRACK** buttons; choice stored in `localStorage` (`kampff-report-track`).
-- Default open: **쉬운 말** (first visit). Hash `#pro` / `#easy` overrides.
-- Community-post export stays on the **pro** track only.
+- Top **LANG** buttons: English | 한국어
+- Stored in `localStorage` (`kampff-report-track`)
+- First visit: **English**. Hash `#ko` / `#easy` or `#en` / `#pro` overrides
+- Community-post export stays on the English track
 
 ## Rules
 
-- Easy track **must not invent** facts: only simplify distance/reco/identity/quotes from analysis.json.
-- Jargon (ACH, L1–L5, harvest…) stripped or moved to “전문 분석”.
-- Still: public text only · not medical/legal.
+- Analysis JSON + markdown reports: **English**
+- Korean track must not invent facts
+- Public text only · not medical/legal

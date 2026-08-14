@@ -157,16 +157,16 @@ a{color:var(--accent2)}
 <body>
 <div class="wrap">
   
-  <div class="track-switch" role="tablist" aria-label="리포트 트랙">
-    <span class="lbl">TRACK</span>
-    <button type="button" id="btn-track-easy" class="active">쉬운 말</button>
-    <button type="button" id="btn-track-pro">전문 분석</button>
+  <div class="track-switch" role="tablist" aria-label="Report language">
+    <span class="lbl">LANG</span>
+    <button type="button" id="btn-track-pro" class="active">English</button>
+    <button type="button" id="btn-track-easy">한국어</button>
   </div>
 
-  <div class="track-panel" id="track-pro" hidden>
+  <div class="track-panel" id="track-pro">
 <header class="hero">
-    <p class="kicker">Kampff · 회원 전반 dossier · 게시 초안≠분석</p>
-    <h1>relay_ops — 회원 전반 분석</h1>
+    <p class="kicker">Kampff · member dossier · post draft ≠ analysis</p>
+    <h1>relay_ops — member analysis</h1>
     <p class="sub">2026-07-13 · forum.example · id <b>relay_ops</b> · viewer north_packet</p>
     <div class="meta">
       <div class="chip"><b>Target</b>relay_ops · relay_ops</div>
@@ -757,10 +757,10 @@ LEAD H    H1 verificationist</pre>
   var bEasy = document.getElementById('btn-track-easy');
   if(bPro) bPro.addEventListener('click', function(){ setTrack('pro'); });
   if(bEasy) bEasy.addEventListener('click', function(){ setTrack('easy'); });
-  var init = 'easy';
+  var init = 'pro';
   try {
-    if (location.hash === '#pro') init = 'pro';
-    else if (location.hash === '#easy') init = 'easy';
+    if (location.hash === '#easy' || location.hash === '#ko') init = 'easy';
+    else if (location.hash === '#pro' || location.hash === '#en') init = 'pro';
     else {
       var s = localStorage.getItem('kampff-report-track');
       if (s === 'easy' || s === 'pro') init = s;

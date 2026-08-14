@@ -862,7 +862,7 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
 
 
     html = f'''<!DOCTYPE html>
-<html lang="{esc(meta.get("language","ko"))}">
+<html lang="{esc(meta.get("language","en"))}">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -872,8 +872,8 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
 <body>
 <div class="wrap">
   <header class="hero">
-    <p class="kicker">Kampff · 회원 전반 dossier · 게시 초안≠분석</p>
-    <h1>{esc(nick)} — 회원 전반 분석</h1>
+    <p class="kicker">Kampff · member dossier · post draft ≠ analysis</p>
+    <h1>{esc(nick)} — member analysis</h1>
     <p class="sub">{esc(date)} · {esc(platform)} · id <b>{esc(tid)}</b> · viewer {esc(viewer.get("id","me"))}</p>
     <div class="meta">
       <div class="chip"><b>Target</b>{esc(nick)} · {esc(tid)}</div>
