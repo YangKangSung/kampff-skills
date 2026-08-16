@@ -355,7 +355,7 @@ TRACK_JS = """
   var bEasy = document.getElementById('btn-track-easy');
   if(bPro) bPro.addEventListener('click', function(){ setTrack('pro'); });
   if(bEasy) bEasy.addEventListener('click', function(){ setTrack('easy'); });
-  var init = 'pro';
+  var init = (document.documentElement.getAttribute('data-kampff-lang') === 'ko') ? 'easy' : 'pro';
   try {
     if (location.hash === '#easy' || location.hash === '#ko') init = 'easy';
     else if (location.hash === '#pro' || location.hash === '#en') init = 'pro';

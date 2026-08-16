@@ -1086,7 +1086,13 @@ def main() -> None:
         "--track",
         choices=("pro", "easy", "both"),
         default="both",
-        help="pro=legacy full; easy=plain KO only; both=one HTML with toggle (default)",
+        help="pro=English full; easy=Korean only; both=one HTML with toggle (default)",
+    )
+    ap.add_argument(
+        "--lang",
+        choices=("auto", "en", "ko"),
+        default="",
+        help="Report language. Default: $KAMPFF_LANG or auto (en unless LANG=ko*).",
     )
     args = ap.parse_args()
     analysis = json.loads(Path(args.analysis).read_text(encoding="utf-8"))
@@ -1096,6 +1102,15 @@ def main() -> None:
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
 
+    import os
+
+    raw = (args.lang or os.environ.get("KAMPFF_LANG") or "auto").strip().lower()
+    if raw in ("en", "ko"):
+        lang = raw
+    else:
+        loc = (os.environ.get("LANG") or os.environ.get("LC_ALL") or "").lower()
+        lang = "ko" if loc.startswith("ko") else "en"
+
     if args.track == "easy":
         from kampff_report_easy import render_easy_document
 
@@ -1104,8 +1119,9 @@ def main() -> None:
         return
 
     html = render(analysis, bundle)
+    html = html.replace("<html lang=\"en\">", f'<html lang="{lang}" data-kampff-lang="{lang}">', 1)
+    html = html.replace("<html lang=\"ko\">", f'<html lang="{lang}" data-kampff-lang="{lang}">', 1)
     if args.track == "both":
-        # dual-track: keep pro body, add plain KO panel + toggle
         import sys
 
         scripts_dir = str(Path(__file__).resolve().parent)

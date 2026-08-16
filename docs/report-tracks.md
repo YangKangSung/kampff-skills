@@ -28,7 +28,8 @@ python scripts/render_kampff_report.py -a … -o …-ko.html --track easy
 
 - Top **LANG** buttons: English | 한국어
 - Stored in `localStorage` (`kampff-report-track`)
-- First visit: **English**. Hash `#ko` / `#easy` or `#en` / `#pro` overrides
+- First visit: **English** unless Settings → Kampff → Language is `한국어` or `auto` and the editor locale is `ko*`
+- Hash `#ko` / `#easy` or `#en` / `#pro` still overrides
 - Community-post export stays on the English track
 
 ## Rules

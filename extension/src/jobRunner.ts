@@ -12,6 +12,7 @@ import {
   findLatestReport,
   openReportForTarget,
   renderReportForTarget,
+  snapshotDepthTagged,
 } from "./renderReport";
 import { materializeSiteAuth } from "./sites";
 import { promoteOutputsToWiki } from "./wikiStore";
@@ -869,6 +870,7 @@ export async function startJobFromRequest(
                 : cfg.skillsDevRoot) ||
               process.env.KAMPFF_SKILLS ||
               "",
+            KAMPFF_LANG: cfg.uiLanguage || process.env.KAMPFF_LANG || "en",
             KAMPFF_JOB_CONTROL: controlPath || "",
             KAMPFF_HARVEST_POLITE: cfg.harvestPolite === false ? "0" : "1",
             KAMPFF_CLIEN_MIN_DELAY_MS: delayMin,
@@ -1443,6 +1445,11 @@ async function tick(
     emit(done);
     stopPollingOnly();
     log(`JOB DONE ${targetId} → ${reportPath}`);
+    snapshotDepthTagged({
+      analysisPath,
+      reportPath,
+      depth: pollCtx?.req.depth,
+    });
 
     if (cfg.openReportOnComplete !== false) {
       try {

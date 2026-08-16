@@ -74,6 +74,9 @@ export const PLATFORMS: PlatformDef[] = [
   },
 ];
 
+export type LanguagePref = "auto" | "en" | "ko";
+export type ResolvedLang = "en" | "ko";
+
 export interface KampffConfig {
   /** Runtime KAMPFF_DATA: inbox / queue / out (scratch + job poll). */
   dataRoot: string;
@@ -109,7 +112,10 @@ export interface KampffConfig {
   reportOpenMode: ReportOpenMode;
   showPeopleView: boolean;
   maxReportsListed: number;
-  uiLanguage: "ko" | "en";
+  /** Settings pref: auto | en | ko */
+  language: LanguagePref;
+  /** Resolved locale (auto → vscode.env.language). */
+  uiLanguage: ResolvedLang;
   promptIncludeClinical: boolean;
   promptIncludeAuthorship: boolean;
   promptIncludeAccumulate: boolean;
@@ -141,7 +147,8 @@ export function getConfig(): KampffConfig {
   const defDepth = (c.get<string>("defaultDepth") || "quick").toLowerCase();
   const reportMode = (c.get<string>("reportOpenMode") || "panel").toLowerCase();
   const sbClick = (c.get<string>("statusBarClick") || "menu").toLowerCase();
-  const uiLang = (c.get<string>("uiLanguage") || "ko").toLowerCase();
+  const langPref = (c.get<string>("language") || "auto").toLowerCase();
+  const uiLangLegacy = (c.get<string>("uiLanguage") || "").toLowerCase();
   const dataRoot = (c.get<string>("dataRoot") || "").trim();
   const wikiRootRaw = (c.get<string>("wikiRoot") || "").trim();
   const peopleRootRaw = (c.get<string>("peopleRoot") || "").trim();
@@ -218,7 +225,12 @@ export function getConfig(): KampffConfig {
           : "panel",
     showPeopleView: c.get<boolean>("showPeopleView") !== false,
     maxReportsListed: Math.max(10, Math.min(500, c.get<number>("maxReportsListed") ?? 80)),
-    uiLanguage: uiLang === "en" ? "en" : "ko",
+    language: (langPref === "en" || langPref === "ko" ? langPref : "auto") as LanguagePref,
+    uiLanguage: resolveLanguage(
+      langPref === "en" || langPref === "ko" ? (langPref as LanguagePref) : "auto",
+      vscode.env.language,
+      uiLangLegacy === "en" || uiLangLegacy === "ko" ? uiLangLegacy : ""
+    ),
     promptIncludeClinical: c.get<boolean>("promptIncludeClinical") !== false,
     promptIncludeAuthorship: c.get<boolean>("promptIncludeAuthorship") !== false,
     promptIncludeAccumulate: c.get<boolean>("promptIncludeAccumulate") !== false,
@@ -253,6 +265,20 @@ export async function updateConfig(
   target: vscode.ConfigurationTarget = vscode.ConfigurationTarget.Global
 ): Promise<void> {
   await vscode.workspace.getConfiguration("kampff").update(key, value, target);
+}
+
+export function resolveLanguage(
+  pref: LanguagePref | string = "auto",
+  display = "",
+  legacy = ""
+): ResolvedLang {
+  const p = String(pref || "auto").toLowerCase();
+  if (p === "en" || p === "ko") return p;
+  const loc = (display || "").toLowerCase();
+  if (/^ko\b/.test(loc)) return "ko";
+  const lg = String(legacy || "").toLowerCase();
+  if (lg === "en" || lg === "ko") return lg;
+  return "en";
 }
 
 export function outDir(cfg = getConfig()): string {
