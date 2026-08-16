@@ -2,7 +2,7 @@
   "name": "kampff",
   "displayName": "Kampff",
   "description": "Kampff operator shell: queue analyze jobs against a kampff-skills clone, open dual-track reports. Default site X. Requires Hermes. Respect rate limits.",
-  "version": "0.9.7",
+  "version": "0.9.9",
   "publisher": "YangKangSung",
   "author": "YangKangSung (ksyang)",
   "license": "MIT",
@@ -325,15 +325,31 @@
           "order": 42,
           "markdownDescription": "Status bar click:\n- **menu** — pick action\n- **analyze** — open analyze flow\n- **latestReport** — open newest report"
         },
+        "kampff.language": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "en",
+            "ko"
+          ],
+          "enumDescriptions": [
+            "Follow VS Code display language",
+            "English",
+            "한국어"
+          ],
+          "default": "auto",
+          "order": 8,
+          "markdownDescription": "Language for reports (and later UI). **auto** follows the editor locale (`ko*` → Korean, otherwise English). Override like any other app: Settings → Kampff → Language."
+        },
         "kampff.uiLanguage": {
           "type": "string",
           "enum": [
             "ko",
             "en"
           ],
-          "default": "ko",
+          "default": "en",
           "order": 50,
-          "description": "Analyze webview labels (ko | en)."
+          "markdownDescription": "Deprecated. Use `kampff.language` (`auto` / `en` / `ko`)."
         },
         "kampff.harvestDelayMinSec": {
           "type": "number",
@@ -536,6 +552,12 @@
         "icon": "$(link-external)"
       },
       {
+        "command": "kampff.openReportBrowser",
+        "title": "브라우저로 리포트 (빠른/FULL)",
+        "category": "Kampff",
+        "icon": "$(browser)"
+      },
+      {
         "command": "kampff.openAnalysisJson",
         "title": "analysis.json 열기",
         "category": "Kampff",
@@ -654,6 +676,11 @@
           "command": "kampff.openHtmlExternal",
           "when": "viewItem == kampff.report || viewItem == kampff.html",
           "group": "1_open@1"
+        },
+        {
+          "command": "kampff.openReportBrowser",
+          "when": "view == kampff.reports || viewItem == kampff.report || viewItem == kampff.html || viewItem == kampff.person",
+          "group": "1_open@15"
         },
         {
           "command": "kampff.openAnalysisJson",

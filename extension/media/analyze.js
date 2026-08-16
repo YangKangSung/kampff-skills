@@ -686,6 +686,18 @@
   });
   on("btnRender", "onclick", render);
   on("btnOpenThis", "onclick", openThis);
+  on("btnOpenQuickBrowser", "onclick", () => {
+    if (!requireId()) return;
+    vscode.postMessage(
+      Object.assign({ type: "openThisReportBrowser", depth: "quick" }, payload())
+    );
+  });
+  on("btnOpenFullBrowser", "onclick", () => {
+    if (!requireId()) return;
+    vscode.postMessage(
+      Object.assign({ type: "openThisReportBrowser", depth: "full" }, payload())
+    );
+  });
   on("btnCPost", "onclick", communityThis);
   on("btnOutLatest", "onclick", () =>
     vscode.postMessage({ type: "openOutLatest" })

@@ -2,6 +2,12 @@
 
 All notable changes to the **Kampff** VS Code extension are documented here.
 
+## [0.9.8] — 2026-08-14
+
+### Added
+- Settings → Kampff → **Language**: `auto` (follow VS Code locale) / `en` / `ko`
+- Reports open English unless language is Korean (`auto` + editor `ko*`, or explicit `ko`)
+
 ## [0.9.7] — 2026-08-12
 
 ### Fixed

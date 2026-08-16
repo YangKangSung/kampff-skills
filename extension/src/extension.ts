@@ -29,7 +29,9 @@ import { generateCommunityPost } from "./communityPost";
 import {
   findLatestAnalysis,
   findLatestReport,
+  findReportsByDepth,
   openReportForTarget,
+  openReportInBrowser,
 } from "./renderReport";
 import {
   formatTarget,
@@ -546,6 +548,51 @@ export function activate(context: vscode.ExtensionContext): void {
         const p = item?.fsPath || reports.latest()?.fsPath;
         if (!p) return;
         await vscode.env.openExternal(vscode.Uri.file(p));
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "kampff.openReportBrowser",
+      async (item?: KampffItem) => {
+        if (item?.fsPath && fs.existsSync(item.fsPath)) {
+          await vscode.env.openExternal(vscode.Uri.file(item.fsPath));
+          return;
+        }
+        let id = getActiveTarget()?.id?.trim() || "";
+        if (!id) {
+          id =
+            (
+              await vscode.window.showInputBox({
+                title: "브라우저로 리포트",
+                prompt: "Handle / ID",
+                placeHolder: "JerryKi28272668",
+                ignoreFocusOut: true,
+              })
+            )?.trim() || "";
+        }
+        if (!id) return;
+        const found = findReportsByDepth(id);
+        if (!found.length) {
+          void vscode.window.showWarningMessage(
+            `Kampff: ${id} 리포트 없음 (빠른/FULL 각각 한 번씩 돌리면 둘 다 남음)`
+          );
+          return;
+        }
+        let pick = found[0];
+        if (found.length > 1) {
+          const chosen = await vscode.window.showQuickPick(
+            found.map((r) => ({
+              label: r.depth === "full" ? "FULL" : "빠른",
+              description: path.basename(r.reportPath),
+              detail: new Date(r.mtimeMs).toLocaleString(),
+              r,
+            })),
+            { title: `브라우저 · ${id}`, placeHolder: "빠른 / FULL" }
+          );
+          if (!chosen) return;
+          pick = chosen.r;
+        }
+        await openReportInBrowser(id, pick.depth);
       }
     ),
 

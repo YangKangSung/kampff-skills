@@ -18,9 +18,11 @@ import {
   findLatestAnalysis,
   findLatestReport,
   openReportForTarget,
+  openReportInBrowser,
   renderReportForTarget,
   targetHasAnalysis,
   targetHasReport,
+  ReportDepth,
 } from "./renderReport";
 import {
   formatTarget,
@@ -106,6 +108,9 @@ export class AnalyzeViewProvider implements vscode.WebviewViewProvider {
           break;
         case "openThisReport":
           await this.onOpenThis(msg);
+          break;
+        case "openThisReportBrowser":
+          await this.onOpenThisBrowser(msg);
           break;
         case "openOutLatest":
           await this.onOpenOutLatest();
@@ -374,6 +379,26 @@ export class AnalyzeViewProvider implements vscode.WebviewViewProvider {
       const p = await openReportForTarget(id);
       this.status(true, `열림 · ${id}\n${p}`);
       this.postAll();
+    } catch (e) {
+      const t = e instanceof Error ? e.message : String(e);
+      this.status(false, t);
+    }
+  }
+
+  private async onOpenThisBrowser(msg: Record<string, string>): Promise<void> {
+    const id = this.remember(msg, "open-browser");
+    if (!id) {
+      this.status(false, "대상 ID를 입력하세요");
+      return;
+    }
+    const raw = String(msg.depth || "").toLowerCase();
+    const depth: ReportDepth | undefined =
+      raw === "quick" || raw === "full" ? raw : undefined;
+    const label = depth === "full" ? "FULL" : depth === "quick" ? "빠른" : "있는 것";
+    this.status(true, `브라우저 · ${label} · ${id}`);
+    try {
+      const p = await openReportInBrowser(id, depth);
+      this.status(true, `브라우저 · ${label}\n${p}`);
     } catch (e) {
       const t = e instanceof Error ? e.message : String(e);
       this.status(false, t);
@@ -789,6 +814,10 @@ export class AnalyzeViewProvider implements vscode.WebviewViewProvider {
           <span class="t">이 사람 보고서 열기</span>
           <span class="d">폼 ID 파일 · <span class="term" data-term="out">out</span> 최신(타인) 아님</span>
         </button>
+        <div class="row-g" style="margin-top:6px">
+          <button type="button" class="btn ghost" id="btnOpenQuickBrowser" title="이 ID의 빠른(quick) HTML을 기본 브라우저로">브라우저 · 빠른</button>
+          <button type="button" class="btn ghost" id="btnOpenFullBrowser" title="이 ID의 FULL HTML을 기본 브라우저로">브라우저 · FULL</button>
+        </div>
       </div>
       <details class="adv export-box" id="exportBox" style="margin-top:10px">
         <summary>선택 · 분석 후 내보내기</summary>
