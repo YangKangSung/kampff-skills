@@ -2,6 +2,16 @@
 
 All notable changes to the **Kampff** VS Code extension are documented here.
 
+## [0.9.10] — 2026-08-16
+
+### Changed
+- Marketplace publish path: `vsce-publish` + `VSCE_PAT` (no Manage UI)
+
+## [0.9.9] — 2026-08-16
+
+### Added
+- Browser open for quick / FULL reports as separate snapshots
+
 ## [0.9.8] — 2026-08-14
 
 ### Added
