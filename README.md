@@ -2,113 +2,47 @@
 
 ### Read the board. Not the vibes.
 
+Boards are loud. Vibes are cheap.
+
+Someone replies under your post and you already have a feeling. Kampff writes that down as a **distance call**, tied to quotes they actually published.
+
+engage · neutral · caution · avoid
+
+It will not call anyone evil. If a claim has no quote, it is marked low-confidence.
+
 [![Stars](https://img.shields.io/github/stars/YangKangSung/kampff-skills?style=social)](https://github.com/YangKangSung/kampff-skills/stargazers)
 [![Sponsor](https://img.shields.io/badge/Sponsor-YangKangSung-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/YangKangSung)
+[![VS Marketplace](https://img.shields.io/visual-studio-marketplace/v/YangKangSung.kampff?label=VS%20Code)](https://marketplace.visualstudio.com/items?itemName=YangKangSung.kampff)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Skill](https://img.shields.io/badge/agent-SKILL.md-0ea5e9)](kampff/SKILL.md)
-[![Docs](https://img.shields.io/badge/docs-index-informational)](docs/README.md)
-[![Changelog](https://img.shields.io/badge/changelog-Keep%20a%20Changelog-blue)](CHANGELOG.md)
 
 [![Kampff demo reel](docs/demo-reel.gif)](https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html)
 
-**▶** GIF autoplays above · click for <a href="https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html" target="_blank" rel="noopener noreferrer"><strong>interactive demo</strong></a> (`Space` pause) · <a href="https://yangkangsung.github.io/kampff-skills/demo-reel.mp4" target="_blank" rel="noopener noreferrer">mp4</a>
-
-**Support independent OSS:** <a href="https://github.com/sponsors/YangKangSung" target="_blank" rel="noopener noreferrer"><strong>github.com/sponsors/YangKangSung</strong></a>
+GIF plays here. Click it for the <a href="https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html" target="_blank" rel="noopener noreferrer"><strong>interactive demo</strong></a> (`Space` pauses) · <a href="https://yangkangsung.github.io/kampff-skills/demo-reel.mp4" target="_blank" rel="noopener noreferrer">mp4</a>
 
 ---
 
+## Try it first
+
+- <a href="https://yangkangsung.github.io/kampff-skills/sample-community-report.html" target="_blank" rel="noopener noreferrer"><strong>Sample report</strong></a>. Live page, not GitHub source. First screen is `쉬운 말`. Switch to the long analysis if you want the graphs.
+- <a href="https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html" target="_blank" rel="noopener noreferrer"><strong>How a report is made</strong></a>. Collect → honesty → distance, then a walk through the same sample.
+- <a href="https://yangkangsung.github.io/kampff-skills/" target="_blank" rel="noopener noreferrer">Pages home</a>
+
+The sample person is fiction: `relay_ops` @ `forum.example`. Real third-party dossiers do not belong in this repo.
+
+> Loyal to **green that means something**, not to brands. Default distance: `neutral`, soft-`engage` on CI / rollback / observability. Not `avoid`.
+
+The rest of the HTML is the evidence for that call.
 
 ---
 
-## Run modes
+## Install
 
-| Mode | How |
-|------|-----|
-| **Standalone** | Install `kampff/` into an agent · optional `kampff-collect` · `scripts/render_kampff_report.py` |
-| **VS Code** (optional) | Extension shell → `skillsDevRoot` at this clone → Analyze |
+Public tree: [`YangKangSung/kampff-skills`](https://github.com/YangKangSung/kampff-skills).
 
-Map: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · scripts: [scripts/README.md](scripts/README.md)
+### Any agent
 
-## Live site
-
-→ <a href="https://yangkangsung.github.io/kampff-skills/" target="_blank" rel="noopener noreferrer"><strong>Pages home</strong></a> (product landing) · docs table: [docs/docs-index.md](docs/docs-index.md)
-
-## Sample report
-
-### → <a href="https://yangkangsung.github.io/kampff-skills/sample-community-report.html" target="_blank" rel="noopener noreferrer"><strong>Open sample HTML report</strong></a> ↗
-
-Live page (not GitHub source). Markdown twin: [sample-community-report.md](docs/sample-community-report.md) · short workplace cut: [sample-output.md](docs/sample-output.md)
-
-> **Synthetic only.** Demo person `relay_ops` @ `forum.example`.  
-> Real third-party dossiers never belong in this repo.
-
-**Dual-track HTML (default):** top toggle **쉬운 말** (plain distance / do·don't) · **전문 분석** (graphs · L1–L5 · lenses). First open defaults to 쉬운 말; choice sticks in `localStorage`. See [report-tracks.md](docs/report-tracks.md).
-
-### Excerpt — matrix + distance
-
-| id | worldview_fit | alliance_fit | stability | drift | risk | one_line |
-|----|---------------|--------------|-----------|-------|------|----------|
-| me | baseline | — | — | — | low | Prefers written decisions + small PRs |
-| **relay_ops** | **partial** (CI / reliability craft) | **conditional engage** | **chronic postmortem writer** | **tool loyalty follows green builds** | harm **low** · process fights **med** | **CI operator; measures, then swaps** |
-
-**Distance:** `neutral` ~ soft-`engage` · **not** `avoid`
-
-| Situation | Tag |
-|-----------|-----|
-| CI flakiness / rollback / observability | **engage** |
-| Default community peer | **neutral** |
-| Vendor cheer without repro | **caution** |
-
-**One-liner**
-
-> `relay_ops` = reliability operator + verificationist poster. Loyal to **green that means something**, not to brands. Trigger reply = same-orbit counter-report, not a personal attack.
-
-### Excerpt — collection honesty
-
-| Surface | Claimed | Collected | Full? |
-|---------|---------|-----------|-------|
-| Posts | 12 | 12 bodies | **YES** |
-| Comments | 120 | 40 recent (API cap) | **NO** |
-| Likes | 45 | 8 unique | **NO** |
-
-### Excerpt — lenses
-
-| Lens | Sample result |
-|------|----------------|
-| **MBTI** (fun) | `ISTJ` lean · I~70 S~62 T~80 J~75 |
-| **CIA-SAT / ACH** | **H1 Verificationist** lead · drivers: control 3 · autonomy 3 · status 1 |
-| **Clinical** (비진단) | Task-bound affect · not a DSM label |
-| **L5 drift** | Vendor X v3 praise → v4 cancel = same trait (verify utility, not brand) |
-
-Inside the HTML: driver radar · Big Five · timeline · force-directed text graph · full L1–L5 · KGB-style dossier card · easy/pro track toggle.
-
----
-
-## What is Kampff?
-
-> **sickn33 profiles customers. i-am profiles you.**  
-> **Kampff profiles everyone on the board — including you.**
-
-An **agent skill** that turns published text into a distance decision:
-
-```text
-posts · comments · mail · chat  →  bundle.json  →  /kampff  →  dossier
-```
-
-| You get | In plain English |
-|---------|------------------|
-| **Distance** | `engage` · `neutral` · `caution` · `avoid` |
-| **Fit** | worldview + alliance vs *you* |
-| **Time** | ephemeris — how they *changed* |
-| **Proof** | every claim tied to a quote (or low-confidence) |
-
-No soul verdicts. No “born evil.” Just **patterns + evidence**.
-
----
-
-## Install (any agent)
-
-Same skill file. Drop it in **your** harness:
+Same skill file. Drop `kampff/` into your harness:
 
 | Agent | Path |
 |-------|------|
@@ -124,95 +58,43 @@ cp -r kampff-skills/kampff ~/.hermes/skills/kampff   # pick your path
 
 ```text
 /kampff analyze path/to/bundle.json
-/kampff member {platform} {id}     # community pipeline
+/kampff member {platform} {id}
 /kampff today
-/kampff drill                      # synthetic practice (hide GOLD first)
-/kampff drill 01
 ```
 
-Optional data dir: `export KAMPFF_DATA=~/kampff-data` (Windows: `setx KAMPFF_DATA "..."`)
+Optional data dir: `export KAMPFF_DATA=~/kampff-data` (Windows: `setx KAMPFF_DATA "..."`).
 
-### Render HTML (offline)
+### VS Code
 
-```bash
-# dual-track default (쉬운 말 + 전문 분석 toggle)
-python scripts/render_kampff_report.py \
-  -a path/to-analysis.json \
-  -o path/to-report.html
-
-# pro only · easy only
-python scripts/render_kampff_report.py -a … -o … --track pro
-python scripts/render_kampff_report.py -a … -o …-easy.html --track easy
-```
-
-Needs a filled `analysis.json` (agent output or [sample-analysis.json](docs/sample-analysis.json)). Schema notes: [report-analysis.schema.md](docs/report-analysis.schema.md).
-
----
-
-## How it works
+[Kampff on the Marketplace](https://marketplace.visualstudio.com/items?itemName=YangKangSung.kampff) (`YangKangSung.kampff` @ **0.9.10**), or:
 
 ```text
-┌─────────────┐     ┌──────────────┐     ┌─────────────────┐
-│  Collect    │ ──▶ │ bundle.json  │ ──▶ │  spectrograph   │
-│  (optional) │     │  + honesty   │     │  L1–L5 + lenses │
-└─────────────┘     └──────────────┘     └────────┬────────┘
-                                                  ▼
-                                         distance report
-                              (.html dual-track DEFAULT · .md twin)
+ext install YangKangSung.kampff
 ```
 
-1. **Collect** lawful text (your tools, or optional `kampff-collect`)
-2. **Honesty** — posts / comments / likes: claimed vs collected (no fake “full crawl”)
-3. **Analyze** — skill reads files only; never invents scrape mid-report
-4. **Decide** — engage cost, not a persuasion playbook
-
-Community boards are a **first-class pipeline**, not a one-off script:  
-[community-member-pipeline.md](docs/community-member-pipeline.md) · [report-template.md](docs/report-template.md)
+The extension queues jobs and opens reports. It does not scrape the web by itself. You still need a `kampff-skills` clone, Hermes, and Python 3. Setup: Activity Bar → Kampff → **Setup…** → point `skillsDevRoot` at that clone → Analyze → Go.
 
 ---
 
-## spectrograph
+## What you get
 
-| Layer | Job |
-|-------|-----|
-| L1 | Psych lean (Big Five-ish · conflict style) |
-| L2 | Worldview axes |
-| L3 | Behavioral signature (chronic vs one-off) |
-| L4 | Alliance / go-together |
-| L5 | Ephemeris — timeline & drift |
-| L6–L7 | HR / OSINT — only if asked · lawful only |
+| | |
+|--|--|
+| **Distance** | Engage, stay neutral, go cautious, or walk. |
+| **Fit** | How their worldview and working style sit next to *yours*. You are in the pool. |
+| **Time** | How they changed. One rant is not a trait. |
+| **Proof** | A quote, or an honest "we do not have this." |
 
-**Community defaults (on):**
-
-| Lens | Vibe |
-|------|------|
-| [MBTI](docs/lenses-mbti.md) | Fun · low validity · never sole `avoid` |
-| [Clinical](docs/lenses-clinical-psych.md) | Formulation only · **비진단** · never sole `avoid` |
-| [CIA-SAT + dossier card](docs/lenses-cia-sat.md) | Public analytic form · ACH · not ops |
-
-```yaml
-analysis_lenses: ["personal", "mbti", "cia_sat", "clinical"]
-```
-
----
-
-## Practice drills (synthetic)
-
-Train distance + quote discipline **without** real people.
-
-| ID | Case | Gold distance (after score) | Trains |
-|----|------|------------------------------|--------|
-| **01** | [`docs/drills/01-criteria-peer/`](docs/drills/01-criteria-peer/) | neutral ~ soft-engage | brand flip ≠ flip-flop · criteria-bound affect |
-| **02** | [`docs/drills/02-status-flex/`](docs/drills/02-status-flex/) | caution | empty flex · meeting cost |
+Collection is a separate step. Analyze reads files only. It does not invent a crawl mid-report.
 
 ```text
-/kampff drill 01          # brief + texts only — hide GOLD
-/kampff drill score 01    # then open GOLD + rubric
+posts · comments · mail · chat  →  bundle.json  →  /kampff  →  dossier
 ```
 
-Rubric: [docs/drills/rubric.md](docs/drills/rubric.md) · craft map: [docs/profiling-craft.md](docs/profiling-craft.md)
-
-**Local smoke (this tree):** subject `gate_runner` (drill 01) scored **90/100 sharp** with dual-track HTML render green (2026-08-09 ad-hoc). Artifacts stay out of git.
+1. **Collect** lawful text you already have a right to read.
+2. **Honesty:** claimed vs collected. Partial crawl stays partial.
+3. **Analyze** the patterns. It is not a character roast.
+4. **Decide** the engage cost. This is not a persuasion playbook.
 
 ---
 
@@ -220,84 +102,85 @@ Rubric: [docs/drills/rubric.md](docs/drills/rubric.md) · craft map: [docs/profi
 
 | Skill | Who it profiles |
 |-------|-----------------|
-| customer profilers | **Buyers** for marketing |
-| i-am / self skills | **You** from agent logs |
-| chat stats tools | Word counts + vibes |
-| **kampff** | **The board** + **you** + time + distance |
+| customer profilers | Buyers, for marketing |
+| i-am / self skills | You, from agent logs |
+| chat stats tools | Word counts and vibes |
+| **kampff** | The board, you, time, and a distance tag |
 
 ---
 
-## Rules of the game
+## Rules
 
 **Do**
 
-- Quote or mark confidence  
-- Put the viewer under the same protocol  
-- Keep real runs under `$KAMPFF_DATA` (outside git)
+- Quote, or mark confidence.
+- Run yourself through the same protocol.
+- Keep real runs under `$KAMPFF_DATA` (outside git).
 
 **Don’t**
 
-- Medical / legal diagnosis  
-- Stalking or covert collection  
-- Commit real people, tokens, or host dumps to this repo  
-- Confuse “deleted a file” with “gone from git history”
+- Medical or legal diagnosis.
+- Stalking or covert collection.
+- Commit real people, tokens, or host dumps to this repo.
+- Confuse “deleted a file” with “gone from git history.”
 
-Samples + drills use fiction only: `relay_ops`, `gate_runner`, `north_packet`, `forum.example`.
+Samples are fiction: `relay_ops`, `user_42`, `north_packet`.
 
 ---
 
-## Repo map
+<details>
+<summary>Layers, if you want the stack</summary>
+
+Community reports can add fun/low-validity lenses. They never get to be the only reason for `avoid`.
+
+| Layer | Job |
+|-------|-----|
+| L1 | Psych lean (Big Five-ish, conflict style) |
+| L2 | Worldview axes |
+| L3 | Behavioral signature (chronic vs one-off) |
+| L4 | Alliance / go-together |
+| L5 | Timeline and drift |
+| L6–L7 | HR / OSINT — only if asked, lawful only |
+
+Default community lenses: [MBTI](docs/lenses-mbti.md) (fun) · [CIA-SAT](docs/lenses-cia-sat.md) (public analytic form, not ops).
+
+```yaml
+analysis_lenses: ["personal", "mbti", "cia_sat"]
+```
+
+Pipeline notes: [community-member-pipeline.md](docs/community-member-pipeline.md) · [report-template.md](docs/report-template.md)
+
+</details>
+
+<details>
+<summary>Layout</summary>
+
+This is the public product tree. Docs: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) · [docs/README.md](docs/README.md).
+
+VS Code UI lives in `extension/` here. Sibling `kampff-vscode` is retired. Build notes: [docs/vscode-bridge.md](docs/vscode-bridge.md) · [extension/BUILD.md](extension/BUILD.md).
 
 ```text
 kampff/                 ← the skill (copy this)
-  SKILL.md
-  references/           ← pipeline · honesty · lenses · template
-docs/
-  drills/               ← synthetic deliberate practice
-  report-tracks.md      ← dual-track HTML (easy / pro)
-  sample-*.md · spectrograph · collectors
-  RUN-INPUT.md
-scripts/
-  render_kampff_report.py
-  kampff_report_easy.py
-collectors/             ← optional YAML packs (adapters maturing)
-kampff-data/            ← local runs only (gitignored)
+extension/              ← VS Code shell (YangKangSung.kampff)
+docs/                   ← samples, architecture, lenses
+scripts/                ← run_kampff_job · render · wiki_store
+collectors/             ← optional YAML packs
 ```
 
----
-
-## Star roadmap
-
-| ⭐ | Unlock |
-|----|--------|
-| shipped | L1–L5 + community pipeline + dual-track sample HTML + drills |
-| 100 | Ephemeris templates |
-| 300 | HR lens pack |
-| 500 | OSINT lens pack |
-| 1000 | Skill #2 |
-
-**[Sponsor](https://github.com/sponsors/YangKangSung)** · **[Issues](https://github.com/YangKangSung/kampff-skills/issues)**
+</details>
 
 ---
 
-## Name & license
+## Name and license
 
-**Kampff** — independent OSS by [YangKangSung](https://github.com/YangKangSung).  
-Not affiliated with any film/game franchise. Name ≈ *struggle to read sparse evidence*.
+**Kampff** is independent OSS by [YangKangSung](https://github.com/YangKangSung). Not affiliated with any film or game franchise. The name is closer to *struggle to read sparse evidence*.
 
-**MIT** — use wisely, cite quotes, respect local law.  
+**MIT.** Use it, cite quotes, follow local law.  
 Third-party tools: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
+
+Star this repo if it is useful. [Issues](https://github.com/YangKangSung/kampff-skills/issues) · [sponsors](https://github.com/sponsors/YangKangSung).
 
 ```text
 graphify  →  code  →  graph
 kampff    →  text  →  human spectrum
 ```
-
----
-
-## Contributing
-
-Public PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).  
-Docs map: [docs/README.md](docs/README.md) · [CHANGELOG.md](CHANGELOG.md)
-
-Security reports: [SECURITY.md](SECURITY.md)
