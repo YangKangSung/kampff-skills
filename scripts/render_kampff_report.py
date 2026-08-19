@@ -433,6 +433,8 @@ h1{margin:0 0 6px;font-size:26px;letter-spacing:-.02em}
   margin:12px 0 0;padding:14px 16px;border-radius:12px;
   background:linear-gradient(90deg,#0c1c28,#0d1a16);border:1px solid #1e4d45;font-size:14.5px;
 }
+.desk-cta{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#0d1520;border:1px solid #1e3a5f;font-size:13px}
+.desk-cta a{color:var(--accent);font-weight:600}
 .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
 .meta .chip{background:#0d131b;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px}
 .meta .chip b{display:block;color:var(--muted);font-weight:500;font-size:10px;margin-bottom:3px}
@@ -519,7 +521,7 @@ a{color:var(--accent2)}
 }
 """
 KAMPFF_CP_JS = '\n<script id="kampff-cp-js">\n(function(){\n  /* tone SoT: vault Agents/Kampff/community-post-tone.md */\n  function unescapeHtml(s){\n    s = String(s || \'\');\n    if (s.indexOf(\'&\') === -1) return s;\n    var t = document.createElement(\'textarea\');\n    t.innerHTML = s;\n    return t.value;\n  }\n  function seed(){\n    var el = document.getElementById(\'kampff-cp-seed\');\n    if(!el) return {};\n    var raw = el.textContent || el.innerText || \'{}\';\n    try { return JSON.parse(raw); } catch(e1){\n      try { return JSON.parse(unescapeHtml(raw)); } catch(e2){ return {}; }\n    }\n  }\n  function $(id){ return document.getElementById(id); }\n  function tone(){\n    var el = $(\'cpTone\');\n    var v = (el && el.value) || (seed().tone) || \'peer\';\n    v = String(v).toLowerCase();\n    if (v === \'short\' || v === \'s\' || v === \'brief\') return \'short\';\n    if (v === \'board\' || v === \'b\' || v === \'full\') return \'board\';\n    return \'peer\';\n  }\n  function cleanOps(s){\n    return String(s||\'\')\n      .replace(/\\b(caution|avoid|engage|ops|ROI|distance|worldview|alliance|stability|drift|risk|L[1-5]|MBTI|ACH|CIA|SAT|Big ?Five|clinical|diagnosis|doxx?|CONFIRMED|PROBABLE|SPECULATIVE)\\b/gi,\'\')\n      .replace(/(이 한 줄은|전반 분석|독시어|dossier 요약|게시용으로 다듬|다음과 같습니다|나아가|결론적으로|요약하자면)/gi,\'\')\n      .replace(/(표본|수집분?|분석\\s*결과|리포트|독시어|권고\\s*태그|matrix|honesty|bundle|harvest)/gi,\'\')\n      .replace(/\\s{2,}/g,\' \').trim();\n  }\n  function tagSalad(t){\n    t = String(t||\'\').trim();\n    if (!t || t.length < 8) return true;\n    var hasStop = /[.。?!]|다\\.|요\\.|임\\.|습니다|거든요|봅니다/.test(t);\n    var parts = t.split(/[\\s·|/,:;]+/).filter(Boolean);\n    if (!hasStop && parts.length >= 3 && parts.every(function(p){ return p.length <= 12; })) return true;\n    if (/\\b(park|kin|use|cm_stock)\\b/i.test(t) && !hasStop) return true;\n    if (/(공유형|논객형|생활형|문제해결형)/.test(t) && !hasStop) return true;\n    return false;\n  }\n  function humanizePreset(s){\n    var t = String(s||\'\').trim();\n    if (!t) return \'\';\n    t = t.replace(/(이 한 줄은|전반 분석|독시어|dossier 요약|게시용으로 다듬)/gi,\'\');\n    if (/^#\\s/.test(t) || /\\n##\\s/.test(t)) {\n      var m = t.match(/##\\s*본문[^\\n]*\\n([\\s\\S]*?)(?=\\n##\\s|$)/);\n      if (m && m[1].trim().length >= 40) t = m[1].trim();\n    }\n    return t.replace(/\\n{3,}/g,\'\\n\\n\').trim();\n  }\n  function distill(d){\n    var cands = [d.point, d.mechanism, d.claim, d.one_line, d.tldr, d.trigger].map(cleanOps).filter(Boolean);\n    for (var i=0;i<cands.length;i++){\n      var raw = cands[i];\n      if (tagSalad(raw)) continue;\n      var parts = raw.split(/(?<=[.。?!]|다\\.|요\\.|습니다\\.|거든요\\.)\\s+/);\n      if (!parts.length) parts = [raw];\n      for (var j=0;j<parts.length;j++){\n        var t = String(parts[j]||\'\').replace(/^[\\s,.:;·\\/-]+|[\\s,.:;·\\/-]+$/g,\'\').trim();\n        if (tagSalad(t)) continue;\n        if (t.length > 110) t = t.slice(0,108).replace(/\\s+\\S*$/,\'\') + \'\\u2026\';\n        if (t.length >= 16) return t;\n      }\n    }\n    return \'\';\n  }\n  function endDot(s){\n    s = String(s||\'\').trim();\n    if (!s) return s;\n    if (/[다요임]$|[.。]$|습니다$|거든요$|봅니다$|생각합니다$/.test(s)) return s;\n    return s + \'.\';\n  }\n  function whoLabel(d){\n    var nick = String(d.nick||\'\').trim();\n    var id = String(d.id||\'\').trim();\n    if (nick && id && nick !== id) return nick + \'(id \' + id + \')\';\n    return nick || id || \'\';\n  }\n  function stripQ(s){ return String(s||\'\').replace(/^["\']+|["\']+$/g,\'\').trim(); }\n  function peerBody(d, mech, claim, anchor, point){\n    var who = whoLabel(d);\n    var nickOnly = String(d.nick||\'\').trim() || who.split(\'(\')[0];\n    var m = endDot(mech);\n    if (who && nickOnly && m.indexOf(nickOnly) === -1) {\n      m = who + \' 님 쪽 공개 글을 기준으로만 보면, \' + m;\n    }\n    var c = stripQ(claim || point);\n    var mid = c\n      ? (\'그래서 \' + c + \'만 보고 단정까지는 잘 안 갑니다.\')\n      : \'그래서 겉으로 보이는 빈도만 보고 단정까지는 잘 안 갑니다.\';\n    var a;\n    if (anchor) {\n      var tail = /쪽|근거|원문|분포|공시|실적|가격/.test(anchor) ? \'\' : \' 쪽\';\n      a = \'판단은 \' + anchor + tail + \'에 두는 편이 낫다고 봅니다.\';\n    } else {\n      a = \'판단은 확인 가능한 원문·날짜 쪽에 두는 편이 낫다고 봅니다.\';\n    }\n    return [m, \'\', mid, a, \'전제 다른 부분 있으면 그 부분만 짚어 주시면 됩니다.\'].join(\'\\n\');\n  }\n  function shortBody(mech, claim, anchor, point){\n    var line1 = endDot(mech || point);\n    var c = stripQ(claim || point);\n    var line2 = c ? (\'그래서 \' + c + \'만 보고 단정까지는 잘 안 갑니다.\') : \'단정까지는 잘 안 갑니다.\';\n    var line3 = anchor\n      ? (\'판단은 \' + anchor + (/쪽|근거|원문/.test(anchor) ? \'\' : \' 쪽\') + \'에 두는 편이 낫다고 봅니다.\')\n      : \'판단은 확인 가능한 근거 쪽에 두는 편이 낫다고 봅니다.\';\n    return [line1, line2, line3].join(\'\\n\');\n  }\n  var REFUSE = \'[게시 초안 생성 불가]\\n이 칸은 회원 전반 분석(dossier)이 아닙니다.\\nanalysis seed 문장이 없어 일반 템플릿으로 채우지 않습니다.\\n→ 위 TL;DR · L1–L5 · Distance · Evidence 가 본 분석입니다.\';\n  function generate(){\n    var d = seed();\n    var tn = tone();\n    var full = humanizePreset(d.preset || \'\');\n    var shortP = humanizePreset(d.preset_short || \'\');\n    if (tn === \'board\' && full && full.length >= 24 && full.length <= 8000 && !tagSalad(full)) return full;\n    if (tn === \'short\' && shortP && shortP.length >= 16) return shortP;\n    if (full && full.length >= 24 && full.length <= 8000 && !tagSalad(full)) {\n      if (tn === \'short\') {\n        var paras = full.split(/\\n\\s*\\n/).filter(function(p){ return p.trim(); });\n        if (paras.length >= 2) return paras.slice(0,2).join(\'\\n\\n\');\n        return full.split(/\\n/).filter(function(l){ return l.trim(); }).slice(0,3).join(\'\\n\');\n      }\n      return full;\n    }\n    var mech = cleanOps(d.mechanism || \'\');\n    var claim = cleanOps(d.claim || \'\');\n    var anchor = cleanOps(d.anchor || \'\');\n    var point = distill(d);\n    if (mech && (claim || point)) {\n      return tn === \'short\' ? shortBody(mech, claim, anchor, point) : peerBody(d, mech, claim, anchor, point);\n    }\n    if (point && !tagSalad(point)) {\n      if (tn === \'short\') return [endDot(point), \'판단은 확인 가능한 근거 쪽에 두는 편이 낫다고 봅니다.\'].join(\'\\n\');\n      return peerBody(d, point, \'\', anchor, point);\n    }\n    return REFUSE;\n  }\n  var out = $(\'cpOut\'), st = $(\'cpStatus\');\n  var gen = $(\'cpGen\'), copy = $(\'cpCopy\'), clr = $(\'cpClear\');\n  function fill(){\n    var t = generate();\n    if (out) out.value = t;\n    if (st) st.textContent = t.indexOf(\'[게시 초안 생성 불가]\') === 0\n      ? \'거부 — seed 없음\'\n      : (\'게시용 · tone=\' + tone() + \' · Copy 가능\');\n    return t;\n  }\n  if (gen) gen.addEventListener(\'click\', fill);\n  var toneEl = $(\'cpTone\');\n  if (toneEl) toneEl.addEventListener(\'change\', fill);\n  if (copy) copy.addEventListener(\'click\', async function(){\n    if (!out || !out.value.trim()) fill();\n    if (!out || out.value.indexOf(\'[게시 초안 생성 불가]\') === 0) { if(st) st.textContent = \'거부문 — copy 안 함\'; return; }\n    try { await navigator.clipboard.writeText(out.value); if(st) st.textContent = \'copied\'; }\n    catch (e) {\n      out.focus(); out.select();\n      try { document.execCommand(\'copy\'); if(st) st.textContent = \'copied\'; }\n      catch (e2) { if(st) st.textContent = \'fail\'; }\n    }\n  });\n  if (clr) clr.addEventListener(\'click\', function(){ if(out) out.value=\'\'; if(st) st.textContent=\'cleared\'; });\n  try {\n    var d0 = seed();\n    if ((d0.preset && String(d0.preset).trim().length >= 24) || (d0.mechanism && d0.claim)) fill();\n  } catch (e) {}\n})();\n</script>\n'
-def render(analysis: dict, bundle: dict | None = None) -> str:
+def render(analysis: dict, bundle: dict | None = None, desk_href: str = "") -> str:
     meta = analysis.get("meta") or {}
     target = analysis.get("target") or {}
     viewer = analysis.get("viewer") or {"id": "me"}
@@ -888,9 +890,11 @@ def render(analysis: dict, bundle: dict | None = None) -> str:
       <span style="font-size:12px;color:var(--muted)">ACH lead: <b style="color:#fff">{esc(ach_lead.get("label",""))}</b></span>
     </div>
     <div class="tldr"><b>TL;DR</b> — {esc(tldr)}</div>
+    {f'<p class="desk-cta" id="desk">Paper-test this call → <a href="{esc(desk_href)}">Distance Desk</a> <span class="muted">mute quotes · situation · time · one person</span></p>' if desk_href else ''}
   </header>
 
   <nav class="toc">
+    {f'<a href="{esc(desk_href)}">Desk</a>' if desk_href else ''}
     <a href="#graphs">Graphs</a>
     <a href="#honesty">Collect</a>
     <a href="#distance">Distance</a>
@@ -1094,6 +1098,11 @@ def main() -> None:
         default="",
         help="Report language. Default: $KAMPFF_LANG or auto (en unless LANG=ko*).",
     )
+    ap.add_argument(
+        "--no-desk",
+        action="store_true",
+        help="Do not write sibling Distance Desk HTML.",
+    )
     args = ap.parse_args()
     analysis = json.loads(Path(args.analysis).read_text(encoding="utf-8"))
     bundle = None
@@ -1103,6 +1112,7 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
 
     import os
+    import sys
 
     raw = (args.lang or os.environ.get("KAMPFF_LANG") or "auto").strip().lower()
     if raw in ("en", "ko"):
@@ -1118,12 +1128,25 @@ def main() -> None:
         print(out)
         return
 
-    html = render(analysis, bundle)
+    desk_href = ""
+    if not args.no_desk:
+        scripts_dir = str(Path(__file__).resolve().parent)
+        if scripts_dir not in sys.path:
+            sys.path.insert(0, scripts_dir)
+        from render_kampff_desk import analysis_to_desk_path, write_desk
+
+        desk_out = analysis_to_desk_path(args.analysis)
+        write_desk(analysis, desk_out, lang=lang)
+        try:
+            desk_href = Path(os.path.relpath(desk_out, out.parent)).as_posix()
+        except ValueError:
+            desk_href = desk_out.name
+        print(desk_out)
+
+    html = render(analysis, bundle, desk_href=desk_href)
     html = html.replace("<html lang=\"en\">", f'<html lang="{lang}" data-kampff-lang="{lang}">', 1)
     html = html.replace("<html lang=\"ko\">", f'<html lang="{lang}" data-kampff-lang="{lang}">', 1)
     if args.track == "both":
-        import sys
-
         scripts_dir = str(Path(__file__).resolve().parent)
         if scripts_dir not in sys.path:
             sys.path.insert(0, scripts_dir)

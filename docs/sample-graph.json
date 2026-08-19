@@ -1,0 +1,558 @@
+{
+  "meta": {
+    "date": "2026-07-13",
+    "platform": "forum.example",
+    "protocol": "relation-v1",
+    "synthetic": true,
+    "n_nodes": 8,
+    "n_edges": 12,
+    "seed": null,
+    "likes": {
+      "status": "not_collected",
+      "n": 0
+    }
+  },
+  "viewer": {
+    "id": "north_packet"
+  },
+  "nodes": [
+    {
+      "id": "north_packet",
+      "nick": "north_packet",
+      "distance": null,
+      "n_texts": 1,
+      "degree": 1,
+      "coord_score": 0,
+      "role": "viewer"
+    },
+    {
+      "id": "relay_ops",
+      "nick": "relay_ops",
+      "distance": null,
+      "n_texts": 3,
+      "degree": 6,
+      "coord_score": 0,
+      "role": "alter"
+    },
+    {
+      "id": "ci_gate",
+      "nick": "ci_gate",
+      "distance": null,
+      "n_texts": 3,
+      "degree": 4,
+      "coord_score": 0,
+      "role": "alter"
+    },
+    {
+      "id": "brigade_w1",
+      "nick": "brigade_w1",
+      "distance": null,
+      "n_texts": 4,
+      "degree": 4,
+      "coord_score": 100,
+      "role": "alter"
+    },
+    {
+      "id": "brigade_w2",
+      "nick": "brigade_w2",
+      "distance": null,
+      "n_texts": 4,
+      "degree": 4,
+      "coord_score": 100,
+      "role": "alter"
+    },
+    {
+      "id": "brigade_w3",
+      "nick": "brigade_w3",
+      "distance": null,
+      "n_texts": 4,
+      "degree": 4,
+      "coord_score": 100,
+      "role": "alter"
+    },
+    {
+      "id": "flame_once",
+      "nick": "flame_once",
+      "distance": null,
+      "n_texts": 1,
+      "degree": 1,
+      "coord_score": 0,
+      "role": "alter"
+    },
+    {
+      "id": "lurker_99",
+      "nick": "lurker_99",
+      "distance": null,
+      "n_texts": 1,
+      "degree": 0,
+      "coord_score": 0,
+      "role": "alter"
+    }
+  ],
+  "edges": [
+    {
+      "source": "brigade_w1",
+      "target": "brigade_w2",
+      "level": 5,
+      "level_name": "brigade",
+      "weight": 13,
+      "kinds": [
+        "replies_to",
+        "co_thread",
+        "burst_sync",
+        "near_dup"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "replies_to",
+          "from": "brigade_w1",
+          "to": "brigade_w2",
+          "n": 2,
+          "level": 3,
+          "quotes": [
+            "[synthetic] Exactly — the crowd already decided. Do not let one dashboard change the story.",
+            "[synthetic] Public opinion has already decided against this vendor. Always like this. Repeat the line."
+          ]
+        },
+        {
+          "kind": "replies_to",
+          "from": "brigade_w2",
+          "to": "brigade_w1",
+          "n": 2,
+          "level": 3,
+          "quotes": [
+            "[synthetic] Public opinion has already decided against this vendor. Always like this. People should see it.",
+            "[synthetic] Everyone already knows the truth. Public opinion has already decided against this vendor."
+          ]
+        },
+        {
+          "kind": "co_thread",
+          "n": 2,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 2,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x",
+            "2026-07-14:t-slo-follow"
+          ]
+        },
+        {
+          "kind": "near_dup",
+          "n": 1,
+          "level": 5,
+          "jaccard": 0.867,
+          "quotes": [
+            "[synthetic] Everyone already knows the truth. Public opinion has already decided against this vendor. Always like this.",
+            "[synthetic] Everyone already knows the truth. Public opinion has already decided against this vendor."
+          ]
+        }
+      ]
+    },
+    {
+      "source": "brigade_w1",
+      "target": "brigade_w3",
+      "level": 5,
+      "level_name": "brigade",
+      "weight": 12,
+      "kinds": [
+        "replies_to",
+        "co_thread",
+        "burst_sync",
+        "near_dup"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "replies_to",
+          "from": "brigade_w1",
+          "to": "brigade_w3",
+          "n": 1,
+          "level": 3,
+          "quotes": [
+            "[synthetic] Same as yesterday. The crowd already decided. Do not let one dashboard change the story."
+          ]
+        },
+        {
+          "kind": "replies_to",
+          "from": "brigade_w3",
+          "to": "brigade_w1",
+          "n": 2,
+          "level": 3,
+          "quotes": [
+            "[synthetic] Always like this. Public opinion has already decided against this vendor. Everyone already knows.",
+            "[synthetic] Everyone already knows the truth. Do not let one dashboard change the story."
+          ]
+        },
+        {
+          "kind": "co_thread",
+          "n": 2,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 2,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x",
+            "2026-07-14:t-slo-follow"
+          ]
+        },
+        {
+          "kind": "near_dup",
+          "n": 1,
+          "level": 5,
+          "jaccard": 0.917,
+          "quotes": [
+            "[synthetic] Exactly — the crowd already decided. Do not let one dashboard change the story.",
+            "[synthetic] Do not let one dashboard change the story. The crowd already decided."
+          ]
+        }
+      ]
+    },
+    {
+      "source": "brigade_w1",
+      "target": "ci_gate",
+      "level": 4,
+      "level_name": "sync",
+      "weight": 3,
+      "kinds": [
+        "co_thread",
+        "burst_sync"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "co_thread",
+          "n": 1,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 1,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "brigade_w1",
+      "target": "relay_ops",
+      "level": 4,
+      "level_name": "sync",
+      "weight": 4,
+      "kinds": [
+        "replies_to",
+        "co_thread",
+        "burst_sync"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "replies_to",
+          "from": "brigade_w1",
+          "to": "relay_ops",
+          "n": 1,
+          "level": 1,
+          "quotes": [
+            "[synthetic] Everyone already knows the truth. Public opinion has already decided against this vendor. Always like this."
+          ]
+        },
+        {
+          "kind": "co_thread",
+          "n": 1,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 1,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "brigade_w2",
+      "target": "brigade_w3",
+      "level": 5,
+      "level_name": "brigade",
+      "weight": 13,
+      "kinds": [
+        "replies_to",
+        "co_thread",
+        "burst_sync",
+        "near_dup"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "replies_to",
+          "from": "brigade_w2",
+          "to": "brigade_w3",
+          "n": 2,
+          "level": 3,
+          "quotes": [
+            "[synthetic] Yes — everyone already knows the truth. Do not let one dashboard change the story.",
+            "[synthetic] Always like this. The crowd already decided. Repeat so it sticks."
+          ]
+        },
+        {
+          "kind": "replies_to",
+          "from": "brigade_w3",
+          "to": "brigade_w2",
+          "n": 2,
+          "level": 3,
+          "quotes": [
+            "[synthetic] Do not let one dashboard change the story. The crowd already decided.",
+            "[synthetic] Public opinion has already decided against this vendor. Always like this."
+          ]
+        },
+        {
+          "kind": "co_thread",
+          "n": 2,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 2,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x",
+            "2026-07-14:t-slo-follow"
+          ]
+        },
+        {
+          "kind": "near_dup",
+          "n": 1,
+          "level": 5,
+          "jaccard": 0.923,
+          "quotes": [
+            "[synthetic] Yes — everyone already knows the truth. Do not let one dashboard change the story.",
+            "[synthetic] Everyone already knows the truth. Do not let one dashboard change the story."
+          ]
+        }
+      ]
+    },
+    {
+      "source": "brigade_w2",
+      "target": "ci_gate",
+      "level": 4,
+      "level_name": "sync",
+      "weight": 3,
+      "kinds": [
+        "co_thread",
+        "burst_sync"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "co_thread",
+          "n": 1,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 1,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "brigade_w2",
+      "target": "relay_ops",
+      "level": 4,
+      "level_name": "sync",
+      "weight": 3,
+      "kinds": [
+        "co_thread",
+        "burst_sync"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "co_thread",
+          "n": 1,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 1,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "brigade_w3",
+      "target": "ci_gate",
+      "level": 4,
+      "level_name": "sync",
+      "weight": 3,
+      "kinds": [
+        "co_thread",
+        "burst_sync"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "co_thread",
+          "n": 1,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 1,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "brigade_w3",
+      "target": "relay_ops",
+      "level": 4,
+      "level_name": "sync",
+      "weight": 3,
+      "kinds": [
+        "co_thread",
+        "burst_sync"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "co_thread",
+          "n": 1,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 1,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "ci_gate",
+      "target": "relay_ops",
+      "level": 4,
+      "level_name": "sync",
+      "weight": 6,
+      "kinds": [
+        "replies_to",
+        "co_thread",
+        "burst_sync"
+      ],
+      "confidence": "hypothesis",
+      "parts": [
+        {
+          "kind": "replies_to",
+          "from": "ci_gate",
+          "to": "relay_ops",
+          "n": 3,
+          "level": 2,
+          "quotes": [
+            "[synthetic] Which SLO gate? p95 or error budget? I can rerun the job.",
+            "[synthetic] Got it — error budget. I'll post the trace id.",
+            "[synthetic] Follow-up: flake was a runner image pin, not Vendor X."
+          ]
+        },
+        {
+          "kind": "co_thread",
+          "n": 1,
+          "level": 1
+        },
+        {
+          "kind": "burst_sync",
+          "n": 1,
+          "level": 4,
+          "windows": [
+            "2026-07-13:t-slo-vendor-x"
+          ]
+        }
+      ]
+    },
+    {
+      "source": "flame_once",
+      "target": "relay_ops",
+      "level": 1,
+      "level_name": "observe",
+      "weight": 1,
+      "kinds": [
+        "replies_to"
+      ],
+      "confidence": "observed",
+      "parts": [
+        {
+          "kind": "replies_to",
+          "from": "flame_once",
+          "to": "relay_ops",
+          "n": 1,
+          "level": 1,
+          "quotes": [
+            "[synthetic] You people are clowns. One comment and I am gone."
+          ]
+        }
+      ]
+    },
+    {
+      "source": "north_packet",
+      "target": "relay_ops",
+      "level": 1,
+      "level_name": "observe",
+      "weight": 1,
+      "kinds": [
+        "replies_to"
+      ],
+      "confidence": "observed",
+      "parts": [
+        {
+          "kind": "replies_to",
+          "from": "north_packet",
+          "to": "relay_ops",
+          "n": 1,
+          "level": 1,
+          "quotes": [
+            "[synthetic] Watching this thread. Want the SLO numbers, not the pile-on."
+          ]
+        }
+      ]
+    }
+  ],
+  "coordination": {
+    "clusters": [
+      {
+        "id": "C1",
+        "member_ids": [
+          "brigade_w1",
+          "brigade_w2",
+          "brigade_w3"
+        ],
+        "score": 100,
+        "read": "strong_signals",
+        "reasons": [
+          "near-duplicate talking points",
+          "same-thread same-day bursts",
+          "brigade stack (near-dup + burst)"
+        ]
+      }
+    ],
+    "disclaimer": "Public-text hypothesis. Not legal proof of a coordinated campaign."
+  }
+}

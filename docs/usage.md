@@ -3,7 +3,7 @@
 수집은 **별도 logic**. skill/agent는 **정규화된 입력 파일**만 읽는다.
 
 **실행 모드 전체 지도:** [ARCHITECTURE.md](ARCHITECTURE.md) (standalone · VS Code).  
-로컬 세팅: [LOCAL_DEV.md](LOCAL_DEV.md).
+로컬 세팅: [ARCHITECTURE.md](ARCHITECTURE.md).
 
 ## 호출 방법
 
@@ -57,6 +57,9 @@ kampff-collect connect status
 
 ```text
 /kampff analyze $KAMPFF_DATA/inbox\2026-07-11\bundle.json
+/kampff desk $KAMPFF_DATA/out\2026-07-11-id-analysis.json
+/kampff graph $KAMPFF_DATA/inbox\2026-07-11\bundle.json
+/kampff graph someid
 ```
 
 ```text
