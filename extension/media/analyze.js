@@ -686,6 +686,13 @@
   });
   on("btnRender", "onclick", render);
   on("btnOpenThis", "onclick", openThis);
+  on("btnDesk", "onclick", () => {
+    if (!requireId()) return;
+    vscode.postMessage(Object.assign({ type: "openDesk" }, payload()));
+  });
+  on("btnGraph", "onclick", () => {
+    vscode.postMessage(Object.assign({ type: "openGraph" }, payload()));
+  });
   on("btnOpenQuickBrowser", "onclick", () => {
     if (!requireId()) return;
     vscode.postMessage(

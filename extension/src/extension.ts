@@ -395,6 +395,90 @@ export function activate(context: vscode.ExtensionContext): void {
         }),
 
     vscode.commands.registerCommand(
+      "kampff.openGraph",
+      async (item?: KampffItem | string) => {
+        const {
+          openGraphForTarget,
+          renderGraphFromBundle,
+          renderGraphFromJson,
+          openGraphHtml,
+        } = await import("./renderGraph");
+        try {
+          let html: string;
+          if (typeof item === "string" && item.endsWith(".json") && item.includes("bundle")) {
+            html = await renderGraphFromBundle(item, true);
+          } else if (item && typeof item === "object" && "fsPath" in item) {
+            const fp = (item as KampffItem).fsPath;
+            if (fp.endsWith("-graph.html")) {
+              await openGraphHtml(fp);
+              html = fp;
+            } else if (/bundle.*\.json$/i.test(fp) || path.basename(fp).startsWith("bundle")) {
+              html = await renderGraphFromBundle(fp, true);
+            } else if (fp.endsWith("-graph.json")) {
+              html = await renderGraphFromJson(fp, true);
+            } else {
+              html = await openGraphForTarget(path.basename(fp));
+            }
+          } else {
+            const id = getActiveTarget()?.id;
+            html = await openGraphForTarget(id);
+          }
+          void vscode.window.showInformationMessage(`Graph: ${html}`);
+        } catch (e) {
+          void vscode.window.showErrorMessage(
+            `Graph failed: ${e instanceof Error ? e.message : e}`
+          );
+        }
+      }
+    ),
+
+    vscode.commands.registerCommand(
+      "kampff.openDesk",
+      async (item?: KampffItem | string) => {
+        const { openDeskForTarget, renderDeskFromAnalysis } = await import(
+          "./renderReport"
+        );
+        try {
+          let desk: string;
+          if (typeof item === "string" && item.endsWith("-analysis.json")) {
+            desk = await renderDeskFromAnalysis(item, true);
+          } else if (item && typeof item === "object" && "fsPath" in item) {
+            const fp = (item as KampffItem).fsPath;
+            if (fp.endsWith("-analysis.json")) {
+              desk = await renderDeskFromAnalysis(fp, true);
+            } else if (fp.endsWith("-desk.html")) {
+              await vscode.commands.executeCommand("kampff.openReportPath", fp);
+              desk = fp;
+            } else if (fp.endsWith("-report.html")) {
+              const a = fp.replace(/-report\.html$/i, "-analysis.json");
+              if (fs.existsSync(a)) {
+                desk = await renderDeskFromAnalysis(a, true);
+              } else {
+                throw new Error("sibling analysis.json missing");
+              }
+            } else {
+              desk = await openDeskForTarget(path.basename(fp));
+            }
+          } else {
+            const id =
+              getActiveTarget()?.id ||
+              (await vscode.window.showInputBox({
+                title: "Kampff · Distance Desk",
+                prompt: "author id (analysis.json must exist in out/)",
+              }));
+            if (!id) return;
+            desk = await openDeskForTarget(id.trim());
+          }
+          void vscode.window.showInformationMessage(`Desk: ${desk}`);
+        } catch (e) {
+          void vscode.window.showErrorMessage(
+            `Desk failed: ${e instanceof Error ? e.message : e}`
+          );
+        }
+      }
+    ),
+
+    vscode.commands.registerCommand(
       "kampff.renderReport",
       async (item?: KampffItem | string) => {
         const { renderReportForTarget, renderReportFromAnalysis, findLatestAnalysis } =

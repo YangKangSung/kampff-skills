@@ -55,6 +55,31 @@ export function analysisToReportPath(analysisPath: string): string {
   return analysisPath.replace(/-analysis\.json$/i, "-report.html");
 }
 
+export function analysisToDeskPath(analysisPath: string): string {
+  return analysisPath.replace(/-analysis\.json$/i, "-desk.html");
+}
+
+export function findLatestDesk(targetId: string): string | undefined {
+  const a = findLatestAnalysis(targetId);
+  if (a) {
+    const d = analysisToDeskPath(a);
+    if (fs.existsSync(d)) return d;
+  }
+  const out = outDir();
+  if (!out || !fs.existsSync(out)) return undefined;
+  const id = targetId.trim();
+  const files = fs
+    .readdirSync(out)
+    .filter((f) => f.endsWith("-desk.html"))
+    .filter((f) => {
+      const base = f.replace(/-desk\.html$/i, "");
+      return base.endsWith(`-${id}`) || base === id;
+    })
+    .map((f) => path.join(out, f))
+    .sort((a, b) => fs.statSync(b).mtimeMs - fs.statSync(a).mtimeMs);
+  return files[0];
+}
+
 export type ReportDepth = "quick" | "full";
 
 export interface DepthReport {
@@ -261,6 +286,74 @@ export async function renderReportForTarget(targetId: string): Promise<string> {
     );
   }
   return renderReportFromAnalysis(a, true);
+}
+
+export async function renderDeskFromAnalysis(
+  analysisPath: string,
+  openAfter = true
+): Promise<string> {
+  const cfg = getConfig();
+  if (!fs.existsSync(analysisPath)) {
+    throw new Error(`analysis 없음: ${analysisPath}`);
+  }
+  const deskPath = analysisToDeskPath(analysisPath);
+  if (!cfg.skillsDevRoot) {
+    throw new Error("skillsDevRoot 없음 — Kampff: Setup에서 이 repo 루트를 지정하세요");
+  }
+  const script = path.join(cfg.skillsDevRoot, "scripts", "render_kampff_desk.py");
+  if (!fs.existsSync(script)) {
+    throw new Error(`desk renderer 없음: ${script}`);
+  }
+  const py = cfg.pythonPath || "python";
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(
+      py,
+      [script, "-a", analysisPath, "-o", deskPath, "--lang", cfg.uiLanguage],
+      {
+        cwd: cfg.skillsDevRoot,
+        windowsHide: true,
+        env: { ...process.env, KAMPFF_LANG: cfg.uiLanguage },
+      }
+    );
+    let err = "";
+    child.stderr.on("data", (d) => (err += String(d)));
+    child.on("error", reject);
+    child.on("close", (code) => {
+      if (code === 0) resolve();
+      else reject(new Error(err || `desk renderer exit ${code}`));
+    });
+  });
+  if (!fs.existsSync(deskPath)) {
+    throw new Error(`desk HTML 없음: ${deskPath}`);
+  }
+  if (openAfter) {
+    const mode = cfg.reportOpenMode;
+    if (mode === "browser" || mode === "both") {
+      await vscode.env.openExternal(vscode.Uri.file(deskPath));
+    }
+    if (mode === "panel" || mode === "both") {
+      await vscode.commands.executeCommand("kampff.openReportPath", deskPath);
+    }
+  }
+  return deskPath;
+}
+
+export async function openDeskForTarget(targetId: string): Promise<string> {
+  const id = targetId.trim();
+  if (!id) throw new Error("ID 없음");
+  let desk = findLatestDesk(id);
+  if (!desk) {
+    const a = findLatestAnalysis(id);
+    if (!a) {
+      throw new Error(
+        `거리 책상 없음: ${id}\n(out/*-${id}-desk.html)\n→ 이 ID로 분석이 끝난 뒤에만 열 수 있음.`
+      );
+    }
+    desk = await renderDeskFromAnalysis(a, true);
+    return desk;
+  }
+  await vscode.commands.executeCommand("kampff.openReportPath", desk);
+  return desk;
 }
 
 export async function openReportForTarget(targetId: string): Promise<string> {

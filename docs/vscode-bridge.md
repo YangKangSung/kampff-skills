@@ -43,6 +43,8 @@ Setup order in UI: **dataRoot → wikiRoot → skillsDevRoot** → sites.
 |--------|------------------------------|
 | Job orchestration | `scripts/run_kampff_job.py` |
 | Render HTML | `scripts/render_kampff_report.py` |
+| Distance Desk | `scripts/render_kampff_desk.py` · command `kampff.openDesk` |
+| Relation graph | `build_relation_bundle.py` (id harvest) + `build_kampff_graph.py` + `render_kampff_graph.py` · `kampff.openGraph` |
 | Community draft | `scripts/community_post.py` (CLI SoT; TS twin may exist in extension) |
 | Prior / promote | `scripts/wiki_store.py` |
 
