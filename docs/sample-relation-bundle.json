@@ -1,0 +1,227 @@
+{
+  "context": "community",
+  "viewer_id": "north_packet",
+  "protocol": "relation-v1",
+  "batch_date": "2026-07-13",
+  "synthetic": true,
+  "meta": {
+    "platform": "forum.example",
+    "language": "en",
+    "synthetic": true,
+    "note": "Fiction. Coordinated-comment demo — not real people."
+  },
+  "people": [
+    {
+      "id": "north_packet",
+      "display_name": "north_packet",
+      "texts": [
+        {
+          "content": "[synthetic] Watching this thread. Want the SLO numbers, not the pile-on.",
+          "timestamp": "2026-07-13T10:12:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "relay_ops"
+        }
+      ]
+    },
+    {
+      "id": "relay_ops",
+      "display_name": "relay_ops",
+      "texts": [
+        {
+          "content": "[synthetic] Cancelled Vendor X v4 after load test failed our SLO gate — same bar as last year.",
+          "timestamp": "2026-07-13T09:40:00+09:00",
+          "source": "community_post",
+          "type": "post",
+          "thread_id": "t-slo-vendor-x"
+        },
+        {
+          "content": "[synthetic] Dashboard is public. Queue time dropped 40% on self-hosted runners.",
+          "timestamp": "2026-07-13T11:05:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x"
+        },
+        {
+          "content": "[synthetic] Repro first. Brand war later.",
+          "timestamp": "2026-07-14T09:10:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-follow"
+        }
+      ]
+    },
+    {
+      "id": "ci_gate",
+      "display_name": "ci_gate",
+      "texts": [
+        {
+          "content": "[synthetic] Which SLO gate? p95 or error budget? I can rerun the job.",
+          "timestamp": "2026-07-13T10:02:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "relay_ops"
+        },
+        {
+          "content": "[synthetic] Got it — error budget. I'll post the trace id.",
+          "timestamp": "2026-07-13T10:40:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "relay_ops"
+        },
+        {
+          "content": "[synthetic] Follow-up: flake was a runner image pin, not Vendor X.",
+          "timestamp": "2026-07-14T09:22:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-follow",
+          "reply_to": "relay_ops"
+        }
+      ]
+    },
+    {
+      "id": "brigade_w1",
+      "display_name": "brigade_w1",
+      "texts": [
+        {
+          "content": "[synthetic] Everyone already knows the truth. Public opinion has already decided against this vendor. Always like this.",
+          "timestamp": "2026-07-13T10:18:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "relay_ops"
+        },
+        {
+          "content": "[synthetic] Exactly — the crowd already decided. Do not let one dashboard change the story.",
+          "timestamp": "2026-07-13T10:21:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "brigade_w2"
+        },
+        {
+          "content": "[synthetic] Public opinion has already decided against this vendor. Always like this. Repeat the line.",
+          "timestamp": "2026-07-14T09:18:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-follow",
+          "reply_to": "brigade_w2"
+        },
+        {
+          "content": "[synthetic] Same as yesterday. The crowd already decided. Do not let one dashboard change the story.",
+          "timestamp": "2026-07-14T09:20:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-follow",
+          "reply_to": "brigade_w3"
+        }
+      ]
+    },
+    {
+      "id": "brigade_w2",
+      "display_name": "brigade_w2",
+      "texts": [
+        {
+          "content": "[synthetic] Public opinion has already decided against this vendor. Always like this. People should see it.",
+          "timestamp": "2026-07-13T10:19:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "brigade_w1"
+        },
+        {
+          "content": "[synthetic] Yes — everyone already knows the truth. Do not let one dashboard change the story.",
+          "timestamp": "2026-07-13T10:22:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "brigade_w3"
+        },
+        {
+          "content": "[synthetic] Everyone already knows the truth. Public opinion has already decided against this vendor.",
+          "timestamp": "2026-07-14T09:19:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-follow",
+          "reply_to": "brigade_w1"
+        },
+        {
+          "content": "[synthetic] Always like this. The crowd already decided. Repeat so it sticks.",
+          "timestamp": "2026-07-14T09:21:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-follow",
+          "reply_to": "brigade_w3"
+        }
+      ]
+    },
+    {
+      "id": "brigade_w3",
+      "display_name": "brigade_w3",
+      "texts": [
+        {
+          "content": "[synthetic] Always like this. Public opinion has already decided against this vendor. Everyone already knows.",
+          "timestamp": "2026-07-13T10:20:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "brigade_w1"
+        },
+        {
+          "content": "[synthetic] Do not let one dashboard change the story. The crowd already decided.",
+          "timestamp": "2026-07-13T10:23:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "brigade_w2"
+        },
+        {
+          "content": "[synthetic] Public opinion has already decided against this vendor. Always like this.",
+          "timestamp": "2026-07-14T09:19:30+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-follow",
+          "reply_to": "brigade_w2"
+        },
+        {
+          "content": "[synthetic] Everyone already knows the truth. Do not let one dashboard change the story.",
+          "timestamp": "2026-07-14T09:22:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-follow",
+          "reply_to": "brigade_w1"
+        }
+      ]
+    },
+    {
+      "id": "flame_once",
+      "display_name": "flame_once",
+      "texts": [
+        {
+          "content": "[synthetic] You people are clowns. One comment and I am gone.",
+          "timestamp": "2026-07-13T11:40:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x",
+          "reply_to": "relay_ops"
+        }
+      ]
+    },
+    {
+      "id": "lurker_99",
+      "display_name": "lurker_99",
+      "texts": [
+        {
+          "content": "[synthetic] Bookmarking the dashboard. No opinion yet.",
+          "timestamp": "2026-07-13T16:00:00+09:00",
+          "source": "community_comment",
+          "type": "comment",
+          "thread_id": "t-slo-vendor-x"
+        }
+      ]
+    }
+  ]
+}

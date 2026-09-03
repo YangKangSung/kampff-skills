@@ -2,7 +2,7 @@
   "name": "kampff",
   "displayName": "Kampff",
   "description": "Kampff operator shell: queue analyze jobs against a kampff-skills clone, open dual-track reports. Default site X. Requires Hermes. Respect rate limits.",
-  "version": "0.9.10",
+  "version": "0.9.14",
   "publisher": "YangKangSung",
   "author": "YangKangSung (ksyang)",
   "license": "MIT",
@@ -481,6 +481,18 @@
         "icon": "$(file-code)"
       },
       {
+        "command": "kampff.openDesk",
+        "title": "거리 책상 (Distance Desk)",
+        "category": "Kampff",
+        "icon": "$(dashboard)"
+      },
+      {
+        "command": "kampff.openGraph",
+        "title": "관계 그래프 (Relation Graph)",
+        "category": "Kampff",
+        "icon": "$(type-hierarchy)"
+      },
+      {
         "command": "kampff.refresh",
         "title": "트리 새로고침",
         "category": "Kampff",
@@ -671,6 +683,16 @@
           "command": "kampff.openReport",
           "when": "viewItem == kampff.report || viewItem == kampff.html",
           "group": "inline@1"
+        },
+        {
+          "command": "kampff.openDesk",
+          "when": "viewItem == kampff.report || viewItem == kampff.html || viewItem == kampff.analysis",
+          "group": "inline@2"
+        },
+        {
+          "command": "kampff.openGraph",
+          "when": "viewItem == kampff.bundle || viewItem == kampff.graph || viewItem == kampff.report || viewItem == kampff.html",
+          "group": "inline@3"
         },
         {
           "command": "kampff.openHtmlExternal",

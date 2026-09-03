@@ -19,11 +19,13 @@ import {
   findLatestReport,
   openReportForTarget,
   openReportInBrowser,
+  openDeskForTarget,
   renderReportForTarget,
   targetHasAnalysis,
   targetHasReport,
   ReportDepth,
 } from "./renderReport";
+import { openGraphForTarget } from "./renderGraph";
 import {
   formatTarget,
   getActiveTarget,
@@ -108,6 +110,12 @@ export class AnalyzeViewProvider implements vscode.WebviewViewProvider {
           break;
         case "openThisReport":
           await this.onOpenThis(msg);
+          break;
+        case "openDesk":
+          await this.onOpenDesk(msg);
+          break;
+        case "openGraph":
+          await this.onOpenGraph(msg);
           break;
         case "openThisReportBrowser":
           await this.onOpenThisBrowser(msg);
@@ -361,6 +369,36 @@ export class AnalyzeViewProvider implements vscode.WebviewViewProvider {
     try {
       const report = await renderReportForTarget(id);
       this.status(true, `② 완료 · ${id}\n${report}\n(이 ID 리포트 — out 최신 아님)`);
+      this.postAll();
+    } catch (e) {
+      const t = e instanceof Error ? e.message : String(e);
+      this.status(false, t);
+    }
+  }
+
+  private async onOpenGraph(msg: Record<string, string>): Promise<void> {
+    const id = this.remember(msg, "graph");
+    this.status(true, id ? `관계 그래프 · ${id}` : "관계 그래프 · 보드");
+    try {
+      const p = await openGraphForTarget(id || undefined);
+      this.status(true, `그래프 · ${p}`);
+      this.postAll();
+    } catch (e) {
+      const t = e instanceof Error ? e.message : String(e);
+      this.status(false, t);
+    }
+  }
+
+  private async onOpenDesk(msg: Record<string, string>): Promise<void> {
+    const id = this.remember(msg, "desk");
+    if (!id) {
+      this.status(false, "대상 ID를 입력하세요");
+      return;
+    }
+    this.status(true, `거리 책상 · ${id}`);
+    try {
+      const p = await openDeskForTarget(id);
+      this.status(true, `책상 · ${id}\n${p}`);
       this.postAll();
     } catch (e) {
       const t = e instanceof Error ? e.message : String(e);
@@ -813,6 +851,14 @@ export class AnalyzeViewProvider implements vscode.WebviewViewProvider {
         <button type="button" class="btn" id="btnOpenThis">
           <span class="t">이 사람 보고서 열기</span>
           <span class="d">폼 ID 파일 · <span class="term" data-term="out">out</span> 최신(타인) 아님</span>
+        </button>
+        <button type="button" class="btn" id="btnDesk">
+          <span class="t">거리 책상 (Desk)</span>
+          <span class="d">인용 뮤트 · 상황 · 시간 · 한 사람만</span>
+        </button>
+        <button type="button" class="btn" id="btnGraph">
+          <span class="t">관계 그래프 (Graph)</span>
+          <span class="d">ID 중심 · 글·댓글 + 이미 수확한 상대</span>
         </button>
         <div class="row-g" style="margin-top:6px">
           <button type="button" class="btn ghost" id="btnOpenQuickBrowser" title="이 ID의 빠른(quick) HTML을 기본 브라우저로">브라우저 · 빠른</button>

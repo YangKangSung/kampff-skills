@@ -2,6 +2,28 @@
 
 All notable changes to the **Kampff** VS Code extension are documented here.
 
+## [0.9.14] — 2026-09-02
+
+### Changed
+- Ego graph **attaches already-harvested 1-hop alters** (no new scrape). Their other threads become hop-2 (cyan).
+- Analyze with `harvestMaxFetch` ≤ 15 uses park-only / 1 search page (quieter 1-hop).
+- Graph opens by nick or `STATE.author_id`, not folder name only.
+
+## [0.9.13] — 2026-08-19
+
+### Changed
+- **관계 그래프** with an ID is an **ego** graph: people on that id’s posts, comments, and likes (if liker ids are in saved harvest HTML). Analyze first so `inbox/*/raw/{id}/posts` exists. No harvest → error, not the sample board.
+
+## [0.9.12] — 2026-08-19
+
+### Added
+- **Relation graph** in the operator shell: Analyze **관계 그래프**, command `kampff.openGraph`, inbox bundle / Reports `*-graph.html`. Builds from `inbox/*/bundle.json` (sample fallback).
+
+## [0.9.11] — 2026-08-19
+
+### Added
+- **Distance Desk** — paper-test one person's call (mute quotes, situation chips, L5 slider). Command `kampff.openDesk` + Analyze button. Not a crowd graph.
+
 ## [0.9.10] — 2026-08-16
 
 ### Changed

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-kampff-lang="en">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -35,6 +35,8 @@ h1{margin:0 0 6px;font-size:26px;letter-spacing:-.02em}
   margin:12px 0 0;padding:14px 16px;border-radius:12px;
   background:linear-gradient(90deg,#0c1c28,#0d1a16);border:1px solid #1e4d45;font-size:14.5px;
 }
+.desk-cta{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:#0d1520;border:1px solid #1e3a5f;font-size:13px}
+.desk-cta a{color:var(--accent);font-weight:600}
 .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px}
 .meta .chip{background:#0d131b;border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px}
 .meta .chip b{display:block;color:var(--muted);font-weight:500;font-size:10px;margin-bottom:3px}
@@ -181,9 +183,11 @@ a{color:var(--accent2)}
       <span style="font-size:12px;color:var(--muted)">ACH lead: <b style="color:#fff">Verificationist</b></span>
     </div>
     <div class="tldr"><b>TL;DR</b> — Verificationist craft peer on CI/observability. Soft-engage on flaky systems; neutral default community peer; avoid vendor cheer without repro. Not avoid.</div>
+    <p class="desk-cta" id="desk">Paper-test this call → <a href="sample-desk.html">Distance Desk</a> <span class="muted">mute quotes · situation · time · one person</span></p>
   </header>
 
   <nav class="toc">
+    <a href="sample-desk.html">Desk</a>
     <a href="#graphs">Graphs</a>
     <a href="#honesty">Collect</a>
     <a href="#distance">Distance</a>
@@ -487,7 +491,7 @@ LEAD H    H1 verificationist</pre>
 
   <section class="card" id="files">
     <h2><span class="n">9</span> Files</h2>
-    <div class="muted">html: docs/sample-community-report.html<br/>note: synthetic public demo</div>
+    <div class="muted">html: docs/sample-community-report.html<br/>desk: docs/sample-desk.html<br/>note: synthetic public demo</div>
   </section>
 
   <section class="card" id="optional-export" style="opacity:.92"><h2><span class="n">Z</span> 선택 · 게시 초안 export <span class="muted" style="font-weight:500;font-size:12px">분석 본체 아님</span></h2><p class="muted"><b>회원 전반 dossier는 위 섹션(TL;DR · Distance · L1–L5 · Evidence)입니다.</b> 이 칸은 커뮤니티 문장을 <i>선택적으로</i> 뽑을 때만 씁니다. seed 없으면 일반 템플릿으로 채우지 않고 거부합니다. 신상·단정·진단·ops 태그 금지.</p><div class="cp-actions" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center"><label class="muted" style="font-size:12px">tone <select id="cpTone" style="margin-left:4px;padding:6px 8px;border-radius:6px"><option value="peer" selected>peer · 동료 톤</option><option value="short">short · 2–3줄</option><option value="board">board · text_ko</option></select></label><button type="button" id="cpGen">게시 초안 만들기</button><button type="button" id="cpCopy">Copy</button><button type="button" id="cpClear">Clear</button></div><textarea class="cp-out" id="cpOut" placeholder="seed 있으면 자동 채움 · 없으면 거부"></textarea><div class="cp-status" id="cpStatus">optional export · not the dossier</div><p class="muted" style="margin-top:10px"><b>Do not post:</b> 실명·연락처 · 단정 · 진단 · ops 태그</p><script type="application/json" id="kampff-cp-seed">{"nick": "relay_ops", "id": "relay_ops", "platform": "forum.example", "board": "forum.example", "tldr": "Verificationist craft peer on CI/observability. Soft-engage on flaky systems; neutral default community peer; avoid vendor cheer without repro. Not avoid.", "one_line": "verificationist · domain trust high · not empty flex", "preset": "", "trigger": "Synthetic trigger thread: Vendor X v4 cancel after measurement fail.", "mechanism": "", "claim": "", "anchor": "", "point": "", "preset_short": "", "tone": "peer"}</script></section>
@@ -757,7 +761,7 @@ LEAD H    H1 verificationist</pre>
   var bEasy = document.getElementById('btn-track-easy');
   if(bPro) bPro.addEventListener('click', function(){ setTrack('pro'); });
   if(bEasy) bEasy.addEventListener('click', function(){ setTrack('easy'); });
-  var init = 'pro';
+  var init = (document.documentElement.getAttribute('data-kampff-lang') === 'ko') ? 'easy' : 'pro';
   try {
     if (location.hash === '#easy' || location.hash === '#ko') init = 'easy';
     else if (location.hash === '#pro' || location.hash === '#en') init = 'pro';
