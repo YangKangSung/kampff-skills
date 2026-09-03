@@ -7,6 +7,8 @@ This extension does **not** ship the analysis skill or scrape the web by itself.
 - Points at your **kampff-skills** clone + runtime data folder  
 - Queues Analyze jobs (Hermes)  
 - Shows progress and opens **dual-track** HTML reports  
+- Opens a **Distance Desk** to paper-test the call (mute quotes · situation · time)  
+- Opens a **relation graph** (people as nodes, level filter, Hide/Dim) from an inbox bundle  
 - Optionally promotes outputs to a wiki shelf  
 
 Skill / CLI SoT: [kampff-skills](https://github.com/YangKangSung/kampff-skills) · architecture: [docs/ARCHITECTURE.md](https://github.com/YangKangSung/kampff-skills/blob/main/docs/ARCHITECTURE.md)

@@ -25,6 +25,8 @@ GIF plays here. Click it for the <a href="https://yangkangsung.github.io/kampff-
 ## Try it first
 
 - <a href="https://yangkangsung.github.io/kampff-skills/sample-community-report.html" target="_blank" rel="noopener noreferrer"><strong>Sample report</strong></a>. Live page, not GitHub source. First screen is `쉬운 말`. Switch to the long analysis if you want the graphs.
+- <a href="docs/sample-desk.html"><strong>Distance Desk</strong></a> (this checkout). Mute quotes, pick a situation, scrub time. One person — not a board map.
+- <a href="docs/sample-graph.html"><strong>Relation graph</strong></a> (this checkout). Nodes and edges. Slide min level to 4 to leave the comment brigade.
 - <a href="https://yangkangsung.github.io/kampff-skills/demo-kampff-walkthrough.html" target="_blank" rel="noopener noreferrer"><strong>How a report is made</strong></a>. Collect → honesty → distance, then a walk through the same sample.
 - <a href="https://yangkangsung.github.io/kampff-skills/" target="_blank" rel="noopener noreferrer">Pages home</a>
 
@@ -58,6 +60,9 @@ cp -r kampff-skills/kampff ~/.hermes/skills/kampff   # pick your path
 
 ```text
 /kampff analyze path/to/bundle.json
+/kampff desk path/to/analysis.json
+/kampff graph path/to/bundle.json
+/kampff graph {id}
 /kampff member {platform} {id}
 /kampff today
 ```
@@ -84,6 +89,8 @@ The extension queues jobs and opens reports. It does not scrape the web by itsel
 | **Fit** | How their worldview and working style sit next to *yours*. You are in the pool. |
 | **Time** | How they changed. One rant is not a trait. |
 | **Proof** | A quote, or an honest "we do not have this." |
+| **Desk** | Paper-test the call: mute quotes, pick a situation, scrub time. One person. |
+| **Graph** | People as nodes, ties as edges. Filter relation level. Thick/rose = stacked or brigade-like. |
 
 Collection is a separate step. Analyze reads files only. It does not invent a crawl mid-report.
 

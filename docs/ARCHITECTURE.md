@@ -52,6 +52,8 @@ kampff-skills/
   scripts/
     # --- product / dual-mode (standalone + extension) ---
     render_kampff_report.py
+    render_kampff_desk.py       # Distance Desk (paper-test one call)
+    kampff_graph.py · build_kampff_graph.py · render_kampff_graph.py
     kampff_report_easy.py
     kampff_paths.py
     wiki_store.py
@@ -122,6 +124,8 @@ python scripts/render_kampff_report.py \
   -a docs/sample-analysis.json \
   -o /tmp/report.html
 # dual-track default (쉬운 말 + 전문); --track pro|easy|both
+# also writes sibling Distance Desk unless --no-desk
+python scripts/render_kampff_desk.py -a docs/sample-analysis.json -o docs/sample-desk.html
 ```
 
 ### A4. Dual-store CLI

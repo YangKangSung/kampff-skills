@@ -28,12 +28,15 @@
 |-------|----------|-------------|
 | `content` | yes | 본문 |
 | `timestamp` | yes | ISO 8601 |
-| `source` | yes | `mail` \| `meeting` \| `chat` \| `messenger` \| `wiki_page` \| `issue` \| `issue_comment` \| `pr_comment` \| `community_post` \| `community_comment` \| `sns_post` \| `sns_comment` |
+| `source` | yes | `mail` \| `meeting` \| `chat` \| `messenger` \| `wiki_page` \| `issue` \| `issue_comment` \| `pr_comment` \| `community_post` \| `community_comment` \| `community_like` \| `sns_post` \| `sns_comment` \| `sns_like` |
 | `platform` | no | `x` \| `facebook` \| `instagram` \| `reddit` \| `linkedin` \| `confluence` \| `jira` \| `github` \| `internal_web` \| `community` |
-| `type` | no | `post` \| `comment` \| `reply` \| `dm` \| `thread` \| `forward` \| `repost` |
+| `type` | no | `post` \| `comment` \| `reply` \| `like` \| `dm` \| `thread` \| `forward` \| `repost` |
 | `url` | no | **permalink** — 해당 글/댓글 URL |
 | `collected_from` | no | 수집 범위 URL (targets[].url) |
 | `thread_id` | no | 스레드·subreddit·게시판 글 id |
+| `reply_to` | no | 이 댓글이 답하는 **사람 id** (관계 그래프 방향 엣지) |
+| `parent_url` | no | 부모 글/댓글 permalink |
+| `mentions` | no | 본문 외 명시 멘션 사람 id 목록 |
 | `source_file` | no | 로컬 raw 경로 |
 
 ## collection_targets[] (optional, in bundle)

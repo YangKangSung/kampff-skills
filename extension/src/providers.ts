@@ -3,7 +3,15 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { getConfig, inboxDir, reportScanDirs } from "./config";
 
-export type KampffItemKind = "report" | "html" | "analysis" | "bundle" | "raw" | "dir" | "file";
+export type KampffItemKind =
+  | "report"
+  | "html"
+  | "graph"
+  | "analysis"
+  | "bundle"
+  | "raw"
+  | "dir"
+  | "file";
 
 export class KampffItem extends vscode.TreeItem {
   constructor(
@@ -45,6 +53,22 @@ export class KampffItem extends vscode.TreeItem {
             [
               "**analysis.json** — 분석 원본 데이터",
               "엔진이 남긴 JSON. HTML 보고서의 재료입니다.",
+              "",
+              `\`${fsPath.replace(/\\/g, "/")}\``,
+            ].join("\n\n")
+          );
+        } else if (kind === "graph") {
+          this.iconPath = new vscode.ThemeIcon("type-hierarchy");
+          this.command = {
+            command: "kampff.openGraph",
+            title: "Open graph",
+            arguments: [this],
+          };
+          this.description = "relation";
+          this.tooltip = new vscode.MarkdownString(
+            [
+              "**관계 그래프** — 사람들 · 엣지 · 레벨 필터",
+              "한 사람 도셔가 아닙니다. Hide/Dim · 선 두께는 HTML 안에서.",
               "",
               `\`${fsPath.replace(/\\/g, "/")}\``,
             ].join("\n\n")
@@ -224,7 +248,13 @@ export class ReportsProvider implements vscode.TreeDataProvider<KampffItem> {
       if (!root || !fs.existsSync(root)) continue;
       try {
         for (const f of fs.readdirSync(root)) {
-          if (!(f.endsWith("-report.html") || (f.endsWith(".html") && f.includes("report")))) {
+          if (
+            !(
+              f.endsWith("-report.html") ||
+              f.endsWith("-graph.html") ||
+              (f.endsWith(".html") && f.includes("report"))
+            )
+          ) {
             continue;
           }
           const p = path.join(root, f);
@@ -247,6 +277,16 @@ export class ReportsProvider implements vscode.TreeDataProvider<KampffItem> {
     const sliced = files.slice(0, max);
 
     return sliced.map((p) => {
+      if (p.toLowerCase().endsWith("-graph.html")) {
+        const base = path.basename(p);
+        const item = new KampffItem(
+          base.replace(/-graph\.html$/i, " · graph"),
+          p,
+          "graph",
+          vscode.TreeItemCollapsibleState.None
+        );
+        return item;
+      }
       const meta = readAnalysisMeta(p);
       const label = reportDisplayLabel(p, meta);
       const item = new KampffItem(
