@@ -2,7 +2,7 @@
   "name": "kampff",
   "displayName": "Kampff",
   "description": "Kampff operator shell: queue analyze jobs against a kampff-skills clone, open dual-track reports. Default site X. Requires Hermes. Respect rate limits.",
-  "version": "0.9.13",
+  "version": "0.9.14",
   "publisher": "YangKangSung",
   "author": "YangKangSung (ksyang)",
   "license": "MIT",

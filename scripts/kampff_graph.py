@@ -452,6 +452,11 @@ def build_graph(
             role = "seed"
         elif pid == viewer:
             role = "viewer"
+        hop = p.get("hop")
+        try:
+            hop_i = int(hop) if hop is not None else (0 if pid == seed else 1)
+        except (TypeError, ValueError):
+            hop_i = 0 if pid == seed else 1
         nodes.append(
             {
                 "id": pid,
@@ -461,6 +466,7 @@ def build_graph(
                 "degree": deg,
                 "coord_score": coord_of.get(pid, 0),
                 "role": role,
+                "hop": hop_i,
             }
         )
     keep = {n["id"] for n in nodes}
@@ -476,6 +482,10 @@ def build_graph(
             "n_nodes": len(nodes),
             "n_edges": len(edges),
             "seed": seed or None,
+            "attached_ids": list(meta.get("attached_ids") or []),
+            "n_hop1": meta.get("n_hop1"),
+            "n_hop2": meta.get("n_hop2"),
+            "ego_hops": meta.get("ego_hops") or (2 if meta.get("attached_ids") else 1),
             "likes": likes_meta
             or {
                 "status": "collected" if likes else "not_collected",
@@ -496,7 +506,7 @@ def build_graph(
                 n["role"] = "seed"
         graph["meta"]["seed"] = seed
         graph["viewer"] = {"id": seed}
-        if explicit_seed:
+        if explicit_seed and not meta.get("ego"):
             graph = ego_graph(graph, seed, hops=hops)
     return graph
 

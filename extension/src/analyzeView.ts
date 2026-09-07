@@ -858,7 +858,7 @@ export class AnalyzeViewProvider implements vscode.WebviewViewProvider {
         </button>
         <button type="button" class="btn" id="btnGraph">
           <span class="t">관계 그래프 (Graph)</span>
-          <span class="d">ID 중심 · 글·댓글·공감에 걸린 사람들</span>
+          <span class="d">ID 중심 · 글·댓글 + 이미 수확한 상대</span>
         </button>
         <div class="row-g" style="margin-top:6px">
           <button type="button" class="btn ghost" id="btnOpenQuickBrowser" title="이 ID의 빠른(quick) HTML을 기본 브라우저로">브라우저 · 빠른</button>

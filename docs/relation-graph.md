@@ -22,7 +22,7 @@ render_kampff_graph.py  →  *-graph.html
     filter by relation level · thickness = weight · color = level
 ```
 
-**Ego (one id):** type an id, then Graph. Nodes are that person plus IDs on their **posts**, **comments**, and **likes** (if liker ids were in the saved HTML). Gold node = seed. This is still Layer 2 — not the Distance Desk.
+**Ego (one id):** type an id, then Graph. Nodes are that person plus IDs on their **posts**, **comments**, and **likes** (if liker ids were in the saved HTML). Gold node = seed. If a 1-hop alter already has harvest HTML in inbox, those threads are **attached** (hop 2, cyan) — no new scrape. This is still Layer 2 — not the Distance Desk.
 
 **Board (no id):** a multi-person `bundle.json` as before.
 

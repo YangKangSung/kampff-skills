@@ -22,30 +22,62 @@ from kampff_paths import data_root
 from thread_actors import parse_thread_file, to_iso
 
 
+def _raw_usable(raw: Path) -> bool:
+    posts = raw / "posts"
+    return (
+        (posts.is_dir() and any(posts.glob("*.html")))
+        or (raw / "thread_actors.json").is_file()
+        or (raw / "relation_bundle.json").is_file()
+    )
+
+
+def _state_ids(raw: Path) -> set[str]:
+    out = {raw.name, raw.name.lower()}
+    st = raw / "STATE.json"
+    if not st.is_file():
+        return out
+    try:
+        data = json.loads(st.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return out
+    for key in ("author_id", "nick", "nickname"):
+        val = str(data.get(key) or "").strip()
+        if val:
+            out.add(val)
+            out.add(val.lower())
+    return out
+
+
+def index_inbox_raw(root: Path | None = None) -> dict[str, Path]:
+    """Newest usable raw dir per folder name / author_id / nick."""
+    inbox = (root or data_root()) / "inbox"
+    catalog: dict[str, tuple[float, Path]] = {}
+    if not inbox.is_dir():
+        return {}
+    for day in inbox.iterdir():
+        raw_root = day / "raw"
+        if not raw_root.is_dir():
+            continue
+        for raw in raw_root.iterdir():
+            if not raw.is_dir() or not _raw_usable(raw):
+                continue
+            try:
+                mt = raw.stat().st_mtime
+            except OSError:
+                continue
+            for key in _state_ids(raw):
+                prev = catalog.get(key)
+                if not prev or mt > prev[0]:
+                    catalog[key] = (mt, raw)
+    return {k: p for k, (_mt, p) in catalog.items()}
+
+
 def find_seed_raw(seed: str, root: Path | None = None) -> Path | None:
     seed = (seed or "").strip()
     if not seed:
         return None
-    inbox = (root or data_root()) / "inbox"
-    if not inbox.is_dir():
-        return None
-    hits: list[Path] = []
-    for day in inbox.iterdir():
-        if not day.is_dir():
-            continue
-        raw = day / "raw" / seed
-        if not raw.is_dir():
-            continue
-        posts = raw / "posts"
-        has_html = posts.is_dir() and any(posts.glob("*.html"))
-        has_actors = (raw / "thread_actors.json").is_file()
-        has_rel = (raw / "relation_bundle.json").is_file()
-        if has_html or has_actors or has_rel:
-            hits.append(raw)
-    if not hits:
-        return None
-    hits.sort(key=lambda p: p.stat().st_mtime, reverse=True)
-    return hits[0]
+    catalog = index_inbox_raw(root)
+    return catalog.get(seed) or catalog.get(seed.lower())
 
 
 def load_threads(raw_dir: Path) -> list[dict[str, Any]]:
@@ -148,6 +180,26 @@ def _score_alters(threads: list[dict], seed: str, seed_threads: set[str]) -> dic
     return dict(score)
 
 
+def _thread_ids_touching(threads: list[dict], ids: set[str]) -> set[str]:
+    out: set[str] = set()
+    for t in threads:
+        tid = str(t.get("thread_id") or "")
+        if not tid:
+            continue
+        if t.get("op_id") in ids:
+            out.add(tid)
+            continue
+        if any(c.get("author_id") in ids for c in t.get("comments") or []):
+            out.add(tid)
+            continue
+        if any(
+            lk.get("author_id") in ids or lk.get("target_id") in ids
+            for lk in t.get("likes") or []
+        ):
+            out.add(tid)
+    return out
+
+
 def bundle_from_threads(
     seed: str,
     threads: list[dict[str, Any]],
@@ -155,13 +207,41 @@ def bundle_from_threads(
     date: str = "",
     max_alters: int = 80,
     platform: str = "community",
+    extra_threads: list[dict[str, Any]] | None = None,
+    attached_ids: list[str] | None = None,
+    max_hop2: int = 24,
 ) -> dict[str, Any]:
     seed = (seed or "").strip()
     day = date or date_cls.today().isoformat()
-    seed_threads = _thread_ids_for_seed(threads, seed)
-    scores = _score_alters(threads, seed, seed_threads)
+    attached_ids = [a for a in (attached_ids or []) if a and a != seed]
+    extra_threads = list(extra_threads or [])
+    seed_pool = list(threads)
+    seed_threads = _thread_ids_for_seed(seed_pool, seed)
+    scores = _score_alters(seed_pool, seed, seed_threads)
     ranked = sorted(scores, key=lambda i: (-scores[i], i))
-    keep = {seed} | set(ranked[: max(0, max_alters)])
+    hop1 = set(ranked[: max(0, max_alters)])
+    keep = {seed} | hop1
+    hop_of: dict[str, int] = {seed: 0}
+    for aid in hop1:
+        hop_of[aid] = 1
+    hop2: list[str] = []
+    if extra_threads and attached_ids:
+        all_for_hop2 = seed_pool + extra_threads
+        for alter in attached_ids:
+            a_threads = _thread_ids_for_seed(all_for_hop2, alter)
+            a_scores = _score_alters(all_for_hop2, alter, a_threads)
+            for pid in sorted(a_scores, key=lambda i: (-a_scores[i], i)):
+                if pid in keep:
+                    continue
+                keep.add(pid)
+                hop_of[pid] = 2
+                hop2.append(pid)
+                if len(hop2) >= max_hop2:
+                    break
+            if len(hop2) >= max_hop2:
+                break
+    threads = seed_pool + extra_threads
+    active_threads = _thread_ids_touching(threads, keep)
     people: dict[str, dict] = {}
     _ensure_person(people, seed, seed)
     likes_n = 0
@@ -169,7 +249,7 @@ def bundle_from_threads(
 
     for t in threads:
         tid = str(t.get("thread_id") or "")
-        if tid not in seed_threads:
+        if tid not in active_threads:
             continue
         url = str(t.get("url") or "")
         ts = to_iso(str(t.get("timestamp") or ""), day)
@@ -231,7 +311,17 @@ def bundle_from_threads(
 
     if likes_n and likes_status != "collected":
         likes_status = "collected"
-    people_list = [people[seed]] + [people[i] for i in ranked if i in people and i != seed]
+    for pid, row in people.items():
+        row["hop"] = hop_of.get(pid, 1 if pid != seed else 0)
+    rest = [people[i] for i in ranked if i in people and i != seed]
+    rest += [people[i] for i in hop2 if i in people and i not in hop1 and i != seed]
+    seen_ids = {seed}
+    people_list = [people[seed]]
+    for row in rest:
+        if row["id"] in seen_ids:
+            continue
+        seen_ids.add(row["id"])
+        people_list.append(row)
     return {
         "context": "community",
         "viewer_id": seed,
@@ -241,13 +331,43 @@ def bundle_from_threads(
             "platform": platform,
             "seed": seed,
             "ego": True,
-            "n_threads": len(seed_threads),
+            "ego_hops": 2 if attached_ids else 1,
+            "n_threads": len(active_threads),
             "n_html_threads": len(threads),
             "max_alters": max_alters,
+            "attached_ids": attached_ids,
+            "n_hop1": len(hop1),
+            "n_hop2": len(hop2),
             "likes": {"status": likes_status, "n": likes_n},
         },
         "people": people_list,
     }
+
+
+def attach_existing_alters(
+    seed: str,
+    hop1_ids: list[str],
+    raw_dir: Path,
+    *,
+    root: Path | None = None,
+    max_attach: int = 6,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    extra: list[dict[str, Any]] = []
+    attached: list[str] = []
+    catalog = index_inbox_raw(root)
+    seed_raw = raw_dir.resolve()
+    for aid in hop1_ids:
+        if len(attached) >= max_attach:
+            break
+        other = catalog.get(aid) or catalog.get(aid.lower())
+        if not other or other.resolve() == seed_raw:
+            continue
+        rows = load_threads(other)
+        if not rows:
+            continue
+        extra.extend(rows)
+        attached.append(aid)
+    return extra, attached
 
 
 def write_relation_artifacts(
@@ -258,6 +378,10 @@ def write_relation_artifacts(
     output: Path | None = None,
     max_alters: int = 80,
     platform: str = "community",
+    attach_existing: bool = True,
+    max_attach: int = 6,
+    max_hop2: int = 24,
+    data_root_override: Path | None = None,
 ) -> Path:
     raw_dir = Path(raw_dir)
     threads = load_threads(raw_dir)
@@ -276,8 +400,33 @@ def write_relation_artifacts(
         + "\n",
         encoding="utf-8",
     )
+    extra: list[dict[str, Any]] = []
+    attached: list[str] = []
+    if attach_existing:
+        seed_threads = _thread_ids_for_seed(threads, seed)
+        hop1 = [
+            i
+            for i, _s in sorted(
+                _score_alters(threads, seed, seed_threads).items(),
+                key=lambda kv: (-kv[1], kv[0]),
+            )
+        ]
+        extra, attached = attach_existing_alters(
+            seed,
+            hop1,
+            raw_dir,
+            root=data_root_override,
+            max_attach=max_attach,
+        )
     bundle = bundle_from_threads(
-        seed, threads, date=date, max_alters=max_alters, platform=platform
+        seed,
+        threads,
+        date=date,
+        max_alters=max_alters,
+        platform=platform,
+        extra_threads=extra,
+        attached_ids=attached,
+        max_hop2=max_hop2,
     )
     out = Path(output) if output else raw_dir / "relation_bundle.json"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -297,6 +446,14 @@ def main() -> None:
     ap.add_argument("--max-alters", type=int, default=80)
     ap.add_argument("--date", default="")
     ap.add_argument("--platform", default="community")
+    ap.add_argument(
+        "--attach-existing",
+        action="store_true",
+        default=True,
+        help="also read inbox raw for 1-hop ids that were already harvested",
+    )
+    ap.add_argument("--no-attach", dest="attach_existing", action="store_false")
+    ap.add_argument("--max-attach", type=int, default=6)
     args = ap.parse_args()
     raw = Path(args.raw) if args.raw else find_seed_raw(args.seed)
     if not raw:
@@ -313,6 +470,8 @@ def main() -> None:
         output=out,
         max_alters=args.max_alters,
         platform=args.platform,
+        attach_existing=args.attach_existing,
+        max_attach=args.max_attach,
     )
     print(path)
 

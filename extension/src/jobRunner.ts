@@ -878,6 +878,13 @@ export async function startJobFromRequest(
             KAMPFF_HARVEST_MIN_DELAY_MS: delayMin,
             KAMPFF_HARVEST_MAX_DELAY_MS: delayMax,
             KAMPFF_CLIEN_MAX_FETCH: String(cfg.harvestMaxFetch ?? 40),
+            ...(Number(cfg.harvestMaxFetch ?? 40) <= 15
+              ? {
+                  KAMPFF_CLIEN_BOARDS: "park",
+                  KAMPFF_CLIEN_COMMENTER_BOARDS: "park",
+                  KAMPFF_CLIEN_SEARCH_PAGES: "1",
+                }
+              : {}),
             KAMPFF_CLIEN_BURST_EVERY: String(cfg.harvestBurstEvery ?? 6),
             KAMPFF_CLIEN_BURST_PAUSE_MS: String(
               Math.round((cfg.harvestBurstPauseSec ?? 10) * 1000)

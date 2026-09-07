@@ -62,7 +62,7 @@ JS = r"""
   var G = {};
   try { G = JSON.parse(document.getElementById("kampff-graph-seed").textContent || "{}"); } catch(e) { G = {}; }
   var nodes = (G.nodes || []).map(function(n,i){
-    return {id:n.id, nick:n.nick||n.id, distance:n.distance, n_texts:n.n_texts||0, degree:n.degree||0, coord_score:n.coord_score||0, role:n.role, x: 400 + Math.cos(i)*80, y: 300 + Math.sin(i)*80, vx:0, vy:0};
+    return {id:n.id, nick:n.nick||n.id, distance:n.distance, n_texts:n.n_texts||0, degree:n.degree||0, coord_score:n.coord_score||0, role:n.role, hop:n.hop||0, x: 400 + Math.cos(i)*80, y: 300 + Math.sin(i)*80, vx:0, vy:0};
   });
   var byId = {};
   nodes.forEach(function(n){ byId[n.id] = n; });
@@ -117,6 +117,7 @@ JS = r"""
       box.innerHTML = '<h2 style="margin:0 0 6px;font-size:16px">'+esc(item.nick)+'</h2>'+
         '<p class="muted">id '+esc(item.id)+' · texts '+item.n_texts+' · degree '+item.degree+'</p>'+
         (item.role === "seed" ? '<p><span class="pill">seed</span> posts / comments / likes around this id</p>' : '')+
+        (item.hop ? '<p class="muted">hop '+item.hop+(item.hop>=2?' · via already-harvested alter':'')+'</p>' : '')+
         (item.distance ? '<p>L1 distance <span class="pill">'+esc(item.distance)+'</span></p>' : '<p class="muted">No L1 distance joined.</p>')+
         '<p>coord_score <b>'+item.coord_score+'</b></p>';
       return;
@@ -223,9 +224,10 @@ JS = r"""
       var dimNode = belowMode === "dim" && minLevel > 1 && !focusIds[n.id];
       var r = 7 + Math.min(8, Math.sqrt(n.n_texts||1)*1.6);
       if (n.role === "seed") r += 4;
+      if (n.hop >= 2) r = Math.max(5, r - 2);
       ctx.beginPath();
       ctx.arc(n.x,n.y,r,0,Math.PI*2);
-      ctx.fillStyle = n.role==="seed" ? "#fbbf24" : (n.role==="viewer" ? "#5eead4" : (n.coord_score>=40 ? "#f87171" : "#e7eef8"));
+      ctx.fillStyle = n.role==="seed" ? "#fbbf24" : (n.role==="viewer" ? "#5eead4" : (n.hop>=2 ? "#7dd3fc" : (n.coord_score>=40 ? "#f87171" : "#e7eef8")));
       var a = dimNode ? 0.22 : 1;
       if (sel && sel !== n && !(sel.source && (sel.source===n.id || sel.target===n.id))) a *= dimNode ? 0.7 : 0.25;
       ctx.globalAlpha = a;
@@ -333,27 +335,45 @@ def render_graph(graph: dict, *, lang: str = "en") -> str:
     likes = meta.get("likes") if isinstance(meta.get("likes"), dict) else {}
     likes_st = str(likes.get("status") or "")
     likes_n = likes.get("n", 0)
+    attached = [str(x) for x in (meta.get("attached_ids") or []) if x]
+    n_hop2 = meta.get("n_hop2") or 0
     if lang == "ko":
         heading = f"{seed_id} 중심" if seed_id else "보드 그래프"
         kicker = "Kampff · 관계"
         sub = "이 ID의 글·댓글·공감에 걸린 사람들" if seed_id else "같은 스레드의 여러 사람"
+        if attached:
+            sub += f" · 이미 수확한 상대 {len(attached)}명 연결"
         likes_line = (
             f'<p class="muted">공감/좋아요: {likes_st or "not_collected"}'
             + (f" · {likes_n}" if likes_n else "")
             + (" — HTML에 공감 ID가 없으면 비움" if likes_st != "collected" else "")
             + "</p>"
         )
+        if attached:
+            likes_line += (
+                f'<p class="muted">2홉: {", ".join(attached[:6])}'
+                + (f" · +{n_hop2}명" if n_hop2 else "")
+                + " (새 수집 없음)</p>"
+            )
         footer = "한 사람 도сье(거리 책상)와 다른 페이지. L5는 법정 증거가 아닙니다."
     else:
         heading = f"Ego · {seed_id}" if seed_id else "Board graph"
         kicker = "Kampff · relation"
         sub = "IDs on this person's posts, comments, likes" if seed_id else "Many people, same threads"
+        if attached:
+            sub += f" · attached {len(attached)} already-harvested alter(s)"
         likes_line = (
             f'<p class="muted">likes: {likes_st or "not_collected"}'
             + (f" · {likes_n}" if likes_n else "")
             + (" — no liker ids in saved HTML" if likes_st != "collected" else "")
             + "</p>"
         )
+        if attached:
+            likes_line += (
+                f'<p class="muted">hop 2: {", ".join(attached[:6])}'
+                + (f" · +{n_hop2}" if n_hop2 else "")
+                + " (no new harvest)</p>"
+            )
         footer = "One person dossier is a different page. This is the board. L5 is not a court."
     return f"""<!DOCTYPE html>
 <html lang="{lang}">

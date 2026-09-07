@@ -2,6 +2,13 @@
 
 All notable changes to the **Kampff** VS Code extension are documented here.
 
+## [0.9.14] — 2026-09-02
+
+### Changed
+- Ego graph **attaches already-harvested 1-hop alters** (no new scrape). Their other threads become hop-2 (cyan).
+- Analyze with `harvestMaxFetch` ≤ 15 uses park-only / 1 search page (quieter 1-hop).
+- Graph opens by nick or `STATE.author_id`, not folder name only.
+
 ## [0.9.13] — 2026-08-19
 
 ### Changed
